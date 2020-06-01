@@ -1,1 +1,1 @@
-# Flatty - tools and sterilizations for plain flat binary files.
+# Flatty - tools and serializer for plain flat binary files.
