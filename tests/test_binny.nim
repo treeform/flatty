@@ -2,7 +2,7 @@ import flatty/binny, flatty/hexPrint, streams, strutils
 
 block:
   var s = ""
-  s.addUInt8(0x12.uint8)
+  s.addUint8(0x12.uint8)
   echo hexPrint(s)
   assert s.readUint8(0) == 0x12.uint8
 
@@ -12,12 +12,12 @@ block:
   assert ss.readAll() == s
 
   var s2 = newString(1)
-  s2.writeUInt8(0, 0x12.uint8)
+  s2.writeUint8(0, 0x12.uint8)
   assert s2.readUint8(0) == 0x12.uint8
 
 block:
   var s = ""
-  s.addUInt16(0x1234.uint16)
+  s.addUint16(0x1234.uint16)
   echo hexPrint(s)
   assert s.readUint16(0) == 0x1234.uint16
 
@@ -27,12 +27,12 @@ block:
   assert ss.readAll() == s
 
   var s2 = newString(2)
-  s2.writeUInt16(0, 0x1234.uint16)
+  s2.writeUint16(0, 0x1234.uint16)
   assert s2.readUint16(0) == 0x1234.uint16
 
 block:
   var s = ""
-  s.addUInt32(0x12345678.uint32)
+  s.addUint32(0x12345678.uint32)
   echo hexPrint(s)
   assert s.readUint32(0) == 0x12345678.uint32
 
@@ -42,12 +42,12 @@ block:
   assert ss.readAll() == s
 
   var s2 = newString(4)
-  s2.writeUInt32(0, 0x12345678.uint32)
+  s2.writeUint32(0, 0x12345678.uint32)
   assert s2.readUint32(0) == 0x12345678.uint32
 
 block:
   var s = ""
-  s.addUInt64(0x12345678AABBCC.uint64)
+  s.addUint64(0x12345678AABBCC.uint64)
   echo hexPrint(s)
   assert s.readUint64(0) == 0x12345678AABBCC.uint64
 
@@ -57,7 +57,7 @@ block:
   assert ss.readAll() == s
 
   var s2 = newString(8)
-  s2.writeUInt64(0, 0x12345678AABBCC.uint64)
+  s2.writeUint64(0, 0x12345678AABBCC.uint64)
   assert s2.readUint64(0) == 0x12345678AABBCC.uint64
 
 block:
