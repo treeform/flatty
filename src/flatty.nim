@@ -21,26 +21,26 @@ func fromFlatty*[T](s: string, x: typedesc[T]): T
 
 # Booleans
 func toFlatty(s: var string, x: bool) =
-  s.addUInt8(x.uint8)
+  s.addUint8(x.uint8)
 
 func fromFlatty(s: string, i: var int, x: var bool) =
-  x = s.readUInt8(i).bool
+  x = s.readUint8(i).bool
   i += 1
 
 # Numbers
-func toFlatty(s: var string, x: uint8) = s.addUInt8(x)
+func toFlatty(s: var string, x: uint8) = s.addUint8(x)
 func toFlatty(s: var string, x: int8) = s.addInt8(x)
-func toFlatty(s: var string, x: uint16) = s.addUInt16(x)
+func toFlatty(s: var string, x: uint16) = s.addUint16(x)
 func toFlatty(s: var string, x: int16) = s.addInt16(x)
-func toFlatty(s: var string, x: uint32) = s.addUInt32(x)
+func toFlatty(s: var string, x: uint32) = s.addUint32(x)
 func toFlatty(s: var string, x: int32) = s.addInt32(x)
-func toFlatty(s: var string, x: uint64) = s.addUInt64(x)
+func toFlatty(s: var string, x: uint64) = s.addUint64(x)
 func toFlatty(s: var string, x: int64) = s.addInt64(x)
 func toFlatty(s: var string, x: float32) = s.addFloat32(x)
 func toFlatty(s: var string, x: float64) = s.addFloat64(x)
 
 func fromFlatty(s: string, i: var int, x: var uint8) =
-  x = s.readUInt8(i)
+  x = s.readUint8(i)
   i += 1
 
 func fromFlatty(s: string, i: var int, x: var int8) =
@@ -48,7 +48,7 @@ func fromFlatty(s: string, i: var int, x: var int8) =
   i += 1
 
 func fromFlatty(s: string, i: var int, x: var uint16) =
-  x = s.readUInt16(i)
+  x = s.readUint16(i)
   i += 2
 
 func fromFlatty(s: string, i: var int, x: var int16) =
@@ -56,7 +56,7 @@ func fromFlatty(s: string, i: var int, x: var int16) =
   i += 2
 
 func fromFlatty(s: string, i: var int, x: var uint32) =
-  x = s.readUInt32(i)
+  x = s.readUint32(i)
   i += 4
 
 func fromFlatty(s: string, i: var int, x: var int32) =
@@ -64,7 +64,7 @@ func fromFlatty(s: string, i: var int, x: var int32) =
   i += 4
 
 func fromFlatty(s: string, i: var int, x: var uint64) =
-  x = s.readUInt64(i)
+  x = s.readUint64(i)
   i += 8
 
 func fromFlatty(s: string, i: var int, x: var int64) =
