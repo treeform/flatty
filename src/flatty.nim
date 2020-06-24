@@ -105,15 +105,27 @@ func fromFlatty(s: string, i: var int, x: var string) =
 # Seq
 func toFlatty[T](s: var string, x: seq[T]) =
   s.addInt64(x.len.int64)
-  for e in x:
-    s.toFlatty(e)
+  when not defined(js) and T is SomeNumber:
+    if x.len == 0:
+      return
+    let byteLen = x.len * sizeof(T)
+    s.setLen(s.len + byteLen)
+    let dest = s[s.len - byteLen].addr
+    copyMem(dest, x[0].unsafeAddr, byteLen)
+  else:
+    for e in x:
+      s.toFlatty(e)
 
 func fromFlatty[T](s: string, i: var int, x: var seq[T]) =
   let len = s.readInt64(i)
   i += 8
   x.setLen(len)
-  for j in 0 ..< len:
-    s.fromFlatty(i, x[j])
+  when not defined(js) and T is SomeNumber:
+    if len > 0:
+      copyMem(x[0].addr, s[i].unsafeAddr, len * sizeof(T))
+  else:
+    for j in 0 ..< len:
+      s.fromFlatty(i, x[j])
 
 # Objects
 func toFlatty(s: var string, x: object) =
