@@ -56,6 +56,10 @@ block:
   ss.setPosition(0)
   assert ss.readAll() == s
 
+  var s2 = newString(8)
+  s2.writeUInt64(0, 0x12345678AABBCC.uint64)
+  assert s2.readUint64(0) == 0x12345678AABBCC.uint64
+
 block:
   var s = ""
   s.addInt8(-12.int8)
