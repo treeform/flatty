@@ -71,37 +71,34 @@ when defined(js):
     s.add ((v and (0xFF.uint64 shl 56)) shr 56).char
 else:
   func readUint16*(s: string, i: int): uint16 =
-    copyMem(result.unsafeAddr, s[i].unsafeAddr, sizeof(result))
+    result = cast[ptr uint16](s[i].unsafeAddr)[]
 
   func writeUint16*(s: var string, i: int, v: uint16) =
-    copyMem(s[i].addr, v.unsafeAddr, sizeof(uint64))
+    cast[ptr uint16](s[i].addr)[] = v
 
   func addUint16*(s: var string, v: uint16) =
     s.setLen(s.len + sizeof(v))
-    let dest = s[s.len - sizeof(v)].addr
-    copyMem(dest, v.unsafeAddr, sizeof(v))
+    cast[ptr uint16](s[s.len - sizeof(v)].addr)[] = v
 
   func readUint32*(s: string, i: int): uint32 =
-    copyMem(result.unsafeAddr, s[i].unsafeAddr, sizeof(result))
+    result = cast[ptr uint32](s[i].unsafeAddr)[]
 
   func writeUint32*(s: var string, i: int, v: uint32) =
-    copyMem(s[i].addr, v.unsafeAddr, sizeof(uint64))
+    cast[ptr uint32](s[i].addr)[] = v
 
   func addUint32*(s: var string, v: uint32) =
     s.setLen(s.len + sizeof(v))
-    let dest = s[s.len - sizeof(v)].addr
-    copyMem(dest, v.unsafeAddr, sizeof(v))
+    cast[ptr uint32](s[s.len - sizeof(v)].addr)[] = v
 
   func readUint64*(s: string, i: int): uint64 =
-    copyMem(result.unsafeAddr, s[i].unsafeAddr, sizeof(result))
+    result = cast[ptr uint64](s[i].unsafeAddr)[]
 
   func writeUint64*(s: var string, i: int, v: uint64) =
-    copyMem(s[i].addr, v.unsafeAddr, sizeof(uint64))
+    cast[ptr uint64](s[i].addr)[] = v
 
   func addUint64*(s: var string, v: uint64) =
     s.setLen(s.len + sizeof(v))
-    let dest = s[s.len - sizeof(v)].addr
-    copyMem(dest, v.unsafeAddr, sizeof(v))
+    cast[ptr uint64](s[s.len - sizeof(v)].addr)[] = v
 
 func readInt8*(s: string, i: int): int8 =
   cast[int8](s.readUint8(i))
