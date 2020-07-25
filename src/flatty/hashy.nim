@@ -7,6 +7,7 @@ export Hash
 proc hash*(x: Hash): Hash = x
 
 {.push overflowChecks: off.}
+
 proc sdbm(s: string): int =
   for c in s:
     result = c.int + (result shl 6) + (result shl 16) - result
@@ -20,4 +21,5 @@ proc hashy*[T](x: T): Hash =
   ## Takes structures and turns them into binary string.
   let s = x.toFlatty()
   djb2(s)
+
 {.pop.}
