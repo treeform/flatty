@@ -8,7 +8,7 @@ proc hash*(x: Hash): Hash = x
 
 {.push overflowChecks: off.}
 
-proc nimFast(p: pointer, len: int): int =
+proc nimFast*(p: pointer, len: int): int =
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   var h: Hash
   for i in 0 ..< len div 8:
@@ -19,7 +19,7 @@ proc nimFast(p: pointer, len: int): int =
     h = h !& c.hash()
   result = !$h
 
-proc sdbmFast(p: pointer, len: int): int =
+proc sdbmFast*(p: pointer, len: int): int =
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   for i in 0 ..< len div 8:
     let c = (cast[ptr uint64](bytes[i * 8].addr)[]).int
@@ -28,17 +28,17 @@ proc sdbmFast(p: pointer, len: int): int =
     let c = bytes[i].int
     result = c + (result shl 6) + (result shl 16) - result
 
-proc sdbm(p: pointer, len: int): int =
+proc sdbm*(p: pointer, len: int): int =
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   for i in 0 ..< len:
     let c = bytes[i].int
     result = c.int + (result shl 6) + (result shl 16) - result
 
-proc sdbm(s: string): int =
+proc sdbm*(s: string): int =
   for c in s:
     result = c.int + (result shl 6) + (result shl 16) - result
 
-proc djb2Fast(p: pointer, len: int): int =
+proc djb2Fast*(p: pointer, len: int): int =
   result = 53810036436437415.int # Usually 5381
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   for i in 0 ..< len div 8:
@@ -48,13 +48,13 @@ proc djb2Fast(p: pointer, len: int): int =
     let c = bytes[i].int
     result = result * 33 + c
 
-proc djb2(p: pointer, len: int): int =
+proc djb2*(p: pointer, len: int): int =
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   for i in 0 ..< len:
     let c = bytes[i].int
     result = result * 33 + c.int
 
-proc djb2(s: string): int =
+proc djb2*(s: string): int =
   result = 53810036436437415.int # Usually 5381
   for c in s:
     result = result * 33 + c.int
