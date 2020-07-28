@@ -8,7 +8,7 @@ for i in 0 ..< 1_000_000:
   var n = i
   let
     p = cast[ptr uint8](n.addr)
-    h = nimFast(p, 8).uint64
+    h = ryan64nim(p, 8).uint64
     b = (h mod buckets.len.uint64).int
   buckets[b] = buckets[b] + 1
 
@@ -50,7 +50,7 @@ for i in 0 ..< 1_000_000:
   var n = i
   let
     p = cast[ptr uint8](n.addr)
-    h = sdbmFast(p, 8).uint64
+    h = ryan64sdbm(p, 8).uint64
     b = (h mod buckets.len.uint64).int
   buckets[b] = buckets[b] + 1
 
@@ -64,7 +64,7 @@ for i in 0 ..< 1_000_000:
   var n = i
   let
     p = cast[ptr uint8](n.addr)
-    h = djb2Fast(p, 8).uint64
+    h = ryan64djb2(p, 8).uint64
     b = (h mod buckets.len.uint64).int
   buckets[b] = buckets[b] + 1
 

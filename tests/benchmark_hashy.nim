@@ -18,9 +18,9 @@ timeIt "short sdbm":
     let h = sdbm(short)
     assert h != 0
 
-timeIt "short sdbm_fast":
+timeIt "short ryan64sdbm":
   for i in 0 ..< 1_000_000:
-    let h = sdbmFast(short[0].unsafeAddr, short.len)
+    let h = ryan64sdbm(short[0].unsafeAddr, short.len)
     assert h != 0
 
 timeIt "short djb2":
@@ -28,9 +28,9 @@ timeIt "short djb2":
     let h = djb2(short)
     assert h != 0
 
-timeIt "short djb2_fast":
+timeIt "short ryan64djb2":
   for i in 0 ..< 1_000_000:
-    let h = djb2Fast(short[0].unsafeAddr, short.len)
+    let h = ryan64djb2(short[0].unsafeAddr, short.len)
     assert h != 0
 
 timeIt "short string":
@@ -47,7 +47,7 @@ timeIt "short nim byte hash":
 
 timeIt "short nim fast hash":
   for i in 0 ..< 1_000_000:
-    var h = nimFast(short[0].unsafeAddr, short.len)
+    var h = ryan64nim(short[0].unsafeAddr, short.len)
     assert h != 0
 
 timeIt "long sdbm":
@@ -55,9 +55,9 @@ timeIt "long sdbm":
     let h = sdbm(long)
     assert h != 0
 
-timeIt "long sdbm_fast":
+timeIt "long ryan64sdbm":
   for i in 0 ..< 100:
-    let h = sdbmFast(long[0].unsafeAddr, long.len)
+    let h = ryan64sdbm(long[0].unsafeAddr, long.len)
     assert h != 0
 
 timeIt "long djb2":
@@ -65,9 +65,9 @@ timeIt "long djb2":
     let h = djb2(long)
     assert h != 0
 
-timeIt "long djb2_fast":
+timeIt "long ryan64djb2":
   for i in 0 ..< 100:
-    let h = djb2Fast(long[0].unsafeAddr, long.len)
+    let h = ryan64djb2(long[0].unsafeAddr, long.len)
     assert h != 0
 
 timeIt "long string":
@@ -84,5 +84,5 @@ timeIt "long nim byte hash":
 
 timeIt "long nim fast hash":
   for i in 0 ..< 100:
-    var h = nimFast(long[0].unsafeAddr, long.len)
+    var h = ryan64nim(long[0].unsafeAddr, long.len)
     assert h != 0

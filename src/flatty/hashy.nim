@@ -8,7 +8,7 @@ proc hash*(x: Hash): Hash = x
 
 {.push overflowChecks: off.}
 
-proc nimFast*(p: pointer, len: int): int =
+proc ryan64nim*(p: pointer, len: int): int =
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   var h: Hash
   for i in 0 ..< len div 8:
@@ -19,7 +19,7 @@ proc nimFast*(p: pointer, len: int): int =
     h = h !& c.hash()
   result = !$h
 
-proc sdbmFast*(p: pointer, len: int): int =
+proc ryan64sdbm*(p: pointer, len: int): int =
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   for i in 0 ..< len div 8:
     let c = (cast[ptr uint64](bytes[i * 8].addr)[]).int
@@ -38,7 +38,7 @@ proc sdbm*(s: string): int =
   for c in s:
     result = c.int + (result shl 6) + (result shl 16) - result
 
-proc djb2Fast*(p: pointer, len: int): int =
+proc ryan64djb2*(p: pointer, len: int): int =
   result = 53810036436437415.int # Usually 5381
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   for i in 0 ..< len div 8:
@@ -62,6 +62,6 @@ proc djb2*(s: string): int =
 proc hashy*[T](x: T): Hash =
   ## Takes structures and turns them into binary string.
   let s = x.toFlatty()
-  djb2_fast(s[0].unsafeAddr, s.len)
+  ryan64djb2(s[0].unsafeAddr, s.len)
 
 {.pop.}
