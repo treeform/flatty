@@ -7,11 +7,54 @@ export Hash
 proc hash*(x: Hash): Hash = x
 
 {.push overflowChecks: off.}
-proc sdbm(s: string): int =
+
+proc ryan64nim*(p: pointer, len: int): int =
+  let bytes = cast[ptr UncheckedArray[uint8]](p)
+  var h: Hash
+  for i in 0 ..< len div 8:
+    let c = (cast[ptr uint64](bytes[i * 8].addr)[]).int
+    h = h !& c.hash()
+  for i in 0 ..< len mod 8:
+    let c = bytes[i].int
+    h = h !& c.hash()
+  result = !$h
+
+proc ryan64sdbm*(p: pointer, len: int): int =
+  let bytes = cast[ptr UncheckedArray[uint8]](p)
+  for i in 0 ..< len div 8:
+    let c = (cast[ptr uint64](bytes[i * 8].addr)[]).int
+    result = c + (result shl 6) + (result shl 16) - result
+  for i in 0 ..< len mod 8:
+    let c = bytes[i].int
+    result = c + (result shl 6) + (result shl 16) - result
+
+proc sdbm*(p: pointer, len: int): int =
+  let bytes = cast[ptr UncheckedArray[uint8]](p)
+  for i in 0 ..< len:
+    let c = bytes[i].int
+    result = c.int + (result shl 6) + (result shl 16) - result
+
+proc sdbm*(s: string): int =
   for c in s:
     result = c.int + (result shl 6) + (result shl 16) - result
 
-proc djb2(s: string): int =
+proc ryan64djb2*(p: pointer, len: int): int =
+  result = 53810036436437415.int # Usually 5381
+  let bytes = cast[ptr UncheckedArray[uint8]](p)
+  for i in 0 ..< len div 8:
+    let c = (cast[ptr uint64](bytes[i * 8].addr)[]).int
+    result = result * 33 + c
+  for i in 0 ..< len mod 8:
+    let c = bytes[i].int
+    result = result * 33 + c
+
+proc djb2*(p: pointer, len: int): int =
+  let bytes = cast[ptr UncheckedArray[uint8]](p)
+  for i in 0 ..< len:
+    let c = bytes[i].int
+    result = result * 33 + c.int
+
+proc djb2*(s: string): int =
   result = 53810036436437415.int # Usually 5381
   for c in s:
     result = result * 33 + c.int
@@ -19,5 +62,6 @@ proc djb2(s: string): int =
 proc hashy*[T](x: T): Hash =
   ## Takes structures and turns them into binary string.
   let s = x.toFlatty()
-  djb2(s)
+  ryan64djb2(s[0].unsafeAddr, s.len)
+
 {.pop.}
