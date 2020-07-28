@@ -1,73 +1,66 @@
-include flatty/hashy
+include flatty/hashy, sets
 
-const bucketCount = 32
+block:
+  var hashSet: HashSet[Hash]
+  for i in 0 ..< 1_000_000:
+    var n = i
+    let
+      p = cast[ptr uint8](n.addr)
+      h = ryan64nim(p, 8)
+    hashSet.incl(h)
 
-var buckets = newSeq[int](bucketCount)
+  echo "nim_fast"
+  echo hashSet.len
+  echo "---"
 
-for i in 0 ..< 1_000_000:
-  var n = i
-  let
-    p = cast[ptr uint8](n.addr)
-    h = ryan64nim(p, 8).uint64
-    b = (h mod buckets.len.uint64).int
-  buckets[b] = buckets[b] + 1
+block:
+  var hashSet: HashSet[Hash]
+  for i in 0 ..< 1_000_000:
+    var n = i
+    let
+      p = cast[ptr uint8](n.addr)
+      h = sdbm(p, 8)
+    hashSet.incl(h)
 
-echo "nim_fast"
-echo $buckets
-echo "---"
+  echo "sdbm"
+  echo hashSet.len
+  echo "---"
 
-buckets = newSeq[int](bucketCount)
+block:
+  var hashSet: HashSet[Hash]
+  for i in 0 ..< 1_000_000:
+    var n = i
+    let
+      p = cast[ptr uint8](n.addr)
+      h = ryan64sdbm(p, 8)
+    hashSet.incl(h)
 
-for i in 0 ..< 1_000_000:
-  var n = i
-  let
-    p = cast[ptr uint8](n.addr)
-    h = sdbm(p, 8).uint64
-    b = (h mod buckets.len.uint64).int
-  buckets[b] = buckets[b] + 1
+  echo "sdbm_fast"
+  echo hashSet.len
+  echo "---"
 
-echo "sdbm"
-echo $buckets
-echo "---"
+block:
+  var hashSet: HashSet[Hash]
+  for i in 0 ..< 1_000_000:
+    var n = i
+    let
+      p = cast[ptr uint8](n.addr)
+      h = djb2(p, 8)
+    hashSet.incl(h)
 
-buckets = newSeq[int](bucketCount)
+  echo "djb2"
+  echo hashSet.len
+  echo "---"
 
-for i in 0 ..< 1_000_000:
-  var n = i
-  let
-    p = cast[ptr uint8](n.addr)
-    h = djb2(p, 8).uint64
-    b = (h mod buckets.len.uint64).int
-  buckets[b] = buckets[b] + 1
+block:
+  var hashSet: HashSet[Hash]
+  for i in 0 ..< 1_000_000:
+    var n = i
+    let
+      p = cast[ptr uint8](n.addr)
+      h = ryan64djb2(p, 8)
+    hashSet.incl(h)
 
-echo "djb2"
-echo $buckets
-echo "---"
-
-buckets = newSeq[int](bucketCount)
-
-for i in 0 ..< 1_000_000:
-  var n = i
-  let
-    p = cast[ptr uint8](n.addr)
-    h = ryan64sdbm(p, 8).uint64
-    b = (h mod buckets.len.uint64).int
-  buckets[b] = buckets[b] + 1
-
-echo "sdbm_fast"
-echo $buckets
-echo "---"
-
-buckets = newSeq[int](bucketCount)
-
-for i in 0 ..< 1_000_000:
-  var n = i
-  let
-    p = cast[ptr uint8](n.addr)
-    h = ryan64djb2(p, 8).uint64
-    b = (h mod buckets.len.uint64).int
-  buckets[b] = buckets[b] + 1
-
-echo "djb2_fast"
-echo $buckets
-echo "---"
+  echo "djb2_fast"
+  echo hashSet.len
+  echo "---"

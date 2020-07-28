@@ -49,6 +49,7 @@ proc ryan64djb2*(p: pointer, len: int): int =
     result = result * 33 + c
 
 proc djb2*(p: pointer, len: int): int =
+  result = 53810036436437415.int # Usually 5381
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   for i in 0 ..< len:
     let c = bytes[i].int
