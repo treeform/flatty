@@ -1,4 +1,4 @@
-import random, fidget/opengl/perf
+import fidget/opengl/perf, random
 
 include flatty/hashy
 

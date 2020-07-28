@@ -28,7 +28,7 @@ proc sdbm_fast(p: pointer, len: int): int =
     let c = bytes[i].int
     result = c + (result shl 6) + (result shl 16) - result
 
-proc sdbm(p:pointer, len: int): int =
+proc sdbm(p: pointer, len: int): int =
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   for i in 0 ..< len:
     let c = bytes[i].int
@@ -48,7 +48,7 @@ proc djb2_fast(p: pointer, len: int): int =
     let c = bytes[i].int
     result = result * 33 + c
 
-proc djb2(p:pointer, len: int): int =
+proc djb2(p: pointer, len: int): int =
   let bytes = cast[ptr UncheckedArray[uint8]](p)
   for i in 0 ..< len:
     let c = bytes[i].int
