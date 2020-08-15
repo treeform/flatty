@@ -33,7 +33,7 @@ proc hexPrint*(p: ptr uint8, len: int): string =
         else:
           result.add('.')
       else:
-        result.add('.')
+        result.add(' ')
 
     i += 16
     result.add("\n")
