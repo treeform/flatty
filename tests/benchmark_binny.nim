@@ -4,7 +4,7 @@ const bufferLength = 100_000_000 * sizeof(uint64)
 
 var
   s = ""
-  total: int
+  total: uint64
 
 timeIt "binny":
   for i in 0 ..< bufferLength div sizeof(uint16):
@@ -24,10 +24,10 @@ timeIt "binny":
     s.writeUint64(i, (i mod 10).uint64)
 
   for i in 0 ..< s.len div sizeof(uint16):
-    inc(total, s.readUint16(i * sizeof(uint16)).int)
+    total += s.readUint16(i * sizeof(uint16))
   for i in 0 ..< s.len div sizeof(uint32):
-    inc(total, s.readUint16(i * sizeof(uint32)).int)
+    total += s.readUint32(i * sizeof(uint32))
   for i in 0 ..< s.len div sizeof(uint64):
-    inc(total, s.readUint16(i * sizeof(uint64)).int)
+    total += swap(s.readUint64(i * sizeof(uint64)))
 
 echo total
