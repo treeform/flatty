@@ -165,17 +165,38 @@ func readStr*(s: seq[uint8], i: int, v: int): string {.inline.} =
 func swap*(v: uint8): uint8 {.inline.} =
   v
 
-func swap*(v: uint16): uint16 {.inline.} =
-  let tmp = cast[array[2, uint8]](v)
-  (tmp[0].uint16 shl 8) or tmp[1].uint16
+when defined(js):
+  func swap*(v: uint16): uint16 =
+    ((v and 0x00FF) shl 8) +
+    ((v and 0xFF00) shr 8)
 
-func swap*(v: uint32): uint32 {.inline.} =
-  let tmp = cast[array[2, uint16]](v)
-  (swap(tmp[0]).uint32 shl 16) or swap(tmp[1])
+  func swap*(v: uint32): uint32 =
+    ((v and (0xFF.uint32 shl 0)) shl 24) +
+    ((v and (0xFF.uint32 shl 8)) shl 8) +
+    ((v and (0xFF.uint32 shl 16)) shr 8) +
+    ((v and (0xFF.uint32 shl 24)) shr 24)
 
-func swap*(v: uint64): uint64 {.inline.} =
-  let tmp = cast[array[2, uint32]](v)
-  (swap(tmp[0]).uint64 shl 32) or swap(tmp[1])
+  func swap*(v: uint64): uint64 =
+    ((v and (0xFF.uint64 shl 0)) shl 56) +
+    ((v and (0xFF.uint64 shl 8)) shl 40) +
+    ((v and (0xFF.uint64 shl 16)) shl 24) +
+    ((v and (0xFF.uint64 shl 24)) shl 8) +
+    ((v and (0xFF.uint64 shl 32)) shr 8) +
+    ((v and (0xFF.uint64 shl 40)) shr 24) +
+    ((v and (0xFF.uint64 shl 48)) shr 40) +
+    ((v and (0xFF.uint64 shl 56)) shr 56)
+else:
+  func swap*(v: uint16): uint16 {.inline.} =
+    let tmp = cast[array[2, uint8]](v)
+    (tmp[0].uint16 shl 8) or tmp[1].uint16
+
+  func swap*(v: uint32): uint32 {.inline.} =
+    let tmp = cast[array[2, uint16]](v)
+    (swap(tmp[0]).uint32 shl 16) or swap(tmp[1])
+
+  func swap*(v: uint64): uint64 {.inline.} =
+    let tmp = cast[array[2, uint32]](v)
+    (swap(tmp[0]).uint64 shl 32) or swap(tmp[1])
 
 func maybeSwap*[T](v: T, enable: bool): T =
   if enable:
