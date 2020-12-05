@@ -178,6 +178,7 @@ func fromFlatty[K, V](s: string, i: var int, x: var Table[K, V]) =
 
 # Arrays
 func toFlatty[N, T](s: var string, x: array[N, T]) =
+  # TODO: Try supportsCopyMem and sizeof(x).
   for e in x:
     s.toFlatty(e)
 
