@@ -1,12 +1,12 @@
-import fidget/opengl/perf, flatty/binny
+import benchy, flatty/binny
 
-const bufferLength = 100_000_000 * sizeof(uint64)
-
-var
-  s = ""
-  total: uint64
+const bufferLength = 10_00_000 * sizeof(uint64)
 
 timeIt "binny":
+  var
+    s = ""
+    total: uint64
+
   for i in 0 ..< bufferLength div sizeof(uint16):
     s.addUint16((i mod 10).uint16)
   s.setLen(0)
@@ -30,4 +30,4 @@ timeIt "binny":
   for i in 0 ..< s.len div sizeof(uint64):
     total += swap(s.readUint64(i * sizeof(uint64)))
 
-echo total
+  keep(total)
