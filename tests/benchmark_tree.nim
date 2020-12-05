@@ -29,17 +29,15 @@ var treeBin = tree.toFlatty()
 timeIt "treeform/flatty fromFlatty":
   keep treeBin.fromFlatty(Node)
 
-timeIt "bingod/planetis-m ":
+timeIt "bingod/planetis-m storeBin":
   let s = newStringStream()
   bingod.storeBin(s, tree)
-  s.setPosition(0)
-  keep s.readAll()
+  keep s.data
 
 let s = newStringStream()
 bingod.storeBin(s, tree)
-s.setPosition(0)
-let bingodBin = s.readAll()
-timeIt "bingod/planetis-m":
+let bingodBin = s.data
+timeIt "bingod/planetis-m binTo":
   let s = newStringStream(bingodBin)
   keep s.binTo(Node)
 
