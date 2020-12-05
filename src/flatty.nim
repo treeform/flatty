@@ -105,7 +105,7 @@ func fromFlatty(s: string, i: var int, x: var string) =
 # Seq
 func toFlatty[T](s: var string, x: seq[T]) =
   s.addInt64(x.len.int64)
-  when not defined(js) and T is SomeNumber:
+  when not defined(js) and T.supportsCopyMem:
     if x.len == 0:
       return
     let byteLen = x.len * sizeof(T)
@@ -120,7 +120,7 @@ func fromFlatty[T](s: string, i: var int, x: var seq[T]) =
   let len = s.readInt64(i)
   i += 8
   x.setLen(len)
-  when not defined(js) and T is SomeNumber:
+  when not defined(js) and T.supportsCopyMem:
     if len > 0:
       copyMem(x[0].addr, s[i].unsafeAddr, len * sizeof(T))
   else:
@@ -178,13 +178,24 @@ func fromFlatty[K, V](s: string, i: var int, x: var Table[K, V]) =
 
 # Arrays
 func toFlatty[N, T](s: var string, x: array[N, T]) =
-  # TODO: Try supportsCopyMem and sizeof(x).
-  for e in x:
-    s.toFlatty(e)
+  when not defined(js) and T.supportsCopyMem:
+    if x.len == 0:
+      return
+    let byteLen = x.len * sizeof(T)
+    s.setLen(s.len + byteLen)
+    let dest = s[s.len - byteLen].addr
+    copyMem(dest, x[0].unsafeAddr, byteLen)
+  else:
+    for e in x:
+      s.toFlatty(e)
 
 func fromFlatty[N, T](s: string, i: var int, x: var array[N, T]) =
-  for j in 0 ..< x.len:
-    s.fromFlatty(i, x[j])
+  when not defined(js) and T.supportsCopyMem:
+    if x.len > 0:
+      copyMem(x[0].addr, s[i].unsafeAddr, sizeof(x))
+  else:
+    for j in 0 ..< x.len:
+      s.fromFlatty(i, x[j])
 
 # Tuples
 func toFlatty[T: tuple](s: var string, x: T) =
