@@ -198,6 +198,15 @@ else:
     let tmp = cast[array[2, uint32]](v)
     (swap(tmp[0]).uint64 shl 32) or swap(tmp[1])
 
+func swap*(v: int16): int16 {.inline.} =
+  cast[int16](cast[uint16](v).swap())
+
+func swap*(v: int32): int32 {.inline.} =
+  cast[int32](cast[uint32](v).swap())
+
+func swap*(v: int64): int64 {.inline.} =
+  cast[int64](cast[uint64](v).swap())
+
 func maybeSwap*[T](v: T, enable: bool): T =
   if enable:
     v.swap()
