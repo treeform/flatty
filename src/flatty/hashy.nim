@@ -9,22 +9,30 @@ proc hash*(x: Hash): Hash = x
 {.push overflowChecks: off.}
 
 proc ryan64nim*(p: pointer, len: int): int =
-  let bytes = cast[ptr UncheckedArray[uint8]](p)
+  let
+    bytes = cast[ptr UncheckedArray[uint8]](p)
+    ints = cast[ptr UncheckedArray[int]](p)
+    intSize = sizeof(int)
   var h: Hash
-  for i in 0 ..< len div 8:
-    let c = (cast[ptr uint64](bytes[i * 8].addr)[]).int
+  for i in 0 ..< len div intSize:
+    let c = ints[i]
     h = h !& c.hash()
-  for i in 0 ..< len mod 8:
+  let last = (len div intSize) * intSize
+  for i in 0 ..< last + len mod intSize:
     let c = bytes[i].int
     h = h !& c.hash()
   result = !$h
 
 proc ryan64sdbm*(p: pointer, len: int): int =
-  let bytes = cast[ptr UncheckedArray[uint8]](p)
-  for i in 0 ..< len div 8:
-    let c = (cast[ptr uint64](bytes[i * 8].addr)[]).int
+  let
+    bytes = cast[ptr UncheckedArray[uint8]](p)
+    ints = cast[ptr UncheckedArray[int]](p)
+    intSize = sizeof(int)
+  for i in 0 ..< len div intSize:
+    let c = ints[i]
     result = c + (result shl 6) + (result shl 16) - result
-  for i in 0 ..< len mod 8:
+  let last = (len div intSize) * intSize
+  for i in 0 ..< last + len mod intSize:
     let c = bytes[i].int
     result = c + (result shl 6) + (result shl 16) - result
 
@@ -40,11 +48,15 @@ proc sdbm*(s: string): int =
 
 proc ryan64djb2*(p: pointer, len: int): int =
   result = 53810036436437415.int # Usually 5381
-  let bytes = cast[ptr UncheckedArray[uint8]](p)
-  for i in 0 ..< len div 8:
-    let c = (cast[ptr uint64](bytes[i * 8].addr)[]).int
+  let
+    bytes = cast[ptr UncheckedArray[uint8]](p)
+    ints = cast[ptr UncheckedArray[int]](p)
+    intSize = sizeof(int)
+  for i in 0 ..< len div intSize:
+    let c = ints[i]
     result = result * 33 + c
-  for i in 0 ..< len mod 8:
+  let last = (len div intSize) * intSize
+  for i in 0 ..< last + len mod intSize:
     let c = bytes[i].int
     result = result * 33 + c
 
