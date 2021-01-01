@@ -24,8 +24,7 @@ proc ryan64nim*(p: pointer, len: int): int =
     let c = ints[i]
     h = h !& c.hash()
   start = stop * 8
-  stop = start + len mod intSize
-  for i in start ..< stop:
+  for i in start ..< len:
     let c = bytes[i].int
     h = h !& c.hash()
   result = !$h
@@ -42,8 +41,7 @@ proc ryan64sdbm*(p: pointer, len: int): int =
     let c = ints[i]
     result = c + (result shl 6) + (result shl 16) - result
   start = stop * 8
-  stop = start + len mod intSize
-  for i in start ..< stop:
+  for i in start ..< len:
     let c = bytes[i].int
     result = c + (result shl 6) + (result shl 16) - result
 
@@ -70,8 +68,7 @@ proc ryan64djb2*(p: pointer, len: int): int =
     let c = ints[i]
     result = result * 33 + c
   start = stop * 8
-  stop = start + len mod intSize
-  for i in start ..< stop:
+  for i in start ..< len:
     let c = bytes[i].int
     result = result * 33 + c
 
