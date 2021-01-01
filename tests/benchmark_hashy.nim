@@ -4,8 +4,8 @@ include flatty/hashy
 
 var
   r = initRand(1988)
-  short = newString(512)
-  long = newString(32 * 1024 * 1024)
+  short = newString(551)
+  long = newString(32 * 1024 * 1024 + 7)
 
 for i in 0 ..< short.len:
   short[i] = r.rand(255).char
