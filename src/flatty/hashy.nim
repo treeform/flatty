@@ -16,12 +16,16 @@ proc ryan64nim*(p: pointer, len: int): int =
     bytes = cast[ptr UncheckedArray[uint8]](p)
     ints = cast[ptr UncheckedArray[int]](p)
     intSize = sizeof(int)
-  var h: Hash
-  for i in 0 ..< len div intSize:
+  var
+    h: Hash
+    start = 0
+    stop = len div intSize
+  for i in start ..< stop:
     let c = ints[i]
     h = h !& c.hash()
-  let last = (len div intSize) * intSize
-  for i in 0 ..< last + len mod intSize:
+  start = stop * 8
+  stop = start + len mod intSize
+  for i in start ..< stop:
     let c = bytes[i].int
     h = h !& c.hash()
   result = !$h
@@ -31,11 +35,15 @@ proc ryan64sdbm*(p: pointer, len: int): int =
     bytes = cast[ptr UncheckedArray[uint8]](p)
     ints = cast[ptr UncheckedArray[int]](p)
     intSize = sizeof(int)
-  for i in 0 ..< len div intSize:
+  var
+    start = 0
+    stop = len div intSize
+  for i in start ..< stop:
     let c = ints[i]
     result = c + (result shl 6) + (result shl 16) - result
-  let last = (len div intSize) * intSize
-  for i in 0 ..< last + len mod intSize:
+  start = stop * 8
+  stop = start + len mod intSize
+  for i in start ..< stop:
     let c = bytes[i].int
     result = c + (result shl 6) + (result shl 16) - result
 
@@ -55,11 +63,15 @@ proc ryan64djb2*(p: pointer, len: int): int =
     bytes = cast[ptr UncheckedArray[uint8]](p)
     ints = cast[ptr UncheckedArray[int]](p)
     intSize = sizeof(int)
-  for i in 0 ..< len div intSize:
+  var
+    start = 0
+    stop = len div intSize
+  for i in start ..< stop:
     let c = ints[i]
     result = result * 33 + c
-  let last = (len div intSize) * intSize
-  for i in 0 ..< last + len mod intSize:
+  start = stop * 8
+  stop = start + len mod intSize
+  for i in start ..< stop:
     let c = bytes[i].int
     result = result * 33 + c
 
