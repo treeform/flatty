@@ -8,6 +8,9 @@ proc hash*(x: Hash): Hash = x
 
 {.push overflowChecks: off.}
 
+when defined(release):
+  {.push checks: off.}
+
 proc ryan64nim*(p: pointer, len: int): int =
   let
     bytes = cast[ptr UncheckedArray[uint8]](p)
@@ -76,5 +79,8 @@ proc hashy*[T](x: T): Hash =
   ## Takes structures and turns them into binary string.
   let s = x.toFlatty()
   ryan64djb2(s[0].unsafeAddr, s.len)
+
+when defined(release):
+  {.pop.}
 
 {.pop.}
