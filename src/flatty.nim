@@ -1,6 +1,6 @@
 ## Convert any nim objects, numbers, strings, refs to and from binary format.
 
-import flatty/binny, tables, typetraits
+import flatty/binny, tables, typetraits, flatty/objvar
 
 # Forward declarations.
 func toFlatty[T](s: var string, x: seq[T])
@@ -140,16 +140,30 @@ func toFlatty(s: var string, x: ref object) =
   let isNil = x == nil
   s.toFlatty(isNil)
   if not isNil:
-    for _, e in x[].fieldPairs:
-      s.toFlatty(e)
+    when x.isObjectVariant:
+      s.toFlatty(x.discriminatorField)
+      for k, e in x[].fieldPairs:
+        when k != x.discriminatorFieldName:
+          s.toFlatty(e)
+    else:
+      for _, e in x[].fieldPairs:
+        s.toFlatty(e)
 
 func fromFlatty(s: string, i: var int, x: var ref object) =
   var isNil: bool
   s.fromFlatty(i, isNil)
   if not isNil:
-    new(x)
-    for _, e in x[].fieldPairs:
-      s.fromFlatty(i, e)
+    when x.isObjectVariant:
+      var discriminator: type(x.discriminatorField)
+      s.fromFlatty(i, discriminator)
+      new(x, discriminator)
+      for k, e in x[].fieldPairs:
+        when k != x.discriminatorFieldName:
+          s.fromFlatty(i, e)
+    else:
+      new(x)
+      for _, e in x[].fieldPairs:
+        s.fromFlatty(i, e)
 
 # Distinct
 func toFlatty[T: distinct](s: var string, x: T) =

@@ -1,4 +1,4 @@
-import flatty, tables
+import flatty, tables, intsets, json
 
 # Test booleans.
 doAssert true.toFlatty.fromFlatty(bool) == true
@@ -108,3 +108,42 @@ doAssert tup2.toFlatty.fromFlatty(tuple[foo: Foo, id: uint8]) == tup2
 # Test arrays of tuples (requires forward declarations)
 var arrOfTuples: array[2, (int, int)] = [(1, 2), (0, 3)]
 doAssert arrOfTuples.toFlatty.fromFlatty(array[2, (int, int)]) == arrOfTuples
+
+# Test intsets
+var intSet = initIntSet()
+for i in 0 .. 10:
+  intSet.incl i
+doAssert intSet.toFlatty.fromFlatty(type(intSet)) == intSet
+
+# Test OOP
+type
+  Person = ref object of RootObj
+    name*: string  # the * means that `name` is accessible from other modules
+    age: int       # no * means that the field is hidden from other modules
+
+  Student = ref object of Person # Student inherits from Person
+    id: int
+var
+  student: Student
+  person: Person
+doAssert student.toFlatty.fromFlatty(type(student)) == student
+doAssert person.toFlatty.fromFlatty(type(person)) == person
+
+# Test Object variants
+type
+  NodeNumKind = enum  # the different node types
+    nkInt,          # a leaf with an integer value
+    nkFloat,        # a leaf with a float value
+  NodeNum = ref object
+    case kind: NodeNumKind  # the ``kind`` field is the discriminator
+    of nkInt: intVal: int
+    of nkFloat: floatVal: float
+
+var nodeNum = NodeNum(kind: nkFloat, floatVal: 3.14)
+var nodeNum2 = NodeNum(kind: nkInt, intVal: 42)
+
+doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).floatVal == nodeNum.floatVal
+doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).intVal == nodeNum2.intVal
+
+var jsonNode = parseJson("{\"json\": true, \"count\":20}")
+doAssert jsonNode.toFlatty.fromFlatty(type(jsonNode)) == jsonNode
