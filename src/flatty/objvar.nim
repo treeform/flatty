@@ -14,21 +14,21 @@ proc `[]`(node: NimNode, kind: NimNodeKind): NimNode =
 
 macro isObjectVariant*(v: typed): bool =
   ## Is this an object variant?
-  let typ = v.getTypeImpl()
+  var typ = v.getTypeImpl()
   if typ.kind == nnkSym:
     return ident("false")
-  let typ2 = typ[0].getTypeImpl()
-  #echo typ2.treeRepr
-  if typ2[2].hasKind(nnkRecCase):
+  while typ.kind != nnkObjectTy:
+    typ = typ[0].getTypeImpl()
+  if typ[2].hasKind(nnkRecCase):
     ident("true")
   else:
     ident("false")
 
 proc discriminator*(v: NimNode): NimNode =
-  let
-    typ = v.getTypeImpl()
-    typ2 = typ[0].getTypeImpl()
-  return typ2[nnkRecList][nnkRecCase][nnkIdentDefs][nnkSym]
+  var typ = v.getTypeImpl()
+  while typ.kind != nnkObjectTy:
+    typ = typ[0].getTypeImpl()
+  return typ[nnkRecList][nnkRecCase][nnkIdentDefs][nnkSym]
 
 macro discriminatorFieldName*(v: typed): untyped =
   ## Turns into the discriminator field.
@@ -44,7 +44,7 @@ macro discriminatorField*(v: typed): untyped =
 macro new*(v: typed, d: typed): untyped =
   ## Creates a new object variant with the discriminator field.
   let
-    typ = v.getTypeImpl()
+    typ = v.getTypeInst()
     fieldName = discriminator(v)
   return quote do:
     `v` = `typ`(`fieldName`: `d`)

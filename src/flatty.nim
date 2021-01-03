@@ -131,7 +131,7 @@ func fromFlatty[T](s: string, i: var int, x: var seq[T]) =
 func toFlatty(s: var string, x: object) =
   when x.isObjectVariant:
     s.toFlatty(x.discriminatorField)
-    for k, e in x[].fieldPairs:
+    for k, e in x.fieldPairs:
       when k != x.discriminatorFieldName:
         s.toFlatty(e)
   else:
@@ -143,7 +143,7 @@ func fromFlatty(s: string, i: var int, x: var object) =
     var discriminator: type(x.discriminatorField)
     s.fromFlatty(i, discriminator)
     new(x, discriminator)
-    for k, e in x[].fieldPairs:
+    for k, e in x.fieldPairs:
       when k != x.discriminatorFieldName:
         s.fromFlatty(i, e)
   else:
