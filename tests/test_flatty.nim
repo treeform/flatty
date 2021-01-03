@@ -134,16 +134,36 @@ type
   NodeNumKind = enum  # the different node types
     nkInt,          # a leaf with an integer value
     nkFloat,        # a leaf with a float value
-  NodeNum = ref object
+  RefNode = ref object
+    active: bool
     case kind: NodeNumKind  # the ``kind`` field is the discriminator
     of nkInt: intVal: int
     of nkFloat: floatVal: float
 
-var nodeNum = NodeNum(kind: nkFloat, floatVal: 3.14)
-var nodeNum2 = NodeNum(kind: nkInt, intVal: 42)
+  ValueNode = object
+    active: bool
+    case kind: NodeNumKind  # the ``kind`` field is the discriminator
+    of nkInt: intVal: int
+    of nkFloat: floatVal: float
 
-doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).floatVal == nodeNum.floatVal
-doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).intVal == nodeNum2.intVal
+block:
+  var nodeNum = RefNode(kind: nkFloat, active: true, floatVal: 3.14)
+  var nodeNum2 = RefNode(kind: nkInt, active: false, intVal: 42)
+
+  doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).floatVal == nodeNum.floatVal
+  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).intVal == nodeNum2.intVal
+  doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).active == nodeNum.active
+  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).active == nodeNum2.active
+
+block:
+  var nodeNum = ValueNode(kind: nkFloat, active: true, floatVal: 3.14)
+  var nodeNum2 = ValueNode(kind: nkInt, active: false, intVal: 42)
+
+  doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).floatVal == nodeNum.floatVal
+  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).intVal == nodeNum2.intVal
+  doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).active == nodeNum.active
+  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).active == nodeNum2.active
+
 
 var jsonNode = parseJson("{\"json\": true, \"count\":20}")
 doAssert jsonNode.toFlatty.fromFlatty(type(jsonNode)) == jsonNode

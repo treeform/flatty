@@ -129,12 +129,26 @@ func fromFlatty[T](s: string, i: var int, x: var seq[T]) =
 
 # Objects
 func toFlatty(s: var string, x: object) =
-  for _, e in x.fieldPairs:
-    s.toFlatty(e)
+  when x.isObjectVariant:
+    s.toFlatty(x.discriminatorField)
+    for k, e in x[].fieldPairs:
+      when k != x.discriminatorFieldName:
+        s.toFlatty(e)
+  else:
+    for _, e in x.fieldPairs:
+      s.toFlatty(e)
 
 func fromFlatty(s: string, i: var int, x: var object) =
-  for _, e in x.fieldPairs:
-    s.fromFlatty(i, e)
+  when x.isObjectVariant:
+    var discriminator: type(x.discriminatorField)
+    s.fromFlatty(i, discriminator)
+    new(x, discriminator)
+    for k, e in x[].fieldPairs:
+      when k != x.discriminatorFieldName:
+        s.fromFlatty(i, e)
+  else:
+    for _, e in x.fieldPairs:
+      s.fromFlatty(i, e)
 
 func toFlatty(s: var string, x: ref object) =
   let isNil = x == nil
