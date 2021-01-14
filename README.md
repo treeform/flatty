@@ -5,6 +5,22 @@
 * Also includes binny a simpler replacement for StringStream (no IO effects, operates on a string)
 * Also includes hashy a hash for any objects based on the serializer.
 
+## Serialize speed
+```
+name ............................... min time      avg time    std dv   runs
+treeform/flatty .................... 6.303 ms      6.514 ms    ±0.181   x100
+bingod/planetis-m ................. 11.337 ms     12.688 ms    ±1.641   x100
+disruptek/frosty .................. 14.767 ms     14.924 ms    ±0.122   x100
+treeform/jsony .................... 12.989 ms     13.343 ms    ±0.408   x100
+```
+## Deserialize speed
+```
+treeform/flatty ................... 10.526 ms     16.134 ms    ±5.508   x100
+bingod/planetis-m binTo ........... 12.836 ms     17.993 ms    ±0.181   x100
+disruptek/frosty .................. 38.513 ms     42.357 ms    ±0.535   x100
+treeform/jsony .................... 96.830 ms    100.615 ms    ±0.992   x100
+```
+
 # API: flatty
 
 ```nim
