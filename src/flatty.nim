@@ -123,10 +123,10 @@ proc fromFlatty*[T](s: string, i: var int, x: var seq[T]) =
   when not defined(js) and T.supportsCopyMem:
     if len > 0:
       copyMem(x[0].addr, s[i].unsafeAddr, len * sizeof(T))
-      i += sizeof(T)
+      i += sizeof(T) * len.int
   else:
-    for j in 0 ..< len:
-      s.fromFlatty(i, x[j])
+    for j in x.mitems:
+      s.fromFlatty(i, j)
 
 # Objects
 proc toFlatty*(s: var string, x: object) =
@@ -136,7 +136,7 @@ proc toFlatty*(s: var string, x: object) =
       when k != x.discriminatorFieldName:
         s.toFlatty(e)
   else:
-    for _, e in x.fieldPairs:
+    for e in x.fields:
       s.toFlatty(e)
 
 proc fromFlatty*(s: string, i: var int, x: var object) =
@@ -148,7 +148,7 @@ proc fromFlatty*(s: string, i: var int, x: var object) =
       when k != x.discriminatorFieldName:
         s.fromFlatty(i, e)
   else:
-    for _, e in x.fieldPairs:
+    for e in x.fields:
       s.fromFlatty(i, e)
 
 proc toFlatty*(s: var string, x: ref object) =
@@ -224,8 +224,8 @@ proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T]) =
       copyMem(x[0.N].addr, s[i].unsafeAddr, sizeof(x))
       i += sizeof(x)
   else:
-    for j in 0 ..< x.len:
-      s.fromFlatty(i, x[j.N])
+    for j in x.mitems:
+      s.fromFlatty(i, j)
 
 # Tuples
 proc toFlatty*[T: tuple](s: var string, x: T) =
