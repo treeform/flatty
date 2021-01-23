@@ -123,6 +123,7 @@ proc fromFlatty*[T](s: string, i: var int, x: var seq[T]) =
   when not defined(js) and T.supportsCopyMem:
     if len > 0:
       copyMem(x[0].addr, s[i].unsafeAddr, len * sizeof(T))
+      i += sizeof(T)
   else:
     for j in 0 ..< len:
       s.fromFlatty(i, x[j])
@@ -212,7 +213,7 @@ proc toFlatty*[N, T](s: var string, x: array[N, T]) =
     let byteLen = x.len * sizeof(T)
     s.setLen(s.len + byteLen)
     let dest = s[s.len - byteLen].addr
-    copyMem(dest, x[0].unsafeAddr, byteLen)
+    copyMem(dest, x[0.N].unsafeAddr, byteLen)
   else:
     for e in x:
       s.toFlatty(e)
@@ -220,7 +221,8 @@ proc toFlatty*[N, T](s: var string, x: array[N, T]) =
 proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T]) =
   when not defined(js) and T.supportsCopyMem:
     if x.len > 0:
-      copyMem(x[0].addr, s[i].unsafeAddr, sizeof(x))
+      copyMem(x[0.N].addr, s[i].unsafeAddr, sizeof(x))
+      i += sizeof(x)
   else:
     for j in 0 ..< x.len:
       s.fromFlatty(i, x[j])
