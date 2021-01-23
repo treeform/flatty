@@ -225,7 +225,7 @@ proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T]) =
       i += sizeof(x)
   else:
     for j in 0 ..< x.len:
-      s.fromFlatty(i, x[j])
+      s.fromFlatty(i, x[j.N])
 
 # Tuples
 proc toFlatty*[T: tuple](s: var string, x: T) =
