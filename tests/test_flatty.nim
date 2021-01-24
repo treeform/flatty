@@ -189,22 +189,28 @@ block:
 
 # Complex object
 block:
+  type Side = enum
+    left, right
   type
     SubObject = object
       a: int64
       b: string
     BigObject = object
       subs: seq[SubObject]
-      arr: array[bool, SubObject]
+      subs2: seq[SubObject]
+      arr: array[Side, SubObject]
   let a = BigObject(
     subs: @[
       SubObject(a: 100, b: "Hmm"),
       SubObject(a: 20, b: "Heh")
     ],
+    subs2: @[
+      SubObject(a: 100, b: "Hmm"),
+      SubObject(a: 20, b: "Heh")
+    ],
     arr: [
-      false: SubObject(a: 42, b: "Ahhh"),
-      true: SubObject(a: 31415, b: "Pi")
+      left: SubObject(a: 42, b: "Ahhh"),
+      right: SubObject(a: 31415, b: "Pi")
     ]
   )
-  when not defined(js):
-    doAssert a.toFlatty.fromFlatty(a.type) == a
+  doAssert a.toFlatty.fromFlatty(a.type) == a
