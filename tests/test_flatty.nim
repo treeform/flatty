@@ -167,3 +167,36 @@ block:
 
 var jsonNode = parseJson("{\"json\": true, \"count\":20}")
 doAssert jsonNode.toFlatty.fromFlatty(type(jsonNode)) == jsonNode
+
+# Enum indexed array
+block:
+  type Colors = enum
+    red, green, yellow, blue
+  let a = [
+    red: 100,
+    green: 300,
+    yellow: -100,
+    blue: 42
+  ]
+  doAssert a.toFlatty.fromFlatty(a.typeof) == a
+
+# Complex object
+block:
+  type
+    SubObject = object
+      a: int64
+      b: string
+    BigObject = object
+      subs: seq[SubObject]
+      arr: array[bool, SubObject]
+  let a = BigObject(
+    subs: @[
+      SubObject(a: 100, b: "Hmm"),
+      SubObject(a: 20, b: "Heh")
+      ],
+    arr:[
+      false: SubObject(a: 42, b: "Ahhh"),
+      true: SubObject(a: 31415, b: "Pi")
+    ]
+    )
+  doAssert a.toFlatty.fromFlatty(a.typeof) == a
