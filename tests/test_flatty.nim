@@ -10,13 +10,16 @@ doAssert 123.uint8.toFlatty.fromFlatty(uint8) == 123
 doAssert 123.uint16.toFlatty.fromFlatty(uint16) == 123
 doAssert 123.uint32.toFlatty.fromFlatty(uint32) == 123
 doAssert 123.uint64.toFlatty.fromFlatty(uint64) == 123
-doAssert 123.int8.toFlatty.fromFlatty(int8) == 123
-doAssert 123.int16.toFlatty.fromFlatty(int16) == 123
+when not defined(js):
+  doAssert 123.int8.toFlatty.fromFlatty(int8) == 123
+  doAssert 123.int16.toFlatty.fromFlatty(int16) == 123
 doAssert 123.int32.toFlatty.fromFlatty(int32) == 123
 doAssert 123.int64.toFlatty.fromFlatty(int64) == 123
-doAssert 123.456.toFlatty.fromFlatty(float) == 123.456
-doAssert $(123.456.float32).toFlatty.fromFlatty(float32) == "123.4560012817383"
-doAssert (123.456.float64).toFlatty.fromFlatty(float64) == 123.456
+
+when not defined(js):
+  doAssert 123.25.toFlatty.fromFlatty(float) == 123.25
+  doAssert $(123.25.float32).toFlatty.fromFlatty(float32) == "123.25"
+  doAssert (123.25.float64).toFlatty.fromFlatty(float64) == 123.25
 
 # Test strings.
 var str: string
@@ -109,11 +112,12 @@ doAssert tup2.toFlatty.fromFlatty(tuple[foo: Foo, id: uint8]) == tup2
 var arrOfTuples: array[2, (int, int)] = [(1, 2), (0, 3)]
 doAssert arrOfTuples.toFlatty.fromFlatty(array[2, (int, int)]) == arrOfTuples
 
-# Test intsets
-var intSet = initIntSet()
-for i in 0 .. 10:
-  intSet.incl i
-doAssert intSet.toFlatty.fromFlatty(type(intSet)) == intSet
+when not defined(js):
+  # Test intsets
+  var intSet = initIntSet()
+  for i in 0 .. 10:
+    intSet.incl i
+  doAssert intSet.toFlatty.fromFlatty(type(intSet)) == intSet
 
 # Test OOP
 type
