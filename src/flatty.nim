@@ -185,7 +185,12 @@ proc toFlatty*[T: distinct](s: var string, x: T) =
   s.toFlatty(x.distinctBase)
 
 proc fromFlatty*[T: distinct](s: string, i: var int, x: var T) =
-  s.fromFlatty(i, x.distinctBase)
+  when defined(js):
+    var z: type(x.distinctBase)
+    s.fromFlatty(i, z)
+    x = T(z)
+  else:
+    s.fromFlatty(i, x.distinctBase)
 
 # Tables
 proc toFlatty*[K, V](s: var string, x: Table[K, V]) =

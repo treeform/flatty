@@ -87,10 +87,7 @@ doAssert node2.right == nil
 # Test distinct objects
 type Ts = distinct float64
 var ts = Ts(123.123)
-func `==`(a, b: TS): bool = float64(a) == float64(b)
-echo ts.float64
-echo cast[seq[uint8]](ts.toFlatty)
-echo ts.toFlatty.fromFlatty(Ts).float64
+func `==`(a, b: Ts): bool = float64(a) == float64(b)
 doAssert ts.toFlatty.fromFlatty(Ts) == ts
 
 # Test tables
@@ -209,4 +206,5 @@ block:
       true: SubObject(a: 31415, b: "Pi")
     ]
   )
-  doAssert a.toFlatty.fromFlatty(a.typeof) == a
+  when not defined(js):
+    doAssert a.toFlatty.fromFlatty(a.type) == a
