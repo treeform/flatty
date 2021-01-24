@@ -1,4 +1,4 @@
-import flatty, tables, intsets, json
+import flatty, intsets, json, tables
 
 # Test booleans.
 doAssert true.toFlatty.fromFlatty(bool) == true
@@ -118,8 +118,8 @@ doAssert intSet.toFlatty.fromFlatty(type(intSet)) == intSet
 # Test OOP
 type
   Person = ref object of RootObj
-    name*: string  # the * means that `name` is accessible from other modules
-    age: int       # no * means that the field is hidden from other modules
+    name*: string # the * means that `name` is accessible from other modules
+    age: int      # no * means that the field is hidden from other modules
 
   Student = ref object of Person # Student inherits from Person
     id: int
@@ -131,18 +131,18 @@ doAssert person.toFlatty.fromFlatty(type(person)) == person
 
 # Test Object variants
 type
-  NodeNumKind = enum  # the different node types
-    nkInt,          # a leaf with an integer value
-    nkFloat,        # a leaf with a float value
+  NodeNumKind = enum # the different node types
+    nkInt,           # a leaf with an integer value
+    nkFloat,         # a leaf with a float value
   RefNode = ref object
     active: bool
-    case kind: NodeNumKind  # the ``kind`` field is the discriminator
+    case kind: NodeNumKind # the ``kind`` field is the discriminator
     of nkInt: intVal: int
     of nkFloat: floatVal: float
 
   ValueNode = object
     active: bool
-    case kind: NodeNumKind  # the ``kind`` field is the discriminator
+    case kind: NodeNumKind # the ``kind`` field is the discriminator
     of nkInt: intVal: int
     of nkFloat: floatVal: float
 
@@ -150,20 +150,25 @@ block:
   var nodeNum = RefNode(kind: nkFloat, active: true, floatVal: 3.14)
   var nodeNum2 = RefNode(kind: nkInt, active: false, intVal: 42)
 
-  doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).floatVal == nodeNum.floatVal
-  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).intVal == nodeNum2.intVal
+  doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).floatVal ==
+      nodeNum.floatVal
+  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).intVal ==
+      nodeNum2.intVal
   doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).active == nodeNum.active
-  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).active == nodeNum2.active
+  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).active ==
+      nodeNum2.active
 
 block:
   var nodeNum = ValueNode(kind: nkFloat, active: true, floatVal: 3.14)
   var nodeNum2 = ValueNode(kind: nkInt, active: false, intVal: 42)
 
-  doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).floatVal == nodeNum.floatVal
-  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).intVal == nodeNum2.intVal
+  doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).floatVal ==
+      nodeNum.floatVal
+  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).intVal ==
+      nodeNum2.intVal
   doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).active == nodeNum.active
-  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).active == nodeNum2.active
-
+  doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).active ==
+      nodeNum2.active
 
 var jsonNode = parseJson("{\"json\": true, \"count\":20}")
 doAssert jsonNode.toFlatty.fromFlatty(type(jsonNode)) == jsonNode
@@ -193,10 +198,10 @@ block:
     subs: @[
       SubObject(a: 100, b: "Hmm"),
       SubObject(a: 20, b: "Heh")
-      ],
-    arr:[
+    ],
+    arr: [
       false: SubObject(a: 42, b: "Ahhh"),
       true: SubObject(a: 31415, b: "Pi")
     ]
-    )
+  )
   doAssert a.toFlatty.fromFlatty(a.typeof) == a

@@ -1,4 +1,4 @@
-import benchy, random, flatty, frosty, marshal, bingod, streams
+import benchy, bingod, flatty, frosty, marshal, random, streams
 
 var seqence = newSeq[(uint8, uint8)](1_000_000)
 

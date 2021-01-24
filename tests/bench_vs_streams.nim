@@ -1,4 +1,4 @@
-import benchy, streams, flatty/binny
+import benchy, flatty/binny, streams
 
 block:
   var s = newStringStream()

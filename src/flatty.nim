@@ -1,6 +1,6 @@
 ## Convert any nim objects, numbers, strings, refs to and from binary format.
 
-import flatty/binny, tables, typetraits, flatty/objvar
+import flatty/binny, flatty/objvar, tables, typetraits
 
 # Forward declarations.
 proc toFlatty*[T](s: var string, x: seq[T])

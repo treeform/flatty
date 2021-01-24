@@ -1,4 +1,4 @@
-import benchy, flatty, frosty, streams, json, intsets, uri
+import benchy, flatty, frosty, intsets, json, streams, uri
 
 template bench(what: untyped) =
   let times = 1000

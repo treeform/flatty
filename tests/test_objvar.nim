@@ -4,17 +4,17 @@ import flatty/objvar, json
 type
   Node = ref object
     val: string
-  NodeKind = enum  # the different node types
-    nkInt,          # a leaf with an integer value
-    nkFloat,        # a leaf with a float value
+  NodeKind = enum # the different node types
+    nkInt,        # a leaf with an integer value
+    nkFloat,      # a leaf with a float value
   RefNode = ref object
     active: bool
-    case kind: NodeKind  # the ``kind`` field is the discriminator
+    case kind: NodeKind # the ``kind`` field is the discriminator
     of nkInt: intVal: int
     of nkFloat: floatVal: float
   ValueNode = ref object
     active: bool
-    case kind: NodeKind  # the ``kind`` field is the discriminator
+    case kind: NodeKind # the ``kind`` field is the discriminator
     of nkInt: intVal: int
     of nkFloat: floatVal: float
 

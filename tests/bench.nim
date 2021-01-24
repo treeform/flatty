@@ -1,4 +1,4 @@
-import benchy, random, flatty, frosty, marshal, bingod, streams, jsony
+import benchy, bingod, flatty, frosty, jsony, marshal, random, streams
 
 type Node = ref object
   active: bool
