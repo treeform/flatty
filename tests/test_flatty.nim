@@ -197,14 +197,9 @@ block:
       b: string
     BigObject = object
       subs: seq[SubObject]
-      subs2: seq[SubObject]
       arr: array[Side, SubObject]
   let a = BigObject(
     subs: @[
-      SubObject(a: 100, b: "Hmm"),
-      SubObject(a: 20, b: "Heh")
-    ],
-    subs2: @[
       SubObject(a: 100, b: "Hmm"),
       SubObject(a: 20, b: "Heh")
     ],
