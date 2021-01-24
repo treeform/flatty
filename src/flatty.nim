@@ -161,7 +161,7 @@ proc toFlatty*(s: var string, x: ref object) =
         when k != x.discriminatorFieldName:
           s.toFlatty(e)
     else:
-      for _, e in x[].fieldPairs:
+      for e in x[].fields:
         s.toFlatty(e)
 
 proc fromFlatty*(s: string, i: var int, x: var ref object) =
@@ -177,7 +177,7 @@ proc fromFlatty*(s: string, i: var int, x: var ref object) =
           s.fromFlatty(i, e)
     else:
       new(x)
-      for _, e in x[].fieldPairs:
+      for e in x[].fields:
         s.fromFlatty(i, e)
 
 # Distinct
@@ -229,11 +229,11 @@ proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T]) =
 
 # Tuples
 proc toFlatty*[T: tuple](s: var string, x: T) =
-  for _, e in x.fieldPairs:
+  for e in x.fields:
     s.toFlatty(e)
 
 proc fromFlatty*[T: tuple](s: string, i: var int, x: var T) =
-  for _, e in x.fieldPairs:
+  for e in x.fields:
     s.fromFlatty(i, e)
 
 proc toFlatty*[T](x: T): string =
