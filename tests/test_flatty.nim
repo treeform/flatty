@@ -10,16 +10,14 @@ doAssert 123.uint8.toFlatty.fromFlatty(uint8) == 123
 doAssert 123.uint16.toFlatty.fromFlatty(uint16) == 123
 doAssert 123.uint32.toFlatty.fromFlatty(uint32) == 123
 doAssert 123.uint64.toFlatty.fromFlatty(uint64) == 123
-when not defined(js):
-  doAssert 123.int8.toFlatty.fromFlatty(int8) == 123
-  doAssert 123.int16.toFlatty.fromFlatty(int16) == 123
+doAssert 123.int8.toFlatty.fromFlatty(int8) == 123
+doAssert 123.int16.toFlatty.fromFlatty(int16) == 123
 doAssert 123.int32.toFlatty.fromFlatty(int32) == 123
 doAssert 123.int64.toFlatty.fromFlatty(int64) == 123
 
-when not defined(js):
-  doAssert 123.25.toFlatty.fromFlatty(float) == 123.25
-  doAssert $(123.25.float32).toFlatty.fromFlatty(float32) == "123.25"
-  doAssert (123.25.float64).toFlatty.fromFlatty(float64) == 123.25
+doAssert 123.25.toFlatty.fromFlatty(float) == 123.25
+doAssert $(123.25.float32).toFlatty.fromFlatty(float32) == "123.25"
+doAssert (123.25.float64).toFlatty.fromFlatty(float64) == 123.25
 
 # Test strings.
 var str: string
@@ -90,6 +88,9 @@ doAssert node2.right == nil
 type Ts = distinct float64
 var ts = Ts(123.123)
 func `==`(a, b: TS): bool = float64(a) == float64(b)
+echo ts.float64
+echo cast[seq[uint8]](ts.toFlatty)
+echo ts.toFlatty.fromFlatty(Ts).float64
 doAssert ts.toFlatty.fromFlatty(Ts) == ts
 
 # Test tables

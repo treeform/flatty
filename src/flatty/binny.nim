@@ -117,7 +117,7 @@ when defined(js):
       uintArray[6] = `s`[`i` + 6];
       uintArray[7] = `s`[`i` + 7];
       var uint64Array = new BigUint64Array(uintArray.buffer);
-      return uint64Array[0];
+      return Number(uint64Array[0]);
     """.}
 
   func writeUint64*(s: Buffer, i: int, v: uint64) {.inline.} =
@@ -162,7 +162,7 @@ when defined(js):
       uintArray[6] = `s`[`i` + 6];
       uintArray[7] = `s`[`i` + 7];
       var uint64Array = new BigInt64Array(uintArray.buffer);
-      return uint64Array[0];
+      return Number(uint64Array[0]);
     """.}
 
   func writeInt64*(s: Buffer, i: int, v: int64) {.inline.} =

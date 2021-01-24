@@ -34,9 +34,8 @@ proc toFlatty*(s: var string, x: uint16) = s.addUint16(x)
 proc toFlatty*(s: var string, x: int16) = s.addInt16(x)
 proc toFlatty*(s: var string, x: uint32) = s.addUint32(x)
 proc toFlatty*(s: var string, x: int32) = s.addInt32(x)
-when not defined(js):
-  proc toFlatty*(s: var string, x: uint64) = s.addUint64(x)
-  proc toFlatty*(s: var string, x: int64) = s.addInt64(x)
+proc toFlatty*(s: var string, x: uint64) = s.addUint64(x)
+proc toFlatty*(s: var string, x: int64) = s.addInt64(x)
 proc toFlatty*(s: var string, x: float32) = s.addFloat32(x)
 proc toFlatty*(s: var string, x: float64) = s.addFloat64(x)
 
