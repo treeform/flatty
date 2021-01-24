@@ -97,10 +97,9 @@ when defined(js):
   func readFloat32*(s: Buffer, i: int): float32 {.inline.} =
      {.emit: """
       var uintArray = new Uint8Array(4);
-      uintArray[0] = `s`[`i` + 0];
-      uintArray[1] = `s`[`i` + 1];
-      uintArray[2] = `s`[`i` + 2];
-      uintArray[3] = `s`[`i` + 3];
+      for(j = 0; j < 4; j++){
+        uintArray[j] = `s`[`i` + j];
+      }
       var float32Array = new Float32Array(uintArray.buffer);
       return float32Array[0];
     """.}
@@ -108,14 +107,9 @@ when defined(js):
   func readUint64*(s: Buffer, i: int): uint64 {.inline.} =
      {.emit: """
       var uintArray = new Uint8Array(8);
-      uintArray[0] = `s`[`i` + 0];
-      uintArray[1] = `s`[`i` + 1];
-      uintArray[2] = `s`[`i` + 2];
-      uintArray[3] = `s`[`i` + 3];
-      uintArray[4] = `s`[`i` + 4];
-      uintArray[5] = `s`[`i` + 5];
-      uintArray[6] = `s`[`i` + 6];
-      uintArray[7] = `s`[`i` + 7];
+      for(j = 0; j < 8; j++){
+        uintArray[j] = `s`[`i` + j];
+      }
       var uint64Array = new BigUint64Array(uintArray.buffer);
       return Number(uint64Array[0]);
     """.}
@@ -125,14 +119,9 @@ when defined(js):
       var uint64Array = new BigUint64Array(1);
       uint64Array[0] = BigInt(`v`);
       var uintArray = new Uint8Array(uint64Array.buffer);
-      `s`[`i` + 0] = uintArray[0];
-      `s`[`i` + 1] = uintArray[1];
-      `s`[`i` + 2] = uintArray[2];
-      `s`[`i` + 3] = uintArray[3];
-      `s`[`i` + 4] = uintArray[4];
-      `s`[`i` + 5] = uintArray[5];
-      `s`[`i` + 6] = uintArray[6];
-      `s`[`i` + 7] = uintArray[7];
+      for(j = 0; j < 8; j++){
+        `s`[`i` + j] = uintArray[j];
+      }
     """.}
 
   func addUint64*(s: var Buffer, v: uint64) {.inline.} =
@@ -140,27 +129,17 @@ when defined(js):
       var uint64Array = new BigUint64Array(1);
       uint64Array[0] = BigInt(`v`);
       var uintArray = new Uint8Array(uint64Array.buffer);
-      `s`.push(uintArray[0]);
-      `s`.push(uintArray[1]);
-      `s`.push(uintArray[2]);
-      `s`.push(uintArray[3]);
-      `s`.push(uintArray[4]);
-      `s`.push(uintArray[5]);
-      `s`.push(uintArray[6]);
-      `s`.push(uintArray[7]);
+      for(j = 0; j < 8; j++){
+        `s`.push(uintArray[j]);
+      }
     """.}
 
   func readInt64*(s: Buffer, i: int): int64 {.inline.} =
      {.emit: """
       var uintArray = new Uint8Array(8);
-      uintArray[0] = `s`[`i` + 0];
-      uintArray[1] = `s`[`i` + 1];
-      uintArray[2] = `s`[`i` + 2];
-      uintArray[3] = `s`[`i` + 3];
-      uintArray[4] = `s`[`i` + 4];
-      uintArray[5] = `s`[`i` + 5];
-      uintArray[6] = `s`[`i` + 6];
-      uintArray[7] = `s`[`i` + 7];
+      for(j = 0; j < 8; j++){
+        uintArray[j] = `s`[`i` + j];
+      }
       var uint64Array = new BigInt64Array(uintArray.buffer);
       return Number(uint64Array[0]);
     """.}
@@ -170,14 +149,9 @@ when defined(js):
       var uint64Array = new BigInt64Array(1);
       uint64Array[0] = BigInt(`v`);
       var uintArray = new Uint8Array(uint64Array.buffer);
-      `s`[`i` + 0] = uintArray[0];
-      `s`[`i` + 1] = uintArray[1];
-      `s`[`i` + 2] = uintArray[2];
-      `s`[`i` + 3] = uintArray[3];
-      `s`[`i` + 4] = uintArray[4];
-      `s`[`i` + 5] = uintArray[5];
-      `s`[`i` + 6] = uintArray[6];
-      `s`[`i` + 7] = uintArray[7];
+      for(j = 0; j < 8; j++){
+        `s`[`i` + j] = uintArray[j];
+      }
     """.}
 
   func addInt64*(s: var Buffer, v: int64) {.inline.} =
@@ -185,14 +159,9 @@ when defined(js):
       var uint64Array = new BigInt64Array(1);
       uint64Array[0] = BigInt(`v`);
       var uintArray = new Uint8Array(uint64Array.buffer);
-      `s`.push(uintArray[0]);
-      `s`.push(uintArray[1]);
-      `s`.push(uintArray[2]);
-      `s`.push(uintArray[3]);
-      `s`.push(uintArray[4]);
-      `s`.push(uintArray[5]);
-      `s`.push(uintArray[6]);
-      `s`.push(uintArray[7]);
+      for(j = 0; j < 8; j++){
+        `s`.push(uintArray[j]);
+      }
     """.}
 
   func writeFloat32*(s: Buffer, i: int, v: float32) {.inline.} =
@@ -200,10 +169,9 @@ when defined(js):
       var float32Array = new Float32Array(1);
       float32Array[0] = `v`;
       var uintArray = new Uint8Array(float32Array.buffer);
-      `s`[`i` + 0] = uintArray[0];
-      `s`[`i` + 1] = uintArray[1];
-      `s`[`i` + 2] = uintArray[2];
-      `s`[`i` + 3] = uintArray[3];
+      for(j = 0; j < 4; j++){
+        `s`[`i` + j] = uintArray[j];
+      }
     """.}
 
   func addFloat32*(s: var Buffer, v: float32) {.inline.} =
@@ -211,23 +179,17 @@ when defined(js):
       var float32Array = new Float32Array(1);
       float32Array[0] = `v`;
       var uintArray = new Uint8Array(float32Array.buffer);
-      `s`.push(uintArray[0]);
-      `s`.push(uintArray[1]);
-      `s`.push(uintArray[2]);
-      `s`.push(uintArray[3]);
+      for(j = 0; j < 4; j++){
+        `s`.push(uintArray[j]);
+      }
     """.}
 
   func readFloat64*(s: Buffer, i: int): float64 {.inline.} =
      {.emit: """
       var uintArray = new Uint8Array(8);
-      uintArray[0] = `s`[`i` + 0];
-      uintArray[1] = `s`[`i` + 1];
-      uintArray[2] = `s`[`i` + 2];
-      uintArray[3] = `s`[`i` + 3];
-      uintArray[4] = `s`[`i` + 4];
-      uintArray[5] = `s`[`i` + 5];
-      uintArray[6] = `s`[`i` + 6];
-      uintArray[7] = `s`[`i` + 7];
+      for(j = 0; j < 8; j++){
+        uintArray[j] = `s`[`i` + j];
+      }
       var float64Array = new Float64Array(uintArray.buffer);
       return float64Array[0];
     """.}
@@ -237,14 +199,9 @@ when defined(js):
       var float64Array = new Float64Array(1);
       float64Array[0] = `v`;
       var uintArray = new Uint8Array(float64Array.buffer);
-      `s`[`i` + 0] = uintArray[0];
-      `s`[`i` + 1] = uintArray[1];
-      `s`[`i` + 2] = uintArray[2];
-      `s`[`i` + 3] = uintArray[3];
-      `s`[`i` + 4] = uintArray[4];
-      `s`[`i` + 5] = uintArray[5];
-      `s`[`i` + 6] = uintArray[6];
-      `s`[`i` + 7] = uintArray[7];
+      for(j = 0; j < 8; j++){
+        `s`[`i` + j] = uintArray[j];
+      }
     """.}
 
   func addFloat64*(s: var Buffer, v: float64) {.inline.} =
@@ -252,14 +209,9 @@ when defined(js):
       var float64Array = new Float64Array(1);
       float64Array[0] = `v`;
       var uintArray = new Uint8Array(float64Array.buffer);
-      `s`.push(uintArray[0]);
-      `s`.push(uintArray[1]);
-      `s`.push(uintArray[2]);
-      `s`.push(uintArray[3]);
-      `s`.push(uintArray[4]);
-      `s`.push(uintArray[5]);
-      `s`.push(uintArray[6]);
-      `s`.push(uintArray[7]);
+      for(j = 0; j < 8; j++){
+        `s`.push(uintArray[j]);
+      }
     """.}
 
 else:
