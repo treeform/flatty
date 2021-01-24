@@ -1,4 +1,8 @@
-import flatty/binny, flatty/hexPrint
+import flatty/hexPrint
+when defined(js):
+  import flatty/jsbinny
+else:
+  import flatty/binny
 
 block:
   var s = ""
