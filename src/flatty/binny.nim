@@ -94,16 +94,6 @@ when defined(js):
   func addInt32*(s: var Buffer, i: int32) {.inline.} =
     s.addUint32(cast[uint32](i))
 
-  func readFloat32*(s: Buffer, i: int): float32 {.inline.} =
-     {.emit: """
-      var uintArray = new Uint8Array(4);
-      for(j = 0; j < 4; j++){
-        uintArray[j] = `s`[`i` + j];
-      }
-      var float32Array = new Float32Array(uintArray.buffer);
-      return float32Array[0];
-    """.}
-
   func readUint64*(s: Buffer, i: int): uint64 {.inline.} =
      {.emit: """
       var uintArray = new Uint8Array(8);
@@ -162,6 +152,16 @@ when defined(js):
       for(j = 0; j < 8; j++){
         `s`.push(uintArray[j]);
       }
+    """.}
+
+  func readFloat32*(s: Buffer, i: int): float32 {.inline.} =
+     {.emit: """
+      var uintArray = new Uint8Array(4);
+      for(j = 0; j < 4; j++){
+        uintArray[j] = `s`[`i` + j];
+      }
+      var float32Array = new Float32Array(uintArray.buffer);
+      return float32Array[0];
     """.}
 
   func writeFloat32*(s: Buffer, i: int, v: float32) {.inline.} =
