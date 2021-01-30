@@ -9,28 +9,28 @@ func writeUint8*(s: var Buffer, i: int, v: uint8) {.inline.} =
 func addUint8*(s: var Buffer, v: uint8) {.inline.} =
   s.add v.char
 
-func toUint8(v: int8): uint8 =
+func toUint8*(v: int8): uint8 =
   var v = v.int
   if v < 0:
-    v = 0xff + v + 1
+    v = 0x100 + v
   return v.uint8
 
-func toInt8(v: uint8): int8 =
+func toInt8*(v: uint8): int8 =
   var v = v.int
-  if v > 128:
-    v = v - 256
+  if v > int8.high:
+    v = v - 0x100
   return v.int8
 
 func toUint16*(v: int16): uint16 =
   var v = v.int
   if v < 0:
-    v = 0xffff + v + 1
+    v = 0x10000 + v
   return v.uint16
 
 func toInt16*(v: uint16): int16 =
   var v = v.int
-  if v > 0x8fff:
-    v = v - 0xffff - 1
+  if v > int16.high:
+    v = v - 0x10000
   return v.int16
 
 func readInt8*(s: Buffer, i: int): int8 {.inline.} =
