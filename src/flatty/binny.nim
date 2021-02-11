@@ -11,96 +11,35 @@ func writeUint8*(s: var Buffer, i: int, v: uint8) {.inline.} =
 func addUint8*(s: var Buffer, v: uint8) {.inline.} =
   s.add v.char
 
-when defined(js):
-  func readUint16*(s: Buffer, i: int): uint16 =
-    s[i+0].uint16 shl 0 +
-    s[i+1].uint16 shl 8
+func readUint16*(s: Buffer, i: int): uint16 {.inline.} =
+  result = cast[ptr uint16](s[i].unsafeAddr)[]
 
-  func writeUint16*(s: var Buffer, i: int, v: uint16) =
-    s[i+0] = ((v and 0x00FF) shr 0).char
-    s[i+1] = ((v and 0xFF00) shr 8).char
+func writeUint16*(s: var Buffer, i: int, v: uint16) {.inline.} =
+  cast[ptr uint16](s[i].addr)[] = v
 
-  func addUint16*(s: var Buffer, v: uint16) =
-    s.add ((v and 0x00FF) shr 0).char
-    s.add ((v and 0xFF00) shr 8).char
+func addUint16*(s: var Buffer, v: uint16) {.inline.} =
+  s.setLen(s.len + sizeof(v))
+  cast[ptr uint16](s[s.len - sizeof(v)].addr)[] = v
 
-  func readUint32*(s: Buffer, i: int): uint32 =
-    s[i+0].uint32 shl 0 +
-    s[i+1].uint32 shl 8 +
-    s[i+2].uint32 shl 16 +
-    s[i+3].uint32 shl 24
+func readUint32*(s: Buffer, i: int): uint32 {.inline.} =
+  result = cast[ptr uint32](s[i].unsafeAddr)[]
 
-  func writeUint32*(s: var Buffer, i: int, v: uint32) =
-    s[i+0] = ((v and 0x000000FF) shr 0).char
-    s[i+1] = ((v and 0x0000FF00) shr 8).char
-    s[i+2] = ((v and 0x00FF0000) shr 16).char
-    s[i+3] = ((v and 0xFF000000.uint32) shr 24).char
+func writeUint32*(s: var Buffer, i: int, v: uint32) {.inline.} =
+  cast[ptr uint32](s[i].addr)[] = v
 
-  func addUint32*(s: var Buffer, v: uint32) =
-    s.add ((v and 0x000000FF) shr 0).char
-    s.add ((v and 0x0000FF00) shr 8).char
-    s.add ((v and 0x00FF0000) shr 16).char
-    s.add ((v and 0xFF000000.uint32) shr 24).char
+func addUint32*(s: var Buffer, v: uint32) {.inline.} =
+  s.setLen(s.len + sizeof(v))
+  cast[ptr uint32](s[s.len - sizeof(v)].addr)[] = v
 
-  func readUint64*(s: Buffer, i: int): uint64 =
-    s[i+0].uint64 shl 0 +
-    s[i+1].uint64 shl 8 +
-    s[i+2].uint64 shl 16 +
-    s[i+3].uint64 shl 24 +
-    s[i+4].uint64 shl 32 +
-    s[i+5].uint64 shl 40 +
-    s[i+6].uint64 shl 48 +
-    s[i+7].uint64 shl 56
+func readUint64*(s: Buffer, i: int): uint64 {.inline.} =
+  result = cast[ptr uint64](s[i].unsafeAddr)[]
 
-  func writeUint64*(s: var Buffer, i: int, v: uint64) =
-    s[i+0] = ((v and (0xFF.uint64 shl 0)) shr 0).char
-    s[i+1] = ((v and (0xFF.uint64 shl 8)) shr 8).char
-    s[i+2] = ((v and (0xFF.uint64 shl 16)) shr 16).char
-    s[i+3] = ((v and (0xFF.uint64 shl 24)) shr 24).char
-    s[i+4] = ((v and (0xFF.uint64 shl 32)) shr 32).char
-    s[i+5] = ((v and (0xFF.uint64 shl 40)) shr 40).char
-    s[i+6] = ((v and (0xFF.uint64 shl 48)) shr 48).char
-    s[i+7] = ((v and (0xFF.uint64 shl 56)) shr 56).char
+func writeUint64*(s: var Buffer, i: int, v: uint64) {.inline.} =
+  cast[ptr uint64](s[i].addr)[] = v
 
-  func addUint64*(s: var Buffer, v: uint64) =
-    s.add ((v and (0xFF.uint64 shl 0)) shr 0).char
-    s.add ((v and (0xFF.uint64 shl 8)) shr 8).char
-    s.add ((v and (0xFF.uint64 shl 16)) shr 16).char
-    s.add ((v and (0xFF.uint64 shl 24)) shr 24).char
-    s.add ((v and (0xFF.uint64 shl 32)) shr 32).char
-    s.add ((v and (0xFF.uint64 shl 40)) shr 40).char
-    s.add ((v and (0xFF.uint64 shl 48)) shr 48).char
-    s.add ((v and (0xFF.uint64 shl 56)) shr 56).char
-else:
-  func readUint16*(s: Buffer, i: int): uint16 {.inline.} =
-    result = cast[ptr uint16](s[i].unsafeAddr)[]
-
-  func writeUint16*(s: var Buffer, i: int, v: uint16) {.inline.} =
-    cast[ptr uint16](s[i].addr)[] = v
-
-  func addUint16*(s: var Buffer, v: uint16) {.inline.} =
-    s.setLen(s.len + sizeof(v))
-    cast[ptr uint16](s[s.len - sizeof(v)].addr)[] = v
-
-  func readUint32*(s: Buffer, i: int): uint32 {.inline.} =
-    result = cast[ptr uint32](s[i].unsafeAddr)[]
-
-  func writeUint32*(s: var Buffer, i: int, v: uint32) {.inline.} =
-    cast[ptr uint32](s[i].addr)[] = v
-
-  func addUint32*(s: var Buffer, v: uint32) {.inline.} =
-    s.setLen(s.len + sizeof(v))
-    cast[ptr uint32](s[s.len - sizeof(v)].addr)[] = v
-
-  func readUint64*(s: Buffer, i: int): uint64 {.inline.} =
-    result = cast[ptr uint64](s[i].unsafeAddr)[]
-
-  func writeUint64*(s: var Buffer, i: int, v: uint64) {.inline.} =
-    cast[ptr uint64](s[i].addr)[] = v
-
-  func addUint64*(s: var Buffer, v: uint64) {.inline.} =
-    s.setLen(s.len + sizeof(v))
-    cast[ptr uint64](s[s.len - sizeof(v)].addr)[] = v
+func addUint64*(s: var Buffer, v: uint64) {.inline.} =
+  s.setLen(s.len + sizeof(v))
+  cast[ptr uint64](s[s.len - sizeof(v)].addr)[] = v
 
 func readInt8*(s: Buffer, i: int): int8 {.inline.} =
   cast[int8](s.readUint8(i))
@@ -144,8 +83,14 @@ func readFloat32*(s: Buffer, i: int): float32 {.inline.} =
 func addFloat32*(s: var Buffer, v: float32) {.inline.} =
   s.addUint32(cast[uint32](v))
 
+func writeFloat32*(s: var Buffer, i: int, v: float32) {.inline.} =
+  s.writeUint32(i, cast[uint32](v))
+
 func readFloat64*(s: Buffer, i: int): float64 {.inline.} =
   cast[float64](s.readUint64(i))
+
+func writeFloat64*(s: var Buffer, i: int, v: float64) {.inline.} =
+  s.writeUint64(i, cast[uint64](v))
 
 func addFloat64*(s: var Buffer, v: float64) {.inline.} =
   s.addUint64(cast[uint64](v))
@@ -176,6 +121,12 @@ when defined(js):
     ((v and (0xFF.uint32 shl 16)) shr 8) +
     ((v and (0xFF.uint32 shl 24)) shr 24)
 
+  func swap*(v: int16): int16 {.inline.} =
+    toInt16(toUint16(v).swap())
+
+  func swap*(v: int32): int32 {.inline.} =
+    cast[int32](cast[uint32](v).swap())
+
   func swap*(v: uint64): uint64 =
     ((v and (0xFF.uint64 shl 0)) shl 56) +
     ((v and (0xFF.uint64 shl 8)) shl 40) +
@@ -198,14 +149,14 @@ else:
     let tmp = cast[array[2, uint32]](v)
     (swap(tmp[0]).uint64 shl 32) or swap(tmp[1])
 
-func swap*(v: int16): int16 {.inline.} =
-  cast[int16](cast[uint16](v).swap())
+  func swap*(v: int16): int16 {.inline.} =
+    cast[int16](cast[uint16](v).swap())
 
-func swap*(v: int32): int32 {.inline.} =
-  cast[int32](cast[uint32](v).swap())
+  func swap*(v: int32): int32 {.inline.} =
+    cast[int32](cast[uint32](v).swap())
 
-func swap*(v: int64): int64 {.inline.} =
-  cast[int64](cast[uint64](v).swap())
+  func swap*(v: int64): int64 {.inline.} =
+    cast[int64](cast[uint64](v).swap())
 
 func maybeSwap*[T](v: T, enable: bool): T =
   if enable:

@@ -14,9 +14,10 @@ doAssert 123.int8.toFlatty.fromFlatty(int8) == 123
 doAssert 123.int16.toFlatty.fromFlatty(int16) == 123
 doAssert 123.int32.toFlatty.fromFlatty(int32) == 123
 doAssert 123.int64.toFlatty.fromFlatty(int64) == 123
-doAssert 123.456.toFlatty.fromFlatty(float) == 123.456
-doAssert $(123.456.float32).toFlatty.fromFlatty(float32) == "123.4560012817383"
-doAssert (123.456.float64).toFlatty.fromFlatty(float64) == 123.456
+
+doAssert 123.25.toFlatty.fromFlatty(float) == 123.25
+doAssert $(123.25.float32).toFlatty.fromFlatty(float32) == "123.25"
+doAssert (123.25.float64).toFlatty.fromFlatty(float64) == 123.25
 
 # Test strings.
 var str: string
@@ -86,7 +87,7 @@ doAssert node2.right == nil
 # Test distinct objects
 type Ts = distinct float64
 var ts = Ts(123.123)
-func `==`(a, b: TS): bool = float64(a) == float64(b)
+func `==`(a, b: Ts): bool = float64(a) == float64(b)
 doAssert ts.toFlatty.fromFlatty(Ts) == ts
 
 # Test tables
@@ -109,11 +110,12 @@ doAssert tup2.toFlatty.fromFlatty(tuple[foo: Foo, id: uint8]) == tup2
 var arrOfTuples: array[2, (int, int)] = [(1, 2), (0, 3)]
 doAssert arrOfTuples.toFlatty.fromFlatty(array[2, (int, int)]) == arrOfTuples
 
-# Test intsets
-var intSet = initIntSet()
-for i in 0 .. 10:
-  intSet.incl i
-doAssert intSet.toFlatty.fromFlatty(type(intSet)) == intSet
+when not defined(js):
+  # Test intsets
+  var intSet = initIntSet()
+  for i in 0 .. 10:
+    intSet.incl i
+  doAssert intSet.toFlatty.fromFlatty(type(intSet)) == intSet
 
 # Test OOP
 type
@@ -187,21 +189,23 @@ block:
 
 # Complex object
 block:
+  type Side = enum
+    left, right
   type
     SubObject = object
       a: int64
       b: string
     BigObject = object
       subs: seq[SubObject]
-      arr: array[bool, SubObject]
+      arr: array[Side, SubObject]
   let a = BigObject(
     subs: @[
       SubObject(a: 100, b: "Hmm"),
       SubObject(a: 20, b: "Heh")
     ],
     arr: [
-      false: SubObject(a: 42, b: "Ahhh"),
-      true: SubObject(a: 31415, b: "Pi")
+      left: SubObject(a: 42, b: "Ahhh"),
+      right: SubObject(a: 31415, b: "Pi")
     ]
   )
-  doAssert a.toFlatty.fromFlatty(a.typeof) == a
+  doAssert a.toFlatty.fromFlatty(a.type) == a
