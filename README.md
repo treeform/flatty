@@ -1,11 +1,20 @@
-# Flatty - serializer and tools for flat binary files.
+# Flatty - serializer and tools for flat binary blobs.
 
-* Aim of flatty is to be the best serializer/deserializer for nim.
-* Also includes hexprint to print out binary data.
-* Also includes binny a simpler replacement for StringStream (no IO effects, operates on a string)
-* Also includes hashy a hash for any objects based on the serializer.
+* Aim of `flatty` is to be the fastest and simplest serializer/deserializer for nim.
+* Also includes `hexprint` to print out binary data.
+* Also includes `binny` a simpler replacement for StringStream (no IO effects, operates on a string)
+* Also includes `hashy` a hash for any objects based on the flatty serializer.
 
-## Serialize speed
+## Speed
+
+Flatty aims to be fast. It achieves this by:
+* Not using slowish StringStream.
+* Checking if objects are "flat" and just copying them.
+* Not doing anything extra like versioning, type checking, etc ...
+* Liberal use of `{.inline.}`
+
+
+### Serialize speed
 ```
 name ............................... min time      avg time    std dv   runs
 treeform/flatty .................... 6.303 ms      6.514 ms    ±0.181   x100
@@ -13,13 +22,29 @@ bingod/planetis-m ................. 11.337 ms     12.688 ms    ±1.641   x100
 disruptek/frosty .................. 14.767 ms     14.924 ms    ±0.122   x100
 treeform/jsony .................... 12.989 ms     13.343 ms    ±0.408   x100
 ```
-## Deserialize speed
+### Deserialize speed
 ```
 treeform/flatty ................... 10.526 ms     16.134 ms    ±5.508   x100
 bingod/planetis-m binTo ........... 12.836 ms     17.993 ms    ±0.181   x100
 disruptek/frosty .................. 38.513 ms     42.357 ms    ±0.535   x100
 treeform/jsony .................... 96.830 ms    100.615 ms    ±0.992   x100
 ```
+
+## JavaScript
+
+Flatty supports Nim's `js` mode. Some features like `uint64`/`int64` are supported badly because of Nim's limitations. Serializing of non-Nim JavaScript objects is not supported.
+
+## Versioning
+
+Note, unlike `protobuf` or `thirft`, `flatty` has no versioning mechanism, if structure of your objects changes the resulting binary would be changed and could not be read back again. Because the schema is just plain Nim types, you need to make sure changing them does not impact your ability to read old flatty binary blobs.
+
+## Compression
+
+Flatty does not do compression it self but I recommend using the excellent https://github.com/guzba/supersnappy library to compress your flatty blobs before you send them over network or write them to disk. Snappy protocol is at this sweet spot of very fast compression, not the best but decent compression ratio, and very simple code.
+
+## Networking
+
+The `flatty` + `supersnappy` + `netty` where originally made to be used together. [Netty](https://github.com/treeform/netty) is a great for UDP networking for games.
 
 # API: flatty
 
