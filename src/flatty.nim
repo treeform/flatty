@@ -167,11 +167,8 @@ proc toFlatty*(s: var string, x: ref object) =
       for k, e in x[].fieldPairs:
         when k != x.discriminatorFieldName:
           s.toFlatty(e)
-    elif compiles(toFlatty(x[])):
-      s.toFlatty(x[])
     else:
-      for e in x[].fields:
-        s.toFlatty(e)
+      s.toFlatty(x[])
 
 proc fromFlatty*(s: string, i: var int, x: var ref object) =
   var isNil: bool
@@ -184,13 +181,9 @@ proc fromFlatty*(s: string, i: var int, x: var ref object) =
       for k, e in x[].fieldPairs:
         when k != x.discriminatorFieldName:
           s.fromFlatty(i, e)
-    elif compiles(toFlatty(x[])):
-      new(x)
-      s.fromFlatty(i, x[])
     else:
       new(x)
-      for e in x[].fields:
-        s.fromFlatty(i, e)
+      s.fromFlatty(i, x[])
 
 # Distinct
 proc toFlatty*[T: distinct](s: var string, x: T) =
