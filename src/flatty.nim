@@ -174,16 +174,8 @@ proc fromFlatty*(s: string, i: var int, x: var ref object) =
   var isNil: bool
   s.fromFlatty(i, isNil)
   if not isNil:
-    when x.isObjectVariant:
-      var discriminator: type(x.discriminatorField)
-      s.fromFlatty(i, discriminator)
-      new(x, discriminator)
-      for k, e in x[].fieldPairs:
-        when k != x.discriminatorFieldName:
-          s.fromFlatty(i, e)
-    else:
-      new(x)
-      s.fromFlatty(i, x[])
+    new(x)
+    s.fromFlatty(i, x[])
 
 # Distinct
 proc toFlatty*[T: distinct](s: var string, x: T) =
