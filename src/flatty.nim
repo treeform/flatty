@@ -7,6 +7,7 @@ import flatty/objvar, tables, typetraits
 
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V] |
   TableRef[K, V] | OrderedTableRef[K, V]
+type SomeCountTable*[K] = CountTable[K] | CountTableRef[K]
 
 # Forward declarations.
 proc toFlatty*[T](s: var string, x: seq[T])
@@ -14,6 +15,7 @@ proc toFlatty*(s: var string, x: object)
 proc toFlatty*(s: var string, x: ref object)
 proc toFlatty*[T: distinct](s: var string, x: T)
 proc toFlatty*[K, V](s: var string, x: SomeTable[K, V])
+proc toFlatty*[K](s: var string, x: SomeCountTable[K])
 proc toFlatty*[N, T](s: var string, x: array[N, T])
 proc toFlatty*[T: tuple](s: var string, x: T)
 proc fromFlatty*[T](s: string, i: var int, x: var seq[T])
@@ -21,6 +23,7 @@ proc fromFlatty*(s: string, i: var int, x: var object)
 proc fromFlatty*(s: string, i: var int, x: var ref object)
 proc fromFlatty*[T: distinct](s: string, i: var int, x: var T)
 proc fromFlatty*[K, V](s: string, i: var int, x: var SomeTable[K, V])
+proc fromFlatty*[K](s: string, i: var int, x: var SomeCountTable[K])
 proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T])
 proc fromFlatty*[T: tuple](s: string, i: var int, x: var T)
 proc fromFlatty*[T](s: string, x: typedesc[T]): T
@@ -208,10 +211,31 @@ proc toFlatty*[K, V](s: var string, x: SomeTable[K, V]) =
 proc fromFlatty*[K, V](s: string, i: var int, x: var SomeTable[K, V]) =
   let len = s.readInt64(i)
   i += 8
+  when x.isReference:
+    new(x)
   for _ in 0 ..< len:
     var
       k: K
       v: V
+    s.fromFlatty(i, k)
+    s.fromFlatty(i, v)
+    x[k] = v
+
+proc toFlatty*[K](s: var string, x: SomeCountTable[K]) =
+  s.addInt64(x.len.int64)
+  for k, v in x:
+    s.toFlatty(k)
+    s.toFlatty(v)
+
+proc fromFlatty*[K](s: string, i: var int, x: var SomeCountTable[K]) =
+  let len = s.readInt64(i)
+  i += 8
+  when x.isReference:
+    new(x)
+  for _ in 0 ..< len:
+    var
+      k: K
+      v: int
     s.fromFlatty(i, k)
     s.fromFlatty(i, v)
     x[k] = v
