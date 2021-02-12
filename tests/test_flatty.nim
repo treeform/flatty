@@ -91,10 +91,17 @@ func `==`(a, b: Ts): bool = float64(a) == float64(b)
 doAssert ts.toFlatty.fromFlatty(Ts) == ts
 
 # Test tables
-var table: Table[string, string]
-table["hi"] = "bye"
-table["foo"] = "bar"
-doAssert table.toFlatty.fromFlatty(Table[string, string]) == table
+block:
+  var table: Table[string, string]
+  table["hi"] = "bye"
+  table["foo"] = "bar"
+  doAssert table.toFlatty.fromFlatty(Table[string, string]) == table
+
+block:
+  var table: OrderedTable[string, string]
+  table["hi"] = "bye"
+  table["foo"] = "bar"
+  doAssert table.toFlatty.fromFlatty(OrderedTable[string, string]) == table
 
 # Test arrays
 var arr: array[3, int] = [1, 2, 3]
