@@ -162,13 +162,7 @@ proc toFlatty*(s: var string, x: ref object) =
   let isNil = x == nil
   s.toFlatty(isNil)
   if not isNil:
-    when x.isObjectVariant:
-      s.toFlatty(x.discriminatorField)
-      for k, e in x[].fieldPairs:
-        when k != x.discriminatorFieldName:
-          s.toFlatty(e)
-    else:
-      s.toFlatty(x[])
+    s.toFlatty(x[])
 
 proc fromFlatty*(s: string, i: var int, x: var ref object) =
   var isNil: bool
