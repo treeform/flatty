@@ -96,6 +96,17 @@ table["hi"] = "bye"
 table["foo"] = "bar"
 doAssert table.toFlatty.fromFlatty(Table[string, string]) == table
 
+var ortabl: OrderedTable[string, string]
+ortabl["hi"] = "bye"
+ortabl["foo"] = "bar"
+doAssert table.toFlatty.fromFlatty(OrderedTable[string, string]) == ortabl
+
+var cntabl: CountTable[string]
+cntabl.inc("hello", 2)
+cntabl.inc("world")
+
+doAssert cntabl.toFlatty.fromFlatty(CountTable[string]) == cntabl
+
 # Test arrays
 var arr: array[3, int] = [1, 2, 3]
 doAssert arr.toFlatty.fromFlatty(array[3, int]) == arr
