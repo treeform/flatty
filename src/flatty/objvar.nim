@@ -12,6 +12,9 @@ proc `[]`(node: NimNode, kind: NimNodeKind): NimNode =
       return c
   return nil
 
+template isReference*(v: typed): bool =
+  compiles(v[])
+
 macro isObjectVariant*(v: typed): bool =
   ## Is this an object variant?
   var typ = v.getTypeImpl()

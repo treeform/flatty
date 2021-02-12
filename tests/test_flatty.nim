@@ -91,10 +91,47 @@ func `==`(a, b: Ts): bool = float64(a) == float64(b)
 doAssert ts.toFlatty.fromFlatty(Ts) == ts
 
 # Test tables
-var table: Table[string, string]
-table["hi"] = "bye"
-table["foo"] = "bar"
-doAssert table.toFlatty.fromFlatty(Table[string, string]) == table
+block:
+  var table: Table[string, string]
+  table["hi"] = "bye"
+  table["foo"] = "bar"
+  doAssert table.toFlatty.fromFlatty(Table[string, string]) == table
+
+block:
+  var table: OrderedTable[string, string]
+  table["hi"] = "bye"
+  table["foo"] = "bar"
+  doAssert table.toFlatty.fromFlatty(OrderedTable[string, string]) == table
+
+block:
+  var table: CountTable[string]
+  table.inc("hi")
+  table.inc("hi")
+  table.inc("foo")
+  doAssert table.toFlatty.fromFlatty(type(table)) == table
+
+block:
+  var table: TableRef[string, string]
+  new(table)
+  table["hi"] = "bye"
+  table["foo"] = "bar"
+  doAssert table.toFlatty.fromFlatty(type(table)) == table
+
+block:
+  var table: OrderedTableRef[string, string]
+  new(table)
+  table["hi"] = "bye"
+  table["foo"] = "bar"
+  doAssert table.toFlatty.fromFlatty(type(table)) == table
+
+block:
+  var table: CountTableRef[string]
+  new(table)
+  table.inc("hi")
+  table.inc("hi")
+  table.inc("foo")
+  doAssert table.toFlatty.fromFlatty(type(table)) == table
+
 
 # Test arrays
 var arr: array[3, int] = [1, 2, 3]
