@@ -44,7 +44,7 @@ Flatty does not do compression it self but I recommend using the excellent https
 
 ## Networking
 
-The `flatty` + `supersnappy` + `netty` where originally made to be used together. [Netty](https://github.com/treeform/netty) is a great for UDP networking for games.
+The `flatty` + `supersnappy` + `netty` were originally made to be used together. [Netty](https://github.com/treeform/netty) is a great for UDP networking for games.
 
 # API: flatty
 
