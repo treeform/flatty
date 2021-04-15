@@ -10,7 +10,6 @@ type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 # Forward declarations.
 proc toFlatty*[T](s: var string, x: seq[T])
 proc toFlatty*(s: var string, x: object)
-proc toFlatty*(s: var string, x: ref object)
 proc toFlatty*[T: distinct](s: var string, x: T)
 proc toFlatty*[K, V](s: var string, x: SomeTable[K, V])
 proc toFlatty*[K](s: var string, x: CountTable[K])
@@ -18,13 +17,14 @@ proc toFlatty*[N, T](s: var string, x: array[N, T])
 proc toFlatty*[T: tuple](s: var string, x: T)
 proc fromFlatty*[T](s: string, i: var int, x: var seq[T])
 proc fromFlatty*(s: string, i: var int, x: var object)
-proc fromFlatty*(s: string, i: var int, x: var ref object)
 proc fromFlatty*[T: distinct](s: string, i: var int, x: var T)
 proc fromFlatty*[K, V](s: string, i: var int, x: var SomeTable[K, V])
 proc fromFlatty*[K](s: string, i: var int, x: var CountTable[K])
 proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T])
 proc fromFlatty*[T: tuple](s: string, i: var int, x: var T)
 proc fromFlatty*[T](s: string, x: typedesc[T]): T
+proc toFlatty*[T](s: var string, x: ref T)
+proc fromFlatty*[T](s: string, i: var int, x: var ref T)
 
 # Booleans
 proc toFlatty*(s: var string, x: bool) =
@@ -158,19 +158,6 @@ proc fromFlatty*(s: string, i: var int, x: var object) =
     for e in x.fields:
       s.fromFlatty(i, e)
 
-proc toFlatty*(s: var string, x: ref object) =
-  let isNil = x == nil
-  s.toFlatty(isNil)
-  if not isNil:
-    s.toFlatty(x[])
-
-proc fromFlatty*(s: string, i: var int, x: var ref object) =
-  var isNil: bool
-  s.fromFlatty(i, isNil)
-  if not isNil:
-    new(x)
-    s.fromFlatty(i, x[])
-
 # Distinct
 proc toFlatty*[T: distinct](s: var string, x: T) =
   s.toFlatty(x.distinctBase)
@@ -254,3 +241,17 @@ proc fromFlatty*[T](s: string, x: typedesc[T]): T =
   ## Takes binary string and turn into structures.
   var i = 0
   s.fromFlatty(i, result)
+
+# Refs
+proc toFlatty*[T](s: var string, x: ref T) =
+  let isNil = x == nil
+  s.toFlatty(isNil)
+  if not isNil:
+    s.toFlatty(x[])
+
+proc fromFlatty*[T](s: string, i: var int, x: var ref T) =
+  var isNil: bool
+  s.fromFlatty(i, isNil)
+  if not isNil:
+    new(x)
+    s.fromFlatty(i, x[])
