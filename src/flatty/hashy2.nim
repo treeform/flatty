@@ -8,7 +8,7 @@ when defined(release):
   {.push checks: off.}
 
 proc addHashy*[T](h: var uint32, x: seq[T])
-proc addHashy*(h: var uint32, x: SomeNumber|bool)
+proc addHashy*(h: var uint32, x: SomeNumber|bool|enum)
 proc addHashy*(h: var uint32, x: string)
 proc addHashy*(h: var uint32, x: object)
 proc addHashy*[T: distinct](h: var uint32, x: T)
@@ -33,28 +33,31 @@ proc hashMem*(p: pointer, len: int): uint32 =
     let c = bytes[i].int
     result = result * 33 + c.uint32 + (c.shr(32)).uint32
 
-proc addHashy*(h: var uint32, x: SomeNumber|bool) =
+proc addHashy*(h: var uint32, x: SomeNumber|bool|enum) =
   h = h * 33 + cast[uint32](x)
 
 proc addHashy*(h: var uint32, x: string) =
   h.addHashy(x.len)
-  h = h * 33 + hashMem(x[0].unsafeAddr, x.len)
+  if x.len > 0:
+    h = h * 33 + hashMem(x[0].unsafeAddr, x.len)
 
 proc addHashy*[T](h: var uint32, x: seq[T]) =
   h.addHashy(x.len)
-  when T.supportsCopyMem:
-    h = h * 33 + hashMem(x[0].unsafeAddr, x.len * sizeof(T))
-  else:
-    for e in x:
-      h.addHashy(e)
+  if x.len > 0:
+    when T.supportsCopyMem:
+      h = h * 33 + hashMem(x[0].unsafeAddr, x.len * sizeof(T))
+    else:
+      for e in x:
+        h.addHashy(e)
 
 proc addHashy*[N, T](h: var uint32, x: array[N, T]) =
   h.addHashy(x.len)
-  when T.supportsCopyMem:
-    h = h * 33 + hashMem(x[0].unsafeAddr, x.len * sizeof(T))
-  else:
-    for e in x:
-      h.addHashy(e)
+  if x.len > 0:
+    when T.supportsCopyMem:
+      h = h * 33 + hashMem(x[0].unsafeAddr, x.len * sizeof(T))
+    else:
+      for e in x:
+        h.addHashy(e)
 
 proc addHashy*(h: var uint32, x: object) =
   when type(x).supportsCopyMem:
