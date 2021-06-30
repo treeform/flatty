@@ -3,7 +3,7 @@
 type Buffer = string | seq[uint8]
 
 func readUint8*(s: Buffer, i: int): uint8 {.inline.} =
-  s[i].uint8
+  cast[uint8](s[i])
 
 func writeUint8*(s: var Buffer, i: int, v: uint8) {.inline.} =
   s[i] = v.char
