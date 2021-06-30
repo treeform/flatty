@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.2.1"
+version       = "0.2.2"
 author        = "treeform"
 description   = "Flatty - tools and serializer for plain flat binary files."
 license       = "MIT"
