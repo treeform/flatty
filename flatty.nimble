@@ -1,7 +1,7 @@
 # Package
 
 version       = "0.2.2"
-author        = "treeform"
+author        = "Andre von Houck"
 description   = "Flatty - tools and serializer for plain flat binary files."
 license       = "MIT"
 srcDir        = "src"
