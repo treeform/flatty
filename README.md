@@ -1,5 +1,7 @@
 # Flatty - serializer and tools for flat binary blobs.
 
+`nimble install flatty`
+
 * Aim of `flatty` is to be the fastest and simplest serializer/deserializer for nim.
 * Also includes `hexprint` to print out binary data.
 * Also includes `binny` a simpler replacement for StringStream (no IO effects, operates on a string)
