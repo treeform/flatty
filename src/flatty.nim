@@ -15,6 +15,10 @@ proc toFlatty*[K, V](s: var string, x: SomeTable[K, V])
 proc toFlatty*[K](s: var string, x: CountTable[K])
 proc toFlatty*[N, T](s: var string, x: array[N, T])
 proc toFlatty*[T: tuple](s: var string, x: T)
+proc toFlatty*[T](s: var string, x: ref T)
+proc toFlatty*[T: range and float](s: var string, x: T)
+proc toFlatty*[T: range and int](s: var string, x: T)
+
 proc fromFlatty*[T](s: string, i: var int, x: var seq[T])
 proc fromFlatty*(s: string, i: var int, x: var object)
 proc fromFlatty*[T: distinct](s: string, i: var int, x: var T)
@@ -23,7 +27,6 @@ proc fromFlatty*[K](s: string, i: var int, x: var CountTable[K])
 proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T])
 proc fromFlatty*[T: tuple](s: string, i: var int, x: var T)
 proc fromFlatty*[T](s: string, x: typedesc[T]): T
-proc toFlatty*[T](s: var string, x: ref T)
 proc fromFlatty*[T](s: string, i: var int, x: var ref T)
 
 # Booleans
@@ -233,15 +236,6 @@ proc fromFlatty*[T: tuple](s: string, i: var int, x: var T) =
   for e in x.fields:
     s.fromFlatty(i, e)
 
-proc toFlatty*[T](x: T): string =
-  ## Takes structures and turns them into binary string.
-  result.toFlatty(x)
-
-proc fromFlatty*[T](s: string, x: typedesc[T]): T =
-  ## Takes binary string and turn into structures.
-  var i = 0
-  s.fromFlatty(i, result)
-
 # Refs
 proc toFlatty*[T](s: var string, x: ref T) =
   let isNil = x == nil
@@ -255,3 +249,20 @@ proc fromFlatty*[T](s: string, i: var int, x: var ref T) =
   if not isNil:
     new(x)
     s.fromFlatty(i, x[])
+
+# Range
+proc toFlatty*[T: range and float](s: var string, x: T) =
+  s.toFlatty(x.float)
+
+proc toFlatty*[T: range and int](s: var string, x: T) =
+  s.toFlatty(x.int)
+
+# Main entry points:
+proc toFlatty*[T](x: T): string =
+  ## Takes structures and turns them into binary string.
+  result.toFlatty(x)
+
+proc fromFlatty*[T](s: string, x: typedesc[T]): T =
+  ## Takes binary string and turn into structures.
+  var i = 0
+  s.fromFlatty(i, result)
