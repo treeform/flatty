@@ -1,5 +1,15 @@
 # Flatty - serializer and tools for flat binary blobs.
 
+`nimble install flatty`
+
+![Github Actions](https://github.com/treeform/flatty/workflows/Github%20Actions/badge.svg)
+
+[API reference](https://nimdocs.com/treeform/flatty)
+
+This library has no dependencies other than the Nim standard libarary.
+
+## About
+
 * Aim of `flatty` is to be the fastest and simplest serializer/deserializer for nim.
 * Also includes `hexprint` to print out binary data.
 * Also includes `binny` a simpler replacement for StringStream (no IO effects, operates on a string)
