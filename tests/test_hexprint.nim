@@ -1,4 +1,4 @@
-import flatty/binny, flatty/hexprint, osproc, streams
+import flatty/binny, flatty/hexprint, streams
 
 var s = newFileStream("tests/test_hexprint-output.txt", fmWrite)
 
@@ -28,8 +28,3 @@ block:
   s.writeLine hexPrint(bin)
 
 s.close()
-
-let (outp, _) = execCmdEx("git diff tests/test_hexprint-output.txt")
-if len(outp) != 0:
-  echo outp
-  quit("Output does not match")
