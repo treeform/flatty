@@ -84,10 +84,13 @@ proc djb2*(s: string): int =
   for c in s:
     result = result * 33 + c.int
 
+proc hashy*(p: pointer, len: int): Hash =
+  ryan64djb2(p, len)
+
 proc hashy*[T](x: T): Hash =
   ## Takes structures and turns them into binary string.
   let s = x.toFlatty()
-  ryan64djb2(s[0].unsafeAddr, s.len)
+  hashy(s[0].unsafeAddr, s.len)
 
 when defined(release):
   {.pop.}
