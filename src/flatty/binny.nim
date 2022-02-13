@@ -107,6 +107,36 @@ func addStr*(s: var seq[uint8], v: string) {.inline.} =
 func readStr*(s: seq[uint8], i: int, v: int): string {.inline.} =
   cast[string](s[i ..< min(s.len, i + v)])
 
+func readUint8*(s: ptr UncheckedArray[uint8], i: int): uint8 {.inline.} =
+  cast[uint8](s[i])
+
+func readUint16*(s: ptr UncheckedArray[uint8], i: int): uint16 {.inline.} =
+  result = cast[ptr uint16](s[i].addr)[]
+
+func readUint32*(s: ptr UncheckedArray[uint8], i: int): uint32 {.inline.} =
+  result = cast[ptr uint32](s[i].addr)[]
+
+func readUint64*(s: ptr UncheckedArray[uint8], i: int): uint64 {.inline.} =
+  result = cast[ptr uint64](s[i].addr)[]
+
+func readInt8*(s: ptr UncheckedArray[uint8], i: int): int8 {.inline.} =
+  cast[int8](s.readUint8(i))
+
+func readInt16*(s: ptr UncheckedArray[uint8], i: int): int16 {.inline.} =
+  cast[int16](s.readUint16(i))
+
+func readInt32*(s: ptr UncheckedArray[uint8], i: int): int32 {.inline.} =
+  cast[int32](s.readUint32(i))
+
+func readInt64*(s: ptr UncheckedArray[uint8], i: int): int64 {.inline.} =
+  cast[int64](s.readUint64(i))
+
+func readFloat32*(s: ptr UncheckedArray[uint8], i: int): float32 {.inline.} =
+  cast[float32](s.readUint32(i))
+
+func readFloat64*(s: ptr UncheckedArray[uint8], i: int): float64 {.inline.} =
+  cast[float64](s.readUint64(i))
+
 func swap*(v: uint8): uint8 {.inline.} =
   v
 

@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.2.3"
+version       = "0.2.4"
 author        = "Andre von Houck"
 description   = "Flatty - tools and serializer for plain flat binary files."
 license       = "MIT"
