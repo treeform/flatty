@@ -3,9 +3,10 @@ when defined(js):
   import flatty/jsbinny
 else:
   import flatty/binny
-import flatty/objvar, tables, typetraits
+import flatty/objvar, tables, typetraits, sets, sequtils
 
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
+type SomeSet[A] = set[A] | HashSet[A] | OrderedSet[A]
 
 # Forward declarations.
 proc toFlatty*[T](s: var string, x: seq[T])
@@ -35,6 +36,14 @@ proc toFlatty*(s: var string, x: bool) =
 
 proc fromFlatty*(s: string, i: var int, x: var bool) =
   x = s.readUint8(i).bool
+  i += 1
+
+# Chars
+proc toFlatty*(s: var string, x: char) =
+  s.addUint8(x.uint8)
+
+proc fromFlatty*(s: string, i: var int, x: var char) =
+  x = s.readUint8(i).char
   i += 1
 
 # Numbers
@@ -256,6 +265,20 @@ proc toFlatty*[T: range and float](s: var string, x: T) =
 
 proc toFlatty*[T: range and int](s: var string, x: T) =
   s.toFlatty(x.int)
+
+# Sets
+proc toFlatty*[T](s: var string, x: SomeSet[T]) =
+  s.addInt64(x.card.int64)
+  for e in x:
+    s.toFlatty(e)
+
+proc fromFlatty*[T](s: string, i: var int, x: var SomeSet[T]) =
+  let len = s.readInt64(i).int
+  i += 8
+  for j in 0 ..< len:
+    var e: T
+    s.fromFlatty(i, e)
+    x.incl(e)
 
 # Main entry points:
 proc toFlatty*[T](x: T): string =

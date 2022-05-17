@@ -1,8 +1,14 @@
-import flatty, intsets, json, tables
+import flatty, intsets, json, tables, sets, flatty/hexprint
 
 # Test booleans.
 doAssert true.toFlatty.fromFlatty(bool) == true
 doAssert false.toFlatty.fromFlatty(bool) == false
+
+# Test chars.
+doAssert 'a'.toFlatty.fromFlatty(char) == 'a'
+doAssert 'z'.toFlatty.fromFlatty(char) == 'z'
+doAssert '\0'.toFlatty.fromFlatty(char) == '\0'
+doAssert '\n'.toFlatty.fromFlatty(char) == '\n'
 
 # Test numbers.
 doAssert 123.toFlatty.fromFlatty(int) == 123
@@ -276,7 +282,7 @@ block:
     Thing(name: "hi", X: 1.RangeT, Y: 1.0.RangeU, Z: North.DirRange),
     Thing(name: "bye", X: 2.RangeT, Y: 2.0.RangeU, Z: West.DirRange)
   ]
-  let binaryData = toFlatty[seq[Thing]](u)
+  let binaryData = toFlatty(u)
   let u2 = binaryData.fromFlatty(seq[Thing])
 
   doAssert u2[0].X == 1
@@ -285,5 +291,23 @@ block:
   doAssert u2[1].X == 2
   doAssert u2[1].Y == 2.0
   doAssert u2[1].Z == West
+
+block:
+  # Sets
+  # set is too large???
+  # doAssert {1, 2, 3}.toFlatty.fromFlatty(set[int]) == {1, 2, 3}
+  doAssert {'a'..'z'}.toFlatty.fromFlatty(set[char]) == {'a'..'z'}
+  doAssert {1.uint8, 2.uint8}.toFlatty.fromFlatty(set[uint8]) == {1.uint8, 2.uint8}
+  doAssert {1.uint16, 2.uint16}.toFlatty.fromFlatty(set[uint16]) == {1.uint16, 2.uint16}
+
+  let hSet1 = toHashSet(["dog", "cat"])
+  doAssert hSet1.toFlatty.fromFlatty(HashSet[string]) == hSet1
+  let hSet2 = toOrderedSet(["dog", "cat"])
+  doAssert hSet2.toFlatty.fromFlatty(OrderedSet[string]) == hSet2
+
+  let hSet3 = toHashSet([1.1, 2.2, 3.3])
+  doAssert hSet3.toFlatty.fromFlatty(HashSet[float64]) == hSet3
+  let hSet4 = toOrderedSet([1.1, 2.2, 3.3])
+  doAssert hSet4.toFlatty.fromFlatty(OrderedSet[float64]) == hSet4
 
 echo "DONE"
