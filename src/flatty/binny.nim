@@ -161,6 +161,9 @@ func swap*(v: int32): int32 {.inline.} =
 func swap*(v: int64): int64 {.inline.} =
   cast[int64](cast[uint64](v).swap())
 
+func swap*(v: int): int {.inline.} =
+  cast[int](cast[uint64](v).swap())
+
 func maybeSwap*[T](v: T, enable: bool): T =
   if enable:
     v.swap()
