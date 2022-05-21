@@ -162,7 +162,12 @@ func swap*(v: int64): int64 {.inline.} =
   cast[int64](cast[uint64](v).swap())
 
 func swap*(v: int): int {.inline.} =
-  cast[int](cast[uint64](v).swap())
+  when sizeOf(int) == 8:
+    cast[int](cast[uint64](v).swap())
+  elif sizeOf(int) == 4:
+    cast[int](cast[uint32](v).swap())
+  else:
+    {.error: "Only 32 and 64 bit systems supported.".}
 
 func maybeSwap*[T](v: T, enable: bool): T =
   if enable:
