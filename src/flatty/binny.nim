@@ -105,7 +105,13 @@ func addStr*(s: var seq[uint8], v: string) {.inline.} =
   s.add(cast[seq[uint8]](v))
 
 func readStr*(s: seq[uint8], i: int, v: int): string {.inline.} =
-  cast[string](s[i ..< min(s.len, i + v)])
+  let len = min(s.len - i, v)
+  result.setLen(len)
+  copyMem(result.cstring, s[i].unsafeAddr, len)
+
+func readStr*(s: ptr UncheckedArray[uint8], i, v: int): string {.inline.} =
+  result.setLen(v)
+  copyMem(result.cstring, s[i].addr, v)
 
 func readUint8*(s: ptr UncheckedArray[uint8], i: int): uint8 {.inline.} =
   cast[uint8](s[i])
