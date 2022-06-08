@@ -12,34 +12,34 @@ func addUint8*(s: var Buffer, v: uint8) {.inline.} =
   s.add v.char
 
 func readUint16*(s: Buffer, i: int): uint16 {.inline.} =
-  result = cast[ptr uint16](s[i].unsafeAddr)[]
+  copyMem(result.addr, s[i].unsafeAddr, 2)
 
 func writeUint16*(s: var Buffer, i: int, v: uint16) {.inline.} =
-  cast[ptr uint16](s[i].addr)[] = v
+  copyMem(s[i].addr, v.unsafeAddr, sizeof(v))
 
 func addUint16*(s: var Buffer, v: uint16) {.inline.} =
   s.setLen(s.len + sizeof(v))
-  cast[ptr uint16](s[s.len - sizeof(v)].addr)[] = v
+  copyMem(s[s.len - sizeof(v)].addr, v.unsafeAddr, sizeof(v))
 
 func readUint32*(s: Buffer, i: int): uint32 {.inline.} =
-  result = cast[ptr uint32](s[i].unsafeAddr)[]
+  copyMem(result.addr, s[i].unsafeAddr, 4)
 
 func writeUint32*(s: var Buffer, i: int, v: uint32) {.inline.} =
-  cast[ptr uint32](s[i].addr)[] = v
+  copyMem(s[i].addr, v.unsafeAddr, sizeof(v))
 
 func addUint32*(s: var Buffer, v: uint32) {.inline.} =
   s.setLen(s.len + sizeof(v))
-  cast[ptr uint32](s[s.len - sizeof(v)].addr)[] = v
+  copyMem(s[s.len - sizeof(v)].addr, v.unsafeAddr, sizeof(v))
 
 func readUint64*(s: Buffer, i: int): uint64 {.inline.} =
-  result = cast[ptr uint64](s[i].unsafeAddr)[]
+  copyMem(result.addr, s[i].unsafeAddr, 8)
 
 func writeUint64*(s: var Buffer, i: int, v: uint64) {.inline.} =
-  cast[ptr uint64](s[i].addr)[] = v
+  copyMem(s[i].addr, v.unsafeAddr, sizeof(v))
 
 func addUint64*(s: var Buffer, v: uint64) {.inline.} =
   s.setLen(s.len + sizeof(v))
-  cast[ptr uint64](s[s.len - sizeof(v)].addr)[] = v
+  copyMem(s[s.len - sizeof(v)].addr, v.unsafeAddr, sizeof(v))
 
 func readInt8*(s: Buffer, i: int): int8 {.inline.} =
   cast[int8](s.readUint8(i))
@@ -117,13 +117,13 @@ func readUint8*(s: ptr UncheckedArray[uint8], i: int): uint8 {.inline.} =
   cast[uint8](s[i])
 
 func readUint16*(s: ptr UncheckedArray[uint8], i: int): uint16 {.inline.} =
-  result = cast[ptr uint16](s[i].addr)[]
+  copyMem(result.addr, s[i].addr, 2)
 
 func readUint32*(s: ptr UncheckedArray[uint8], i: int): uint32 {.inline.} =
-  result = cast[ptr uint32](s[i].addr)[]
+  copyMem(result.addr, s[i].addr, 4)
 
 func readUint64*(s: ptr UncheckedArray[uint8], i: int): uint64 {.inline.} =
-  result = cast[ptr uint64](s[i].addr)[]
+  copyMem(result.addr, s[i].addr, 8)
 
 func readInt8*(s: ptr UncheckedArray[uint8], i: int): int8 {.inline.} =
   cast[int8](s.readUint8(i))
