@@ -26,7 +26,8 @@ proc hashMem*(p: pointer, len: int): uint32 =
     start = 0
     stop = len div intSize
   for i in start ..< stop:
-    let c = ints[i]
+    var c: int
+    copyMem(c.addr, ints[i].addr, intSize)
     result = result * 33 + c.uint32
   start = stop * 8
   for i in start ..< len:
