@@ -1,4 +1,4 @@
-import benchy, bingod, flatty, frosty, marshal, random, streams
+import benchy, flatty
 
 var seqence = newSeq[(uint8, uint8)](1_000_000)
 
@@ -13,7 +13,7 @@ timeIt "treeform/flatty seq fromFlatty":
 
 var arr: array[1_000_000, (uint8, uint8)]
 
-echo arr.len, " seqenceay of (uint8, uint8)"
+echo arr.len, " array of (uint8, uint8)"
 
 timeIt "treeform/flatty arr toFlatty":
   keep arr.toFlatty()

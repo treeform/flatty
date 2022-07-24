@@ -1,6 +1,6 @@
 import benchy, flatty/binny
 
-const bufferLength = 10_00_000 * sizeof(uint64)
+const bufferLength = 100_000 * sizeof(uint64)
 
 timeIt "binny":
   var

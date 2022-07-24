@@ -21,7 +21,8 @@ proc ryan64nim*(p: pointer, len: int): int =
     start = 0
     stop = len div intSize
   for i in start ..< stop:
-    let c = ints[i]
+    var c: int
+    copyMem(c.addr, ints[i].addr, intSize)
     h = h !& c.hash()
   start = stop * 8
   for i in start ..< len:
@@ -38,7 +39,8 @@ proc ryan64sdbm*(p: pointer, len: int): int =
     start = 0
     stop = len div intSize
   for i in start ..< stop:
-    let c = ints[i]
+    var c: int
+    copyMem(c.addr, ints[i].addr, intSize)
     result = c + (result shl 6) + (result shl 16) - result
   start = stop * 8
   for i in start ..< len:
@@ -65,7 +67,8 @@ proc ryan64djb2*(p: pointer, len: int): int =
     start = 0
     stop = len div intSize
   for i in start ..< stop:
-    let c = ints[i]
+    var c: int
+    copyMem(c.addr, ints[i].addr, intSize)
     result = result * 33 + c
   start = stop * 8
   for i in start ..< len:
