@@ -10,7 +10,7 @@ This library has no dependencies other than the Nim standard library.
 
 ## About
 
-* Aim of `flatty` is to be the fastest and simplest serializer/deserializer for nim.
+* Aim of `flatty` is to be the fastest and simplest serializer/deserializer for Nim.
 * Also includes `hexprint` to print out binary data.
 * Also includes `binny` a simpler replacement for StringStream (no IO effects, operates on a string)
 * Also includes `hashy` a hash for any objects based on the flatty serializer.
