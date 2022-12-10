@@ -1,4 +1,4 @@
-## Convert any nim objects, numbers, strings, refs to and from binary format.
+## Convert any Nim objects, numbers, strings, refs to and from binary format.
 when defined(js):
   import flatty/jsbinny
 else:
