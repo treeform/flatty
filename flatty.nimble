@@ -1,4 +1,4 @@
-version       = "0.3.4"
+version       = "0.3.5"
 author        = "Andre von Houck"
 description   = "Flatty - tools and serializer for plain flat binary files."
 license       = "MIT"

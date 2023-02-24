@@ -3,7 +3,7 @@ when defined(js):
   import flatty/jsbinny
 else:
   import flatty/binny
-import flatty/objvar, tables, typetraits, sets, sequtils
+import tables, typetraits, sets, sequtils, macros
 
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 type SomeSet[A] = set[A] | HashSet[A] | OrderedSet[A]
@@ -148,27 +148,85 @@ proc fromFlatty*[T](s: string, i: var int, x: var seq[T]) =
       s.fromFlatty(i, j)
 
 # Objects
-proc toFlatty*(s: var string, x: object) =
-  when x.isObjectVariant:
-    s.toFlatty(x.discriminatorField)
-    for k, e in x.fieldPairs:
-      when k != x.discriminatorFieldName:
-        s.toFlatty(e)
-  else:
-    for e in x.fields:
-      s.toFlatty(e)
+macro toFlattyImpl(s: var string, x: object) =
 
-proc fromFlatty*(s: string, i: var int, x: var object) =
-  when x.isObjectVariant:
-    var discriminator: type(x.discriminatorField)
-    s.fromFlatty(i, discriminator)
-    new(x, discriminator)
-    for k, e in x.fieldPairs:
-      when k != x.discriminatorFieldName:
-        s.fromFlatty(i, e)
-  else:
-    for e in x.fields:
-      s.fromFlatty(i, e)
+  func impl(nodes: NimNode|seq[NimNode], s,x: NimNode): NimNode =
+    result = newStmtList()
+    var fields: seq[NimNode]
+    for node in nodes:
+      if node.kind == nnkRecCase:
+        let discriminatorField = node[0][0]
+        let discriminator = quote do: `x`.`discriminatorField`
+        result.add: quote do:
+          `s`.toFlatty(`discriminator`)
+
+        var caseStmt = nnkCaseStmt.newTree(discriminator)
+        for branch in node[1 .. ^1]:
+          caseStmt.add:
+            if branch.kind == nnkOfBranch:
+              if branch[1].kind == nnkRecList:
+                nnkOfBranch.newTree(branch[0], impl(branch[1], s,x))
+              else:
+                nnkOfBranch.newTree(branch[0], impl(branch[1..^1], s,x))
+            else:
+              if branch[0].kind == nnkRecList:
+                nnkElse.newTree(impl(branch[0], s,x))
+              else:
+                nnkElse.newTree(impl(branch, s,x))
+        result.add caseStmt
+
+      else:
+        fields.add node[0]
+
+    for field in fields:
+      result.add: quote do:
+        `s`.toFlatty(`x`.`field`)
+
+  impl(x.getTypeImpl[2], s,x)
+
+proc toFlatty*(s: var string, x: object) = toFlattyImpl(s, x)
+
+
+macro fromFlattyImpl(s: string, i: var int, x: var object) =
+
+  func impl(nodes: NimNode|seq[NimNode], s,i,x: NimNode): NimNode =
+    result = newStmtList()
+    var fields: seq[NimNode]
+    for node in nodes:
+      if node.kind == nnkRecCase:
+        let discriminatorField = node[0][0]
+        let discriminatorType = node[0][1]
+        let discriminator = genSym(nskVar, "discriminator")
+        result.add: quote do:
+          var `discriminator`: `discriminatorType`
+          `s`.fromFlatty(`i`, `discriminator`)
+          `x`.`discriminatorField` = `discriminator`
+
+        var caseStmt = nnkCaseStmt.newTree(discriminator)
+        for branch in node[1 .. ^1]:
+          caseStmt.add:
+            if branch.kind == nnkOfBranch:
+              if branch[1].kind == nnkRecList:
+                nnkOfBranch.newTree(branch[0], impl(branch[1], s,i,x))
+              else:
+                nnkOfBranch.newTree(branch[0], impl(branch[1..^1], s,i,x))
+            else:
+              if branch[0].kind == nnkRecList:
+                nnkElse.newTree(impl(branch[0], s,i,x))
+              else:
+                nnkElse.newTree(impl(branch, s,i,x))
+        result.add caseStmt
+
+      else:
+        fields.add node[0]
+        
+    for field in fields:
+      result.add: quote do:
+        `s`.fromFlatty(`i`, `x`.`field`)
+
+  impl(x.getTypeImpl[2], s,i,x)
+
+proc fromFlatty*(s: string, i: var int, x: var object) = fromFlattyImpl(s, i, x)
 
 # Distinct
 proc toFlatty*[T: distinct](s: var string, x: T) =

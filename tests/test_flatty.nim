@@ -218,6 +218,41 @@ block:
 var jsonNode = parseJson("{\"json\": true, \"count\":20}")
 doAssert jsonNode.toFlatty.fromFlatty(type(jsonNode)) == jsonNode
 
+# Complex Object variants
+type
+  ComplexVariantKind = enum cvkA, cvkB, cvkC
+  ComplexVariantSubKind = enum cvskA, cvskB
+  ComplexVariant = object
+    a: int
+    case kind: ComplexVariantKind
+    of cvkA: b: int
+    else:
+      case subKind: ComplexVariantSubKind
+      of cvskA: c: int
+      of cvskB:
+        d,e: int
+    case isSomething: bool
+    of true: f: int
+    else: discard
+
+block:
+  let
+    cv1 = ComplexVariant(a: 4, kind: cvkA, b: 2, isSomething: true, f: 0)
+    cv1Computed = cv1.toFlatty.fromFlatty(ComplexVariant)
+
+  doAssert cv1.a == cv1Computed.a
+  doAssert cv1.b == cv1Computed.b
+  doAssert cv1.f == cv1Computed.f
+
+  let
+    cv2 = ComplexVariant(a: 1, kind: cvkC, subKind: cvskB, d: 3, e: 3, isSomething: true, f: 7)
+    cv2Computed = cv2.toFlatty.fromFlatty(ComplexVariant)
+
+  doAssert cv2.a == cv2Computed.a
+  doAssert cv2.d == cv2Computed.d
+  doAssert cv2.e == cv2Computed.e
+  doAssert cv2.f == cv2Computed.f
+
 # Enum indexed array
 block:
   type Colors = enum
