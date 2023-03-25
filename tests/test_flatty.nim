@@ -12,6 +12,7 @@ doAssert '\n'.toFlatty.fromFlatty(char) == '\n'
 
 # Test numbers.
 doAssert 123.toFlatty.fromFlatty(int) == 123
+doAssert 123.uint.toFlatty.fromFlatty(uint) == 123
 doAssert 123.uint8.toFlatty.fromFlatty(uint8) == 123
 doAssert 123.uint16.toFlatty.fromFlatty(uint16) == 123
 doAssert 123.uint32.toFlatty.fromFlatty(uint32) == 123

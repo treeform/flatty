@@ -90,6 +90,10 @@ proc fromFlatty*(s: string, i: var int, x: var int64) =
   x = s.readInt64(i)
   i += 8
 
+proc fromFlatty*(s: string, i: var int, x: var uint) =
+  x = s.readUint64(i).uint
+  i += 8
+
 proc fromFlatty*(s: string, i: var int, x: var int) =
   x = s.readInt64(i).int
   i += 8
