@@ -1,0 +1,5 @@
+isObjectVariant	flatty/objvar.html#isObjectVariant.m,typed	objvar: isObjectVariant(v: typed): bool	
+discriminator	flatty/objvar.html#discriminator,NimNode	objvar: discriminator(v: NimNode): NimNode	
+discriminatorFieldName	flatty/objvar.html#discriminatorFieldName.m,typed	objvar: discriminatorFieldName(v: typed): untyped	
+discriminatorField	flatty/objvar.html#discriminatorField.m,typed	objvar: discriminatorField(v: typed): untyped	
+new	flatty/objvar.html#new.m,typed,typed	objvar: new(v: typed; d: typed): untyped	
