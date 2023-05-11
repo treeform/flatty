@@ -4,7 +4,7 @@
 
 ![Github Actions](https://github.com/treeform/flatty/workflows/Github%20Actions/badge.svg)
 
-[API reference](https://nimdocs.com/treeform/flatty)
+[API reference](https://treeform.github.io/flatty)
 
 This library has no dependencies other than the Nim standard library.
 
