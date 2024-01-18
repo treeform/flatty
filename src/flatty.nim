@@ -53,10 +53,20 @@ proc toFlatty*(s: var string, x: uint32) = s.addUint32(x)
 proc toFlatty*(s: var string, x: int32) = s.addInt32(x)
 proc toFlatty*(s: var string, x: uint64) = s.addUint64(x)
 proc toFlatty*(s: var string, x: int64) = s.addInt64(x)
-proc toFlatty*(s: var string, x: int) = s.addInt64(x)
-proc toFlatty*(s: var string, x: uint) = s.addUInt64(x)
 proc toFlatty*(s: var string, x: float32) = s.addFloat32(x)
 proc toFlatty*(s: var string, x: float64) = s.addFloat64(x)
+
+proc toFlatty*(s: var string, x: int) =
+  when sizeof(int) == 4:
+    s.addInt32(x)
+  else:
+    s.addInt64(x)
+
+proc toFlatty*(s: var string, x: uint) =
+  when sizeof(int) == 4:
+    s.addUInt32(x)
+  else:
+    s.addUInt64(x)
 
 proc fromFlatty*(s: string, i: var int, x: var uint8) =
   x = s.readUint8(i)
@@ -91,12 +101,20 @@ proc fromFlatty*(s: string, i: var int, x: var int64) =
   i += 8
 
 proc fromFlatty*(s: string, i: var int, x: var int) =
-  x = s.readInt64(i).int
-  i += 8
+  when sizeof(int) == 4:
+    x = s.readInt32(i).int
+    i += 4
+  else:
+    x = s.readInt64(i).int
+    i += 8
 
 proc fromFlatty*(s: string, i: var int, x: var uint) =
-  x = s.readUInt64(i).uint
-  i += 8
+  when sizeof(int) == 4:
+    x = s.readUInt32(i).uint
+    i += 4
+  else:
+    x = s.readUInt64(i).uint
+    i += 8
 
 proc fromFlatty*(s: string, i: var int, x: var float32) =
   x = s.readFloat32(i)
