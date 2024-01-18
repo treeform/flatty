@@ -4,4 +4,4 @@ description   = "Flatty - tools and serializer for plain flat binary files."
 license       = "MIT"
 srcDir        = "src"
 
-requires "nim >= 1.2.0"
+requires "nim >= 1.4.0"
