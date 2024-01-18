@@ -67,6 +67,7 @@ jobs:
       run: choosenim ${{ matrix.nim-version }}
 
     - name: Run tests
+      shell: bash -eo pipefail
       run: |
         cd "${{ github.event.repository.name }}"
         # List test files here
