@@ -12,6 +12,7 @@ doAssert '\n'.toFlatty.fromFlatty(char) == '\n'
 
 # Test numbers.
 doAssert 123.toFlatty.fromFlatty(int) == 123
+doAssert 123.uint.toFlatty.fromFlatty(uint) == 123.uint
 doAssert 123.uint8.toFlatty.fromFlatty(uint8) == 123
 doAssert 123.uint16.toFlatty.fromFlatty(uint16) == 123
 doAssert 123.uint32.toFlatty.fromFlatty(uint32) == 123
@@ -252,45 +253,6 @@ block:
     ]
   )
   doAssert a.toFlatty.fromFlatty(a.type) == a
-
-block:
-  # https://github.com/treeform/flatty/issues/22
-  type
-    Direction = enum North, South, East, West
-    DirRange = range[North..West]
-    RangeT = range[1..10]
-    RangeU = range[1.0..10.0]
-    Thing = object
-      name: string
-      X: RangeT
-      Y: RangeU
-      Z: DirRange
-
-  var aDirection = North
-  doAssert toFlatty(aDirection).fromFlatty(Direction) == aDirection
-
-  var aDirRange = DirRange(North)
-  doAssert toFlatty(aDirRange).fromFlatty(DirRange) == aDirRange
-
-  var aRangeT = RangeT(2)
-  doAssert toFlatty(aRangeT).fromFlatty(RangeT) == aRangeT
-
-  var aRangeU = RangeU(3.14)
-  doAssert toFlatty(aRangeU).fromFlatty(RangeU) == aRangeU
-
-  let u = @[
-    Thing(name: "hi", X: 1.RangeT, Y: 1.0.RangeU, Z: North.DirRange),
-    Thing(name: "bye", X: 2.RangeT, Y: 2.0.RangeU, Z: West.DirRange)
-  ]
-  let binaryData = toFlatty(u)
-  let u2 = binaryData.fromFlatty(seq[Thing])
-
-  doAssert u2[0].X == 1
-  doAssert u2[0].Y == 1.0
-  doAssert u2[0].Z == North
-  doAssert u2[1].X == 2
-  doAssert u2[1].Y == 2.0
-  doAssert u2[1].Z == West
 
 block:
   # Sets

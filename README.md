@@ -1,6 +1,7 @@
 # Flatty - serializer and tools for flat binary blobs.
 
-`nimble install flatty`
+* `atlas use flatty`
+* `nimble install flatty`
 
 ![Github Actions](https://github.com/treeform/flatty/workflows/Github%20Actions/badge.svg)
 

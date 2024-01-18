@@ -17,8 +17,6 @@ proc toFlatty*[K](s: var string, x: CountTable[K])
 proc toFlatty*[N, T](s: var string, x: array[N, T])
 proc toFlatty*[T: tuple](s: var string, x: T)
 proc toFlatty*[T](s: var string, x: ref T)
-proc toFlatty*[T: range and float](s: var string, x: T)
-proc toFlatty*[T: range and int](s: var string, x: T)
 
 proc fromFlatty*[T](s: string, i: var int, x: var seq[T])
 proc fromFlatty*(s: string, i: var int, x: var object)
@@ -58,6 +56,18 @@ proc toFlatty*(s: var string, x: int64) = s.addInt64(x)
 proc toFlatty*(s: var string, x: float32) = s.addFloat32(x)
 proc toFlatty*(s: var string, x: float64) = s.addFloat64(x)
 
+proc toFlatty*(s: var string, x: int) =
+  when sizeof(int) == 4:
+    s.addInt32(x)
+  else:
+    s.addInt64(x)
+
+proc toFlatty*(s: var string, x: uint) =
+  when sizeof(int) == 4:
+    s.addUInt32(x)
+  else:
+    s.addUInt64(x)
+
 proc fromFlatty*(s: string, i: var int, x: var uint8) =
   x = s.readUint8(i)
   i += 1
@@ -91,8 +101,20 @@ proc fromFlatty*(s: string, i: var int, x: var int64) =
   i += 8
 
 proc fromFlatty*(s: string, i: var int, x: var int) =
-  x = s.readInt64(i).int
-  i += 8
+  when sizeof(int) == 4:
+    x = s.readInt32(i).int
+    i += 4
+  else:
+    x = s.readInt64(i).int
+    i += 8
+
+proc fromFlatty*(s: string, i: var int, x: var uint) =
+  when sizeof(int) == 4:
+    x = s.readUInt32(i).uint
+    i += 4
+  else:
+    x = s.readUInt64(i).uint
+    i += 8
 
 proc fromFlatty*(s: string, i: var int, x: var float32) =
   x = s.readFloat32(i)
@@ -103,10 +125,10 @@ proc fromFlatty*(s: string, i: var int, x: var float64) =
   i += 8
 
 # Enums
-proc toFlatty*[T: enum](s: var string, x: T) =
+proc toFlatty*[T: enum and not range](s: var string, x: T) =
   s.addInt64(x.int)
 
-proc fromFlatty*[T: enum](s: string, i: var int, x: var T) =
+proc fromFlatty*[T: enum and not range](s: string, i: var int, x: var T) =
   x = cast[T](s.readInt64(i))
   i += 8
 
@@ -258,13 +280,6 @@ proc fromFlatty*[T](s: string, i: var int, x: var ref T) =
   if not isNil:
     new(x)
     s.fromFlatty(i, x[])
-
-# Range
-proc toFlatty*[T: range and float](s: var string, x: T) =
-  s.toFlatty(x.float)
-
-proc toFlatty*[T: range and int](s: var string, x: T) =
-  s.toFlatty(x.int)
 
 # Sets
 proc toFlatty*[T](s: var string, x: SomeSet[T]) =
