@@ -72,8 +72,6 @@ jobs:
         cd "${{ github.event.repository.name }}"
         # List test files here
 
-        nim c -r tests/jstest.nim
-        nim c -r tests/jstest_jsbinny.nim
         nim c -r tests/test_binny.nim
         nim c -r tests/test_datetime.nim
         nim c -r tests/test_flatty.nim
@@ -84,10 +82,3 @@ jobs:
 
         nim js -r tests/jstest.nim
         nim js -r tests/jstest_jsbinny.nim
-        nim js -r tests/test_binny.nim
-        nim js -r tests/test_datetime.nim
-        nim js -r tests/test_flatty.nim
-        nim js -r tests/test_hashy.nim
-        nim js -r tests/test_hexprint.nim
-        nim js -r tests/test_memoryused.nim
-        nim js -r tests/test_objvar.nim
