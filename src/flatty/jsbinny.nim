@@ -93,11 +93,11 @@ func addInt32*(s: var Buffer, i: int32) {.inline.} =
 func readUint64*(s: Buffer, i: int): uint64 {.inline.} =
     {.emit: """
     var uintArray = new Uint8Array(8);
-    for(j = 0; j < 8; j++){
+    for(let j = 0; j < 8; j++){
       uintArray[j] = `s`[`i` + j];
     }
     var uint64Array = new BigUint64Array(uintArray.buffer);
-    return Number(uint64Array[0]);
+    if (true) return Number(uint64Array[0]);
   """.}
 
 func writeUint64*(s: Buffer, i: int, v: uint64) {.inline.} =
@@ -105,7 +105,7 @@ func writeUint64*(s: Buffer, i: int, v: uint64) {.inline.} =
     var uint64Array = new BigUint64Array(1);
     uint64Array[0] = BigInt(`v`);
     var uintArray = new Uint8Array(uint64Array.buffer);
-    for(j = 0; j < 8; j++){
+    for(let j = 0; j < 8; j++){
       `s`[`i` + j] = uintArray[j];
     }
   """.}
@@ -115,7 +115,7 @@ func addUint64*(s: var Buffer, v: uint64) {.inline.} =
     var uint64Array = new BigUint64Array(1);
     uint64Array[0] = BigInt(`v`);
     var uintArray = new Uint8Array(uint64Array.buffer);
-    for(j = 0; j < 8; j++){
+    for(let j = 0; j < 8; j++){
       `s`.push(uintArray[j]);
     }
   """.}
@@ -123,11 +123,11 @@ func addUint64*(s: var Buffer, v: uint64) {.inline.} =
 func readInt64*(s: Buffer, i: int): int64 {.inline.} =
     {.emit: """
     var uintArray = new Uint8Array(8);
-    for(j = 0; j < 8; j++){
+    for(let j = 0; j < 8; j++){
       uintArray[j] = `s`[`i` + j];
     }
     var uint64Array = new BigInt64Array(uintArray.buffer);
-    return Number(uint64Array[0]);
+    if (true) return Number(uint64Array[0]);
   """.}
 
 func writeInt64*(s: Buffer, i: int, v: int64) {.inline.} =
@@ -135,7 +135,7 @@ func writeInt64*(s: Buffer, i: int, v: int64) {.inline.} =
     var uint64Array = new BigInt64Array(1);
     uint64Array[0] = BigInt(`v`);
     var uintArray = new Uint8Array(uint64Array.buffer);
-    for(j = 0; j < 8; j++){
+    for(let j = 0; j < 8; j++){
       `s`[`i` + j] = uintArray[j];
     }
   """.}
@@ -145,7 +145,7 @@ func addInt64*(s: var Buffer, v: int64) {.inline.} =
     var uint64Array = new BigInt64Array(1);
     uint64Array[0] = BigInt(`v`);
     var uintArray = new Uint8Array(uint64Array.buffer);
-    for(j = 0; j < 8; j++){
+    for(let j = 0; j < 8; j++){
       `s`.push(uintArray[j]);
     }
   """.}
@@ -153,11 +153,11 @@ func addInt64*(s: var Buffer, v: int64) {.inline.} =
 func readFloat32*(s: Buffer, i: int): float32 {.inline.} =
     {.emit: """
     var uintArray = new Uint8Array(4);
-    for(j = 0; j < 4; j++){
+    for(let j = 0; j < 4; j++){
       uintArray[j] = `s`[`i` + j];
     }
     var float32Array = new Float32Array(uintArray.buffer);
-    return float32Array[0];
+    if (true) return float32Array[0];
   """.}
 
 func writeFloat32*(s: Buffer, i: int, v: float32) {.inline.} =
@@ -165,7 +165,7 @@ func writeFloat32*(s: Buffer, i: int, v: float32) {.inline.} =
     var float32Array = new Float32Array(1);
     float32Array[0] = `v`;
     var uintArray = new Uint8Array(float32Array.buffer);
-    for(j = 0; j < 4; j++){
+    for(let j = 0; j < 4; j++){
       `s`[`i` + j] = uintArray[j];
     }
   """.}
@@ -175,7 +175,7 @@ func addFloat32*(s: var Buffer, v: float32) {.inline.} =
     var float32Array = new Float32Array(1);
     float32Array[0] = `v`;
     var uintArray = new Uint8Array(float32Array.buffer);
-    for(j = 0; j < 4; j++){
+    for(let j = 0; j < 4; j++){
       `s`.push(uintArray[j]);
     }
   """.}
@@ -183,11 +183,11 @@ func addFloat32*(s: var Buffer, v: float32) {.inline.} =
 func readFloat64*(s: Buffer, i: int): float64 {.inline.} =
     {.emit: """
     var uintArray = new Uint8Array(8);
-    for(j = 0; j < 8; j++){
+    for(let j = 0; j < 8; j++){
       uintArray[j] = `s`[`i` + j];
     }
     var float64Array = new Float64Array(uintArray.buffer);
-    return float64Array[0];
+    if (true) return float64Array[0];
   """.}
 
 func writeFloat64*(s: Buffer, i: int, v: float64) {.inline.} =
@@ -195,7 +195,7 @@ func writeFloat64*(s: Buffer, i: int, v: float64) {.inline.} =
     var float64Array = new Float64Array(1);
     float64Array[0] = `v`;
     var uintArray = new Uint8Array(float64Array.buffer);
-    for(j = 0; j < 8; j++){
+    for(let j = 0; j < 8; j++){
       `s`[`i` + j] = uintArray[j];
     }
   """.}
@@ -205,7 +205,7 @@ func addFloat64*(s: var Buffer, v: float64) {.inline.} =
     var float64Array = new Float64Array(1);
     float64Array[0] = `v`;
     var uintArray = new Uint8Array(float64Array.buffer);
-    for(j = 0; j < 8; j++){
+    for(let j = 0; j < 8; j++){
       `s`.push(uintArray[j]);
     }
   """.}
