@@ -8,7 +8,6 @@ when defined(js):
 else:
   import flatty/binny
 
-
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 type SomeSet[A] = set[A] | HashSet[A] | OrderedSet[A]
 
