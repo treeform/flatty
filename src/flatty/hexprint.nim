@@ -1,7 +1,6 @@
-import strutils
+import std/strutils
 
 when defined(js):
-
   proc hexPrint*(buf: string): string =
     ## Prints a string in hex format of the old DOS debug program.
     ## Useful for looking at binary dumps.
@@ -41,7 +40,6 @@ when defined(js):
       result.add("\n")
 
 else:
-
   proc hexPrint*(p: ptr uint8, len: int, startAddress = 0): string =
     ## Prints a string in hex format of the old DOS debug program.
     ## Useful for looking at binary dumps.

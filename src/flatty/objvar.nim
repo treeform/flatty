@@ -1,4 +1,4 @@
-import macros
+import std/macros
 
 proc hasKind(node: NimNode, kind: NimNodeKind): bool =
   for c in node.children:

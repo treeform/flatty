@@ -1,6 +1,8 @@
 ## Hash functions based on flatty, hash any nested object.
 
-import flatty/objvar, typetraits
+import 
+  std/typetraits,
+  flatty/objvar
 
 {.push overflowChecks: off.}
 
