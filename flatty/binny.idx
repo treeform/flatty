@@ -54,15 +54,15 @@ nim	swap	flatty/binny.html#swap,int64	proc swap(v: int64): int64		167
 nim	swap	flatty/binny.html#swap,int	proc swap(v: int): int		170
 nim	maybeSwap	flatty/binny.html#maybeSwap,T,bool	proc maybeSwap[T](v: T; enable: bool): T		178
 nimgrp	readuint8	flatty/binny.html#readUint8-procs-all	proc		5
-nimgrp	readint8	flatty/binny.html#readInt8-procs-all	proc		44
-nimgrp	addstr	flatty/binny.html#addStr-procs-all	proc		98
-nimgrp	readfloat32	flatty/binny.html#readFloat32-procs-all	proc		80
-nimgrp	swap	flatty/binny.html#swap-procs-all	proc		146
 nimgrp	readint16	flatty/binny.html#readInt16-procs-all	proc		53
-nimgrp	readuint16	flatty/binny.html#readUint16-procs-all	proc		14
-nimgrp	readint64	flatty/binny.html#readInt64-procs-all	proc		71
 nimgrp	readfloat64	flatty/binny.html#readFloat64-procs-all	proc		89
-nimgrp	readuint64	flatty/binny.html#readUint64-procs-all	proc		34
-nimgrp	readstr	flatty/binny.html#readStr-procs-all	proc		101
-nimgrp	readuint32	flatty/binny.html#readUint32-procs-all	proc		24
+nimgrp	swap	flatty/binny.html#swap-procs-all	proc		146
+nimgrp	addstr	flatty/binny.html#addStr-procs-all	proc		98
+nimgrp	readint8	flatty/binny.html#readInt8-procs-all	proc		44
+nimgrp	readint64	flatty/binny.html#readInt64-procs-all	proc		71
+nimgrp	readfloat32	flatty/binny.html#readFloat32-procs-all	proc		80
 nimgrp	readint32	flatty/binny.html#readInt32-procs-all	proc		62
+nimgrp	readstr	flatty/binny.html#readStr-procs-all	proc		101
+nimgrp	readuint64	flatty/binny.html#readUint64-procs-all	proc		34
+nimgrp	readuint16	flatty/binny.html#readUint16-procs-all	proc		14
+nimgrp	readuint32	flatty/binny.html#readUint32-procs-all	proc		24

@@ -52,5 +52,5 @@ nim	fromFlatty	flatty.html#fromFlatty,string,int,string	proc fromFlatty(s: strin
 nim	toFlatty	flatty.html#toFlatty,string,SomeSet[T]	proc toFlatty[T](s: var string; x: SomeSet[T])		285
 nim	fromFlatty	flatty.html#fromFlatty,string,int,SomeSet[T]	proc fromFlatty[T](s: string; i: var int; x: var SomeSet[T])		290
 nim	toFlatty	flatty.html#toFlatty,T	proc toFlatty[T](x: T): string		299
-nimgrp	fromflatty	flatty.html#fromFlatty-procs-all	proc		21
 nimgrp	toflatty	flatty.html#toFlatty-procs-all	proc		12
+nimgrp	fromflatty	flatty.html#fromFlatty-procs-all	proc		21
