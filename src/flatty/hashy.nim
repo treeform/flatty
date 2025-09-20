@@ -1,6 +1,8 @@
 ## Hash functions based on flatty, hash any nested object.
 
-import flatty, hashes
+import 
+  std/hashes,
+  flatty
 
 export Hash
 

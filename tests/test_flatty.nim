@@ -1,4 +1,6 @@
-import flatty, intsets, json, tables, sets, flatty/hexprint
+import 
+  std/[intsets, json, tables, sets],
+  flatty
 
 # Test booleans.
 doAssert true.toFlatty.fromFlatty(bool) == true

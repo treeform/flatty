@@ -1,9 +1,12 @@
 ## Convert any Nim objects, numbers, strings, refs to and from binary format.
+import 
+  std/[tables, typetraits, sets],
+  flatty/objvar
+  
 when defined(js):
   import flatty/jsbinny
 else:
   import flatty/binny
-import flatty/objvar, tables, typetraits, sets, sequtils
 
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 type SomeSet[A] = set[A] | HashSet[A] | OrderedSet[A]
@@ -43,7 +46,7 @@ proc toFlatty*(s: var string, x: char) =
 proc fromFlatty*(s: string, i: var int, x: var char) =
   x = s.readUint8(i).char
   i += 1
-
+  
 # Numbers
 proc toFlatty*(s: var string, x: uint8) = s.addUint8(x)
 proc toFlatty*(s: var string, x: int8) = s.addInt8(x)

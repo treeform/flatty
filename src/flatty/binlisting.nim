@@ -1,8 +1,8 @@
 ## Takes bin-listing in ASCII format and turns them into real binary.
-import parseutils, strutils
+import std/[parseutils, strutils]
 
 proc decodeBinListing*(text: string): string =
-
+  ## Takes bin-listing in ASCII format and turns them into real binary.
   for line in text.split("\n"):
     let line = line.strip()
     if line == "": continue

@@ -1,4 +1,4 @@
-import unicode
+import std/unicode
 
 proc maybeSwap(u: uint16, swap: bool): uint16 =
   ## Swaps from big endian to little endian if swap is true.
