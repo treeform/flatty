@@ -1,4 +1,4 @@
-import benchy, bingod, flatty, frosty, jsony, marshal, random, streams
+import benchy, bingo, flatty, frosty/streams, jsony, random, streams
 
 type Node = ref object
   active: bool
@@ -24,44 +24,54 @@ proc genTree(depth: int): Node =
       result.kids.add nil
 
 var tree = genTree(10)
+var stringSink: string
+var nodeSink: Node
+var intSink: int
 
 echo genId, " node tree:"
 
 echo "Serialize speed"
 timeIt "treeform/flatty", 100:
-  keep tree.toFlatty()
+  stringSink = tree.toFlatty()
+  intSink += stringSink.len
 
-timeIt "bingod/planetis-m", 100:
+timeIt "bingo/planetis-m", 100:
   let s = newStringStream()
-  bingod.storeBin(s, tree)
-  keep s.data
+  bingo.storeBin(s, tree)
+  stringSink = s.data
+  intSink += stringSink.len
 
 timeIt "disruptek/frosty", 100:
-  keep tree.freeze()
+  stringSink = tree.freeze()
+  intSink += stringSink.len
 
 # super slow
 # timeIt "std/marshal", 100:
 #   keep marshal.`$$`(tree)
 
 timeIt "treeform/jsony", 100:
-  keep tree.toJson()
+  stringSink = tree.toJson()
+  intSink += stringSink.len
 
 echo "Deserialize speed"
 
 var treeBin = tree.toFlatty()
 timeIt "treeform/flatty", 100:
-  keep treeBin.fromFlatty(Node)
+  nodeSink = treeBin.fromFlatty(Node)
+  intSink += nodeSink.kids.len
 
 let s = newStringStream()
-bingod.storeBin(s, tree)
-let bingodBin = s.data
-timeIt "bingod/planetis-m binTo", 100:
-  let s = newStringStream(bingodBin)
-  keep s.binTo(Node)
+bingo.storeBin(s, tree)
+let bingoBin = s.data
+timeIt "bingo/planetis-m binTo", 100:
+  let s = newStringStream(bingoBin)
+  nodeSink = s.binTo(Node)
+  intSink += nodeSink.kids.len
 
 var treeFrosityBin = tree.freeze()
 timeIt "disruptek/frosty", 100:
-  keep thaw[Node](treeFrosityBin)
+  nodeSink = thaw[Node](treeFrosityBin)
+  intSink += nodeSink.kids.len
 
 # super slow
 # var treeMarshalBin = $$tree
@@ -70,4 +80,7 @@ timeIt "disruptek/frosty", 100:
 
 var treeJsanyBin = tree.toJson()
 timeIt "treeform/jsony", 100:
-  keep treeJsanyBin.fromJson(Node)
+  nodeSink = treeJsanyBin.fromJson(Node)
+  intSink += nodeSink.kids.len
+
+echo "sink: ", intSink
