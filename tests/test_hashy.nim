@@ -1,4 +1,7 @@
-import flatty/hashy
+when defined(js):
+  import flatty/jshashy
+else:
+  import flatty/hashy
 
 echo hashy(1.int8)
 echo hashy(1.uint8)
