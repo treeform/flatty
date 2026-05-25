@@ -48,6 +48,12 @@ treeform/jsony .................... 11.199 ms     14.036 ms    +/-1.773   x100
 
 Flatty supports Nim's `js` mode. Some features like `uint64`/`int64` are supported badly because of Nim's limitations. Serializing of non-Nim JavaScript objects is not supported.
 
+## Integer Width Modes
+
+By default, Flatty serializes Nim's default `int`, `uint`, and container lengths using the target's native `int` width. A 32-bit target uses 32-bit values, and a 64-bit target uses 64-bit values.
+
+You can force a specific width with `-d:flatty32` or `-d:flatty64`. Use the same mode when reading and writing a blob. Fixed-width types like `int32`, `uint32`, `int64`, and `uint64` are not affected by these modes.
+
 ## Versioning
 
 Note, unlike `protobuf` or `thirft`, `flatty` has no versioning mechanism, if structure of your objects changes the resulting binary would be changed and could not be read back again. Because the schema is just plain Nim types, you need to make sure changing them does not impact your ability to read old flatty binary blobs.

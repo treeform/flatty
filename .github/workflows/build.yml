@@ -27,6 +27,10 @@ jobs:
           nimby install -g "${{ github.event.repository.name }}/${{ github.event.repository.name }}.nimble"
       - name: Run native tests
         run: nim r tests/tests.nim
+      - name: Run flatty32 tests
+        run: nim r -d:flatty32 tests/tests.nim
+      - name: Run flatty64 tests
+        run: nim r -d:flatty64 tests/tests.nim
       - name: Run JavaScript tests with Node
         run: nim js -r tests/tests.nim
       - name: Run JavaScript tests in strict mode

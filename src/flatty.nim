@@ -12,6 +12,17 @@ else:
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 type SomeSet[A] = set[A] | HashSet[A] | OrderedSet[A]
 
+when defined(flatty32) and defined(flatty64):
+  {.error: "flatty32 and flatty64 cannot both be defined".}
+
+const FlattyIntSize =
+  when defined(flatty32):
+    4
+  elif defined(flatty64):
+    8
+  else:
+    sizeof(int)
+
 when not defined(js):
   type UnsupportedHandle = AsyncFD | SocketHandle
 
@@ -25,8 +36,35 @@ func skipsFlattyCopyMem[T](_: typedesc[T]): bool =
   else:
     T is UnsupportedHandle
 
+func hasModeInt[T](_: typedesc[T]): bool =
+  when (T is int) or (T is uint):
+    true
+  elif T is distinct:
+    typeof(default(T).distinctBase).hasModeInt
+  elif T is object:
+    when default(T).isObjectVariant:
+      true
+    else:
+      block:
+        var found {.compileTime.} = false
+        for field in default(T).fields:
+          found = found or typeof(field).hasModeInt
+        found
+  elif T is tuple:
+    block:
+      var found {.compileTime.} = false
+      for field in default(T).fields:
+        found = found or typeof(field).hasModeInt
+      found
+  elif T is array:
+    typeof(default(T)[low(T)]).hasModeInt
+  else:
+    false
+
 func copyable[T](_: typedesc[T]): bool =
   when not T.supportsCopyMem:
+    false
+  elif FlattyIntSize != sizeof(int) and T.hasModeInt:
     false
   elif skipsFlattyCopyMem(T):
     false
@@ -53,6 +91,46 @@ func copyable[T](_: typedesc[T]): bool =
     typeof(default(T)[low(T)]).copyable
   else:
     true
+
+template writeFlattyInt(s: var string, i: int, x: int) =
+  when FlattyIntSize == 4:
+    s.writeInt32(i, x.int32)
+  else:
+    s.writeInt64(i, x.int64)
+
+template addFlattyInt(s: var string, x: int) =
+  when FlattyIntSize == 4:
+    s.addInt32(x.int32)
+  else:
+    s.addInt64(x.int64)
+
+template addFlattyUInt(s: var string, x: uint) =
+  when FlattyIntSize == 4:
+    s.addUint32(x.uint32)
+  else:
+    s.addUint64(x.uint64)
+
+template readFlattyInt(s: string, i: var int): untyped =
+  block:
+    when FlattyIntSize == 4:
+      let value = s.readInt32(i).int
+      i += 4
+      value
+    else:
+      let value = s.readInt64(i).int
+      i += 8
+      value
+
+template readFlattyUInt(s: string, i: var int): untyped =
+  block:
+    when FlattyIntSize == 4:
+      let value = s.readUint32(i).uint
+      i += 4
+      value
+    else:
+      let value = s.readUint64(i).uint
+      i += 8
+      value
 
 # Forward declarations.
 proc toFlatty*[T](s: var string, x: seq[T])
@@ -150,16 +228,10 @@ proc toFlatty*(s: var string, x: float32) = s.addFloat32(x)
 proc toFlatty*(s: var string, x: float64) = s.addFloat64(x)
 
 proc toFlatty*(s: var string, x: int) =
-  when sizeof(int) == 4:
-    s.addInt32(x)
-  else:
-    s.addInt64(x)
+  s.addFlattyInt(x)
 
 proc toFlatty*(s: var string, x: uint) =
-  when sizeof(int) == 4:
-    s.addUInt32(x)
-  else:
-    s.addUInt64(x)
+  s.addFlattyUInt(x)
 
 proc fromFlatty*(s: string, i: var int, x: var uint8) =
   x = s.readUint8(i)
@@ -194,20 +266,10 @@ proc fromFlatty*(s: string, i: var int, x: var int64) =
   i += 8
 
 proc fromFlatty*(s: string, i: var int, x: var int) =
-  when sizeof(int) == 4:
-    x = s.readInt32(i).int
-    i += 4
-  else:
-    x = s.readInt64(i).int
-    i += 8
+  x = s.readFlattyInt(i)
 
 proc fromFlatty*(s: string, i: var int, x: var uint) =
-  when sizeof(int) == 4:
-    x = s.readUInt32(i).uint
-    i += 4
-  else:
-    x = s.readUInt64(i).uint
-    i += 8
+  x = s.readFlattyUInt(i)
 
 proc fromFlatty*(s: string, i: var int, x: var float32) =
   x = s.readFloat32(i)
@@ -227,12 +289,11 @@ proc fromFlatty*[T: enum and not range](s: string, i: var int, x: var T) =
 
 # Strings
 proc toFlatty*(s: var string, x: string) =
-  s.addInt64(x.len)
+  s.addFlattyInt(x.len)
   s.add(x)
 
 proc fromFlatty*(s: string, i: var int, x: var string) =
-  let len = s.readInt64(i).int
-  i += 8
+  let len = s.readFlattyInt(i)
   when defined(js):
     x = s[i ..< i + len]
   else:
@@ -247,18 +308,17 @@ proc toFlatty*[T](s: var string, x: seq[T]) =
     let
       oldLen = s.len
       byteLen = x.len * sizeof(T)
-    s.setLen(oldLen + 8 + byteLen)
-    s.writeInt64(oldLen, x.len.int64)
+    s.setLen(oldLen + FlattyIntSize + byteLen)
+    s.writeFlattyInt(oldLen, x.len)
     if byteLen > 0:
-      copyMem(s[oldLen + 8].addr, x[0].unsafeAddr, byteLen)
+      copyMem(s[oldLen + FlattyIntSize].addr, x[0].unsafeAddr, byteLen)
   else:
-    s.addInt64(x.len.int64)
+    s.addFlattyInt(x.len)
     for e in x:
       s.toFlatty(e)
 
 proc fromFlatty*[T](s: string, i: var int, x: var seq[T]) =
-  let len = s.readInt64(i).int
-  i += 8
+  let len = s.readFlattyInt(i)
   when not defined(js) and T.copyable:
     when declared(setLenUninit):
       x.setLenUninit(len)
@@ -309,7 +369,7 @@ proc fromFlatty*[T: distinct](s: string, i: var int, x: var T) =
 
 # Tables
 proc toTableLike[T](s: var string, K: type, V: type, x: T) {.inline.} =
-  s.addInt64(x.len.int64)
+  s.addFlattyInt(x.len)
   for k, v in x:
     s.toFlatty(k)
     s.toFlatty(v)
@@ -317,8 +377,7 @@ proc toTableLike[T](s: var string, K: type, V: type, x: T) {.inline.} =
 proc fromTableLike[T](
     s: string, i: var int, K: type, V: type, x: var T
 ) {.inline.} =
-  let len = s.readInt64(i).int
-  i += 8
+  let len = s.readFlattyInt(i)
   when T is Table[K, V]:
     x = initTable[K, V](len)
   elif T is OrderedTable[K, V]:
@@ -392,13 +451,12 @@ proc fromFlatty*[T](s: string, i: var int, x: var ref T) =
 
 # Sets
 proc toFlatty*[T](s: var string, x: SomeSet[T]) =
-  s.addInt64(x.card.int64)
+  s.addFlattyInt(x.card)
   for e in x:
     s.toFlatty(e)
 
 proc fromFlatty*[T](s: string, i: var int, x: var SomeSet[T]) =
-  let len = s.readInt64(i).int
-  i += 8
+  let len = s.readFlattyInt(i)
   when x is HashSet[T]:
     x = initHashSet[T](len)
   elif x is OrderedSet[T]:
