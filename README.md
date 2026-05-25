@@ -31,17 +31,19 @@ Benchmark below serializes and deserializes a 11125 node tree.
 ### Serialize speed
 ```
 name ............................... min time      avg time    std dv   runs
-treeform/flatty .................... 2.157 ms      2.319 ms    +/-0.147   x100
-bingo/planetis-m ................... 2.527 ms      2.599 ms    +/-0.055   x100
-disruptek/frosty ................... 5.779 ms      5.942 ms    +/-0.101   x100
-treeform/jsony ..................... 9.147 ms      9.361 ms    +/-0.165   x100
+treeform/flatty .................... 2.265 ms      2.413 ms    +/-0.114   x100
+bingo/planetis-m ................... 2.632 ms      2.705 ms    +/-0.056   x100
+disruptek/frosty ................... 6.280 ms      6.532 ms    +/-0.142   x100
+std/marshal ....................... 85.178 ms     93.228 ms    +/-9.956   x100
+treeform/jsony ..................... 9.618 ms     10.835 ms    +/-1.276   x100
 ```
 ### Deserialize speed
 ```
-treeform/flatty .................... 2.625 ms      3.503 ms    +/-0.206   x100
-bingo/planetis-m binTo ............. 4.796 ms      6.300 ms    +/-1.463   x100
-disruptek/frosty ................... 8.879 ms     11.549 ms    +/-2.227   x100
-treeform/jsony .................... 11.199 ms     14.036 ms    +/-1.773   x100
+treeform/flatty .................... 2.643 ms      4.285 ms    +/-0.597   x100
+bingo/planetis-m binTo ............. 5.735 ms      5.969 ms    +/-0.132   x100
+disruptek/frosty ................... 9.529 ms      9.959 ms    +/-0.290   x100
+std/marshal ...................... 148.723 ms    155.663 ms    +/-4.763   x100
+treeform/jsony .................... 12.023 ms     13.514 ms    +/-1.143   x100
 ```
 
 ## JavaScript

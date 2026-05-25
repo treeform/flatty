@@ -1,4 +1,4 @@
-import benchy, bingo, flatty, frosty/streams, jsony, random, streams
+import benchy, bingo, flatty, frosty/streams, jsony, marshal, random, streams
 
 type Node = ref object
   active: bool
@@ -56,9 +56,9 @@ timeIt "disruptek/frosty", 100:
   stringSink = tree.freeze()
   intSink += stringSink.len
 
-# super slow
-# timeIt "std/marshal", 100:
-#   keep marshal.`$$`(tree)
+timeIt "std/marshal", 100:
+  stringSink = marshal.`$$`(tree)
+  intSink += stringSink.len
 
 timeIt "treeform/jsony", 100:
   stringSink = tree.toJson()
@@ -84,10 +84,10 @@ timeIt "disruptek/frosty", 100:
   nodeSink = thaw[Node](treeFrosityBin)
   intSink += nodeSink.kids.len + nodeSink.payload.len + int(nodeSink.u16s[0])
 
-# super slow
-# var treeMarshalBin = $$tree
-# timeIt "std/marshal", 100:
-#   keep marshal.to[Node](treeMarshalBin)
+var treeMarshalBin = marshal.`$$`(tree)
+timeIt "std/marshal", 100:
+  nodeSink = marshal.to[Node](treeMarshalBin)
+  intSink += nodeSink.kids.len + nodeSink.payload.len + int(nodeSink.u16s[0])
 
 var treeJsanyBin = tree.toJson()
 timeIt "treeform/jsony", 100:
