@@ -1,6 +1,9 @@
-import 
-  std/[intsets, json, tables, sets],
+import
+  std/[intsets, json, options, tables, sets],
   flatty
+
+when not defined(js):
+  import std/[asyncdispatch, nativesockets]
 
 # Test booleans.
 doAssert true.toFlatty.fromFlatty(bool) == true
@@ -23,6 +26,8 @@ doAssert 123.int8.toFlatty.fromFlatty(int8) == 123
 doAssert 123.int16.toFlatty.fromFlatty(int16) == 123
 doAssert 123.int32.toFlatty.fromFlatty(int32) == 123
 doAssert 123.int64.toFlatty.fromFlatty(int64) == 123
+doAssert cint(123).toFlatty.fromFlatty(cint) == cint(123)
+doAssert cuint(123).toFlatty.fromFlatty(cuint) == cuint(123)
 
 doAssert 123.25.toFlatty.fromFlatty(float) == 123.25
 doAssert $(123.25.float32).toFlatty.fromFlatty(float32) == "123.25"
@@ -68,6 +73,21 @@ type Foo = object
 
 let foo = Foo(id: 32, name: "yes", time: 16.77, active: true)
 doAssert foo.toFlatty().fromFlatty(Foo) == foo
+
+# Test odd Nim object field identifiers.
+type FooBar = object
+  `Foo Bar`: string
+
+let fooBar = FooBar(`Foo Bar`: "Hello World")
+doAssert fooBar.toFlatty.fromFlatty(FooBar) == fooBar
+
+when NimMajor >= 2:
+  # Test default object field values.
+  type Frog = object
+    legs: int = 4
+
+  let frog = Frog()
+  doAssert frog.toFlatty.fromFlatty(Frog) == frog
 
 # Test ref objects.
 type Bar = ref object
@@ -156,6 +176,19 @@ doAssert tup2.toFlatty.fromFlatty(tuple[foo: Foo, id: uint8]) == tup2
 var arrOfTuples: array[2, (int, int)] = [(1, 2), (0, 3)]
 doAssert arrOfTuples.toFlatty.fromFlatty(array[2, (int, int)]) == arrOfTuples
 
+# Test options.
+block:
+  var a: Option[int] = some(123)
+  var b: Option[int]
+  doAssert a.toFlatty.fromFlatty(Option[int]) == a
+  doAssert b.toFlatty.fromFlatty(Option[int]) == b
+
+  type Test = object
+    key: Option[Foo]
+
+  let test = Test(key: some(foo))
+  doAssert test.toFlatty.fromFlatty(Test) == test
+
 when not defined(js):
   # Test intsets
   var intSet = initIntSet()
@@ -176,6 +209,24 @@ var
   person: Person
 doAssert student.toFlatty.fromFlatty(type(student)) == student
 doAssert person.toFlatty.fromFlatty(type(person)) == person
+
+block:
+  var student = Student(name: "Ada", age: 19, id: 42)
+  var student2 = student.toFlatty.fromFlatty(Student)
+  doAssert student2 != nil
+  doAssert student2.name == student.name
+  doAssert student2.age == student.age
+  doAssert student2.id == student.id
+
+  type
+    ValuePerson = object of RootObj
+      name: string
+      age: int
+    ValueStudent = object of ValuePerson
+      id: int
+
+  let valueStudent = ValueStudent(name: "Ada", age: 19, id: 42)
+  doAssert valueStudent.toFlatty.fromFlatty(ValueStudent) == valueStudent
 
 # Test Object variants
 type
@@ -217,6 +268,13 @@ block:
   doAssert nodeNum.toFlatty.fromFlatty(type(nodeNum)).active == nodeNum.active
   doAssert nodeNum2.toFlatty.fromFlatty(type(nodeNum2)).active ==
       nodeNum2.active
+
+  let nodes = @[nodeNum, nodeNum2]
+  let nodes2 = nodes.toFlatty.fromFlatty(type(nodes))
+  doAssert nodes2[0].kind == nkFloat
+  doAssert nodes2[0].floatVal == nodeNum.floatVal
+  doAssert nodes2[1].kind == nkInt
+  doAssert nodes2[1].intVal == nodeNum2.intVal
 
 var jsonNode = parseJson("{\"json\": true, \"count\":20}")
 doAssert jsonNode.toFlatty.fromFlatty(type(jsonNode)) == jsonNode
@@ -273,5 +331,39 @@ block:
   doAssert hSet3.toFlatty.fromFlatty(HashSet[float64]) == hSet3
   let hSet4 = toOrderedSet([1.1, 2.2, 3.3])
   doAssert hSet4.toFlatty.fromFlatty(OrderedSet[float64]) == hSet4
+
+static:
+  type
+    PtrObject = object
+      p: pointer
+      value: int
+    CstringObject = object
+      text: cstring
+    Callback = proc (value: int): int
+    CallbackObject = object
+      cb: Callback
+    RawAddress = distinct pointer
+
+  doAssert not compiles(default(pointer).toFlatty)
+  doAssert not compiles(default(ptr int).toFlatty)
+  doAssert not compiles(default(cstring).toFlatty)
+  doAssert not compiles(default(Callback).toFlatty)
+  doAssert not compiles(default(RawAddress).toFlatty)
+  when declared(AsyncFD):
+    doAssert not compiles(default(AsyncFD).toFlatty)
+    doAssert not compiles(default(seq[AsyncFD]).toFlatty)
+  when declared(SocketHandle):
+    doAssert not compiles(default(SocketHandle).toFlatty)
+    doAssert not compiles(default(seq[SocketHandle]).toFlatty)
+
+  doAssert not compiles(default(PtrObject).toFlatty)
+  doAssert not compiles(default(CstringObject).toFlatty)
+  doAssert not compiles(default(CallbackObject).toFlatty)
+
+  doAssert not compiles(@[default(PtrObject)].toFlatty)
+  doAssert not compiles([default(ptr int)].toFlatty)
+  doAssert not compiles([default(cstring)].toFlatty)
+  doAssert not compiles(@[default(Callback)].toFlatty)
+  doAssert not compiles(@[default(RawAddress)].toFlatty)
 
 echo "DONE"
