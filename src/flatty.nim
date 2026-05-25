@@ -1,6 +1,6 @@
 ## Convert any Nim objects, numbers, strings, refs to and from binary format.
 import
-  std/[tables, typetraits, sets],
+  std/[importutils, tables, typetraits, sets],
   flatty/objvar
 
 when defined(js):
@@ -67,6 +67,8 @@ func copyable[T](_: typedesc[T]): bool =
   elif FlattyIntSize != sizeof(int) and T.hasModeInt:
     false
   elif skipsFlattyCopyMem(T):
+    false
+  elif T is range:
     false
   elif (T is pointer) or (T is ptr) or (T is cstring) or (T is proc):
     false
@@ -156,6 +158,7 @@ proc toFlatty*(s: var string, x: float32)
 proc toFlatty*(s: var string, x: float64)
 proc toFlatty*(s: var string, x: int)
 proc toFlatty*(s: var string, x: uint)
+proc toFlatty*[T: range](s: var string, x: T)
 proc toFlatty*[T: enum and not range](s: var string, x: T)
 proc toFlatty*(s: var string, x: string)
 
@@ -182,6 +185,7 @@ proc fromFlatty*(s: string, i: var int, x: var int)
 proc fromFlatty*(s: string, i: var int, x: var uint)
 proc fromFlatty*(s: string, i: var int, x: var float32)
 proc fromFlatty*(s: string, i: var int, x: var float64)
+proc fromFlatty*[T: range](s: string, i: var int, x: var T)
 proc fromFlatty*[T: enum and not range](s: string, i: var int, x: var T)
 proc fromFlatty*(s: string, i: var int, x: var string)
 
@@ -279,6 +283,17 @@ proc fromFlatty*(s: string, i: var int, x: var float64) =
   x = s.readFloat64(i)
   i += 8
 
+# Ranges
+proc toFlatty*[T: range](s: var string, x: T) =
+  s.toFlatty(x.rangeBase)
+
+proc fromFlatty*[T: range](s: string, i: var int, x: var T) =
+  var value: rangeBase(T)
+  s.fromFlatty(i, value)
+  if value < low(T).rangeBase or value > high(T).rangeBase:
+    raise newException(RangeDefect, "value out of range")
+  x = T(value)
+
 # Enums
 proc toFlatty*[T: enum and not range](s: var string, x: T) =
   s.addInt64(x.int)
@@ -334,6 +349,7 @@ proc fromFlatty*[T](s: string, i: var int, x: var seq[T]) =
 
 # Objects
 proc toFlatty*[T: object](s: var string, x: T) =
+  privateAccess(T)
   when x.isObjectVariant:
     s.toFlatty(x.discriminatorField)
     for k, e in x.fieldPairs:
@@ -344,6 +360,7 @@ proc toFlatty*[T: object](s: var string, x: T) =
       s.toFlatty(e)
 
 proc fromFlatty*[T: object](s: string, i: var int, x: var T) =
+  privateAccess(T)
   when x.isObjectVariant:
     var discriminator: type(x.discriminatorField)
     s.fromFlatty(i, discriminator)
@@ -412,7 +429,7 @@ proc toFlatty*[N, T](s: var string, x: array[N, T]) =
     let byteLen = x.len * sizeof(T)
     let oldLen = s.len
     s.setLen(oldLen + byteLen)
-    copyMem(s[oldLen].addr, x[0.N].unsafeAddr, byteLen)
+    copyMem(s[oldLen].addr, x[low(x)].unsafeAddr, byteLen)
   else:
     for e in x:
       s.toFlatty(e)
@@ -420,7 +437,7 @@ proc toFlatty*[N, T](s: var string, x: array[N, T]) =
 proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T]) =
   when not defined(js) and T.copyable:
     if x.len > 0:
-      copyMem(x[0.N].addr, s[i].unsafeAddr, sizeof(x))
+      copyMem(x[low(x)].addr, s[i].unsafeAddr, sizeof(x))
       i += sizeof(x)
   else:
     for j in x.mitems:
