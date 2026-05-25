@@ -1,3 +1,6 @@
+when cpuEndian != littleEndian:
+  {.error: "flatty only supports little-endian native targets".}
+
 # Like StringStream but without the Stream and side effects.
 
 type Buffer = string | seq[uint8]
