@@ -26,21 +26,22 @@ Flatty aims to be fast. It achieves this by:
 * Not doing anything extra like versioning, type checking, etc ...
 * Liberal use of `{.inline.}`
 
+Benchmark below serializes and deserializes a 11125 node tree.
 
 ### Serialize speed
 ```
 name ............................... min time      avg time    std dv   runs
-treeform/flatty .................... 6.303 ms      6.514 ms    ±0.181   x100
-bingod/planetis-m ................. 11.337 ms     12.688 ms    ±1.641   x100
-disruptek/frosty .................. 14.767 ms     14.924 ms    ±0.122   x100
-treeform/jsony .................... 12.989 ms     13.343 ms    ±0.408   x100
+treeform/flatty .................... 2.157 ms      2.319 ms    +/-0.147   x100
+bingo/planetis-m ................... 2.527 ms      2.599 ms    +/-0.055   x100
+disruptek/frosty ................... 5.779 ms      5.942 ms    +/-0.101   x100
+treeform/jsony ..................... 9.147 ms      9.361 ms    +/-0.165   x100
 ```
 ### Deserialize speed
 ```
-treeform/flatty ................... 10.526 ms     16.134 ms    ±5.508   x100
-bingod/planetis-m binTo ........... 12.836 ms     17.993 ms    ±0.181   x100
-disruptek/frosty .................. 38.513 ms     42.357 ms    ±0.535   x100
-treeform/jsony .................... 96.830 ms    100.615 ms    ±0.992   x100
+treeform/flatty .................... 2.625 ms      3.503 ms    +/-0.206   x100
+bingo/planetis-m binTo ............. 4.796 ms      6.300 ms    +/-1.463   x100
+disruptek/frosty ................... 8.879 ms     11.549 ms    +/-2.227   x100
+treeform/jsony .................... 11.199 ms     14.036 ms    +/-1.773   x100
 ```
 
 ## JavaScript

@@ -136,7 +136,7 @@ proc toFlatty*(s: var string, x: char) =
 proc fromFlatty*(s: string, i: var int, x: var char) =
   x = s.readUint8(i).char
   i += 1
-  
+
 # Numbers
 proc toFlatty*(s: var string, x: uint8) = s.addUint8(x)
 proc toFlatty*(s: var string, x: int8) = s.addInt8(x)
@@ -233,32 +233,42 @@ proc toFlatty*(s: var string, x: string) =
 proc fromFlatty*(s: string, i: var int, x: var string) =
   let len = s.readInt64(i).int
   i += 8
-  x = s[i ..< i + len]
+  when defined(js):
+    x = s[i ..< i + len]
+  else:
+    x = newStringUninit(len)
+    if len > 0:
+      copyMem(x[0].addr, s[i].unsafeAddr, len)
   i += len
 
 # Seq
 proc toFlatty*[T](s: var string, x: seq[T]) =
-  s.addInt64(x.len.int64)
   when not defined(js) and T.copyable:
-    if x.len == 0:
-      return
-    let byteLen = x.len * sizeof(T)
-    s.setLen(s.len + byteLen)
-    let dest = s[s.len - byteLen].addr
-    copyMem(dest, x[0].unsafeAddr, byteLen)
+    let
+      oldLen = s.len
+      byteLen = x.len * sizeof(T)
+    s.setLen(oldLen + 8 + byteLen)
+    s.writeInt64(oldLen, x.len.int64)
+    if byteLen > 0:
+      copyMem(s[oldLen + 8].addr, x[0].unsafeAddr, byteLen)
   else:
+    s.addInt64(x.len.int64)
     for e in x:
       s.toFlatty(e)
 
 proc fromFlatty*[T](s: string, i: var int, x: var seq[T]) =
-  let len = s.readInt64(i)
+  let len = s.readInt64(i).int
   i += 8
-  x.setLen(len)
   when not defined(js) and T.copyable:
+    when declared(setLenUninit):
+      x.setLenUninit(len)
+    else:
+      x.setLen(len)
     if len > 0:
       copyMem(x[0].addr, s[i].unsafeAddr, len * sizeof(T))
-      i += sizeof(T) * len.int
+      i += sizeof(T) * len
   else:
+    x.setLen(len)
     for j in x.mitems:
       s.fromFlatty(i, j)
 
@@ -307,8 +317,14 @@ proc toTableLike[T](s: var string, K: type, V: type, x: T) {.inline.} =
 proc fromTableLike[T](
     s: string, i: var int, K: type, V: type, x: var T
 ) {.inline.} =
-  let len = s.readInt64(i)
+  let len = s.readInt64(i).int
   i += 8
+  when T is Table[K, V]:
+    x = initTable[K, V](len)
+  elif T is OrderedTable[K, V]:
+    x = initOrderedTable[K, V](len)
+  elif T is CountTable[K]:
+    x = initCountTable[K](len)
   for _ in 0 ..< len:
     var
       k: K
@@ -335,9 +351,9 @@ proc toFlatty*[N, T](s: var string, x: array[N, T]) =
     if x.len == 0:
       return
     let byteLen = x.len * sizeof(T)
-    s.setLen(s.len + byteLen)
-    let dest = s[s.len - byteLen].addr
-    copyMem(dest, x[0.N].unsafeAddr, byteLen)
+    let oldLen = s.len
+    s.setLen(oldLen + byteLen)
+    copyMem(s[oldLen].addr, x[0.N].unsafeAddr, byteLen)
   else:
     for e in x:
       s.toFlatty(e)
@@ -363,13 +379,13 @@ proc fromFlatty*[T: tuple](s: string, i: var int, x: var T) =
 # Refs
 proc toFlatty*[T](s: var string, x: ref T) =
   let isNil = x == nil
-  s.toFlatty(isNil)
+  s.addUint8(isNil.uint8)
   if not isNil:
     s.toFlatty(x[])
 
 proc fromFlatty*[T](s: string, i: var int, x: var ref T) =
-  var isNil: bool
-  s.fromFlatty(i, isNil)
+  let isNil = s.readUint8(i).bool
+  i += 1
   if not isNil:
     new(x)
     s.fromFlatty(i, x[])
@@ -383,6 +399,10 @@ proc toFlatty*[T](s: var string, x: SomeSet[T]) =
 proc fromFlatty*[T](s: string, i: var int, x: var SomeSet[T]) =
   let len = s.readInt64(i).int
   i += 8
+  when x is HashSet[T]:
+    x = initHashSet[T](len)
+  elif x is OrderedSet[T]:
+    x = initOrderedSet[T](len)
   for j in 0 ..< len:
     var e: T
     s.fromFlatty(i, e)

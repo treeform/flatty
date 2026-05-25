@@ -1,6 +1,6 @@
 ## Hash functions based on flatty, hash any nested object.
 
-import 
+import
   std/typetraits,
   flatty/objvar
 
