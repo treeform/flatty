@@ -16,6 +16,7 @@ This library has no dependencies other than the Nim standard library.
 * Also includes `binny` a simpler replacement for StringStream (no IO effects, operates on a string)
 * Also includes `hashy` a hash for any objects based on the flatty serializer.
 * Also includes `encode` a way to convert to/from utf16 BE/LE and with BOM and utf32.
+* Only Nim-owned values are serialized. Raw pointers, cstrings, procs, and distinct OS handles are rejected.
 
 ## Speed
 
