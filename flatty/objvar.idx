@@ -1,4 +1,4 @@
-nimTitle	objvar	flatty/objvar.html	module src/flatty/objvar		0
+nimTitle	objvar	flatty/objvar.html	module flatty/objvar		0
 nim	isObjectVariant	flatty/objvar.html#isObjectVariant.m,typed	macro isObjectVariant(v: typed): bool		15
 nim	discriminator	flatty/objvar.html#discriminator,NimNode	proc discriminator(v: NimNode): NimNode		27
 nim	discriminatorFieldName	flatty/objvar.html#discriminatorFieldName.m,typed	macro discriminatorFieldName(v: typed): untyped		33

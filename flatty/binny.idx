@@ -1,4 +1,4 @@
-nimTitle	binny	flatty/binny.html	module src/flatty/binny		0
+nimTitle	binny	flatty/binny.html	module flatty/binny		0
 nim	readUint8	flatty/binny.html#readUint8,Buffer,int	proc readUint8(s: Buffer; i: int): uint8		5
 nim	writeUint8	flatty/binny.html#writeUint8,Buffer,int,uint8	proc writeUint8(s: var Buffer; i: int; v: uint8)		8
 nim	addUint8	flatty/binny.html#addUint8,Buffer,uint8	proc addUint8(s: var Buffer; v: uint8)		11

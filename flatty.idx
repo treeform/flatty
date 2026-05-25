@@ -1,4 +1,4 @@
-nimTitle	flatty	flatty.html	module src/flatty		0
+nimTitle	flatty	flatty.html	module flatty		0
 nim	SomeTable	flatty.html#SomeTable	type SomeTable		11
 nim	toFlatty	flatty.html#toFlatty,string,seq[T]	proc toFlatty[T](s: var string; x: seq[T])		15
 nim	toFlatty	flatty.html#toFlatty,string,	proc toFlatty(s: var string; x: object)		16
