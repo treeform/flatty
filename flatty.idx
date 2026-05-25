@@ -60,7 +60,7 @@ nim	toFlatty	flatty.html#toFlatty,string,proc	proc toFlatty(s: var string; x: pr
 nim	fromFlatty	flatty.html#fromFlatty,string,int,proc	proc fromFlatty(s: string; i: var int; x: var proc)		118
 nim	toFlatty	flatty.html#toFlatty,string,T_5	proc toFlatty[T: UnsupportedHandle](s: var string; x: T)		121
 nim	fromFlatty	flatty.html#fromFlatty,string,int,T_5	proc fromFlatty[T: UnsupportedHandle](s: string; i: var int; x: var T)		122
-nim	toFlatty	flatty.html#toFlatty,T	proc toFlatty[T](x: T): string		392
-nim	fromFlatty	flatty.html#fromFlatty,string,typedesc[T]	proc fromFlatty[T](s: string; x: typedesc[T]): T		396
+nim	toFlatty	flatty.html#toFlatty,T	proc toFlatty[T](x: T): string		412
+nim	fromFlatty	flatty.html#fromFlatty,string,typedesc[T]	proc fromFlatty[T](s: string; x: typedesc[T]): T		416
 nimgrp	toflatty	flatty.html#toFlatty-procs-all	proc		58
 nimgrp	fromflatty	flatty.html#fromFlatty-procs-all	proc		84
