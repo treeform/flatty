@@ -136,7 +136,7 @@ proc toFlatty*(s: var string, x: char) =
 proc fromFlatty*(s: string, i: var int, x: var char) =
   x = s.readUint8(i).char
   i += 1
-  
+
 # Numbers
 proc toFlatty*(s: var string, x: uint8) = s.addUint8(x)
 proc toFlatty*(s: var string, x: int8) = s.addInt8(x)
