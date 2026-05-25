@@ -236,10 +236,7 @@ proc fromFlatty*(s: string, i: var int, x: var string) =
   when defined(js):
     x = s[i ..< i + len]
   else:
-    when declared(newStringUninit):
-      x = newStringUninit(len)
-    else:
-      x.setLen(len)
+    x = newStringUninit(len)
     if len > 0:
       copyMem(x[0].addr, s[i].unsafeAddr, len)
   i += len
