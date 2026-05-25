@@ -1,30 +1,42 @@
-import flatty/binny, flatty/hexprint, streams
+when defined(js):
+  import flatty/jsbinny
+else:
+  import flatty/binny, streams
 
-var s = newFileStream("tests/test_hexprint-output.txt", fmWrite)
+import flatty/hexprint
+
+var output = ""
+
+proc writeLine(line: string) =
+  output.add(line)
+  output.add("\n")
 
 block:
-  s.writeLine "Sentence:"
-  s.writeLine hexPrint("Hi how are you doing today?")
+  writeLine "Sentence:"
+  writeLine hexPrint("Hi how are you doing today?")
 
 block:
-  s.writeLine "ASCII:"
+  writeLine "ASCII:"
   var bin = ""
   for i in 0 .. 255:
     bin.add chr(i)
-  s.writeLine hexPrint(bin)
+  writeLine hexPrint(bin)
 
 block:
-  s.writeLine "int16s:"
+  writeLine "int16s:"
   var bin = ""
   for i in 0 .. 16:
     bin.addUint16(i.uint16)
-  s.writeLine hexPrint(bin)
+  writeLine hexPrint(bin)
 
 block:
-  s.writeLine "int32s"
+  writeLine "int32s"
   var bin = ""
   for i in 0 .. 16:
     bin.addUint32(1000 * i.uint32)
-  s.writeLine hexPrint(bin)
+  writeLine hexPrint(bin)
 
-s.close()
+when not defined(js):
+  var s = newFileStream("tests/test_hexprint-output.txt", fmWrite)
+  s.write(output)
+  s.close()

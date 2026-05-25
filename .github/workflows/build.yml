@@ -29,5 +29,7 @@ jobs:
         run: nim r tests/tests.nim
       - name: Run JavaScript tests with Node
         run: nim js -r tests/tests.nim
+      - name: Run JavaScript tests in strict mode
+        run: node tests/js_strict_runner.mjs tests/tests.js
       - name: Run JavaScript binny tests with Node
         run: nim js -r tests/jstest_jsbinny.nim
