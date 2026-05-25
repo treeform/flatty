@@ -1,7 +1,7 @@
 when defined(js):
   import flatty/jsbinny
 else:
-  import flatty/binny, streams
+  import flatty/binny
 
 import flatty/hexprint
 
@@ -37,6 +37,4 @@ block:
   writeLine hexPrint(bin)
 
 when not defined(js):
-  var s = newFileStream("tests/test_hexprint-output.txt", fmWrite)
-  s.write(output)
-  s.close()
+  writeFile("tests/test_hexprint-output.txt", output)
