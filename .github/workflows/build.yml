@@ -17,9 +17,19 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: treeform/setup-nim-action@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Install dependencies
         shell: bash
         run: |
           cd ..
           nimby install -g "${{ github.event.repository.name }}/${{ github.event.repository.name }}.nimble"
-      - run: nim r tests/tests.nim
+      - name: Run native tests
+        run: nim r tests/tests.nim
+      - name: Run JavaScript tests with Node
+        run: nim js -r tests/tests.nim
+      - name: Run JavaScript tests in strict mode
+        run: node tests/js_strict_runner.mjs tests/tests.js
+      - name: Run JavaScript binny tests with Node
+        run: nim js -r tests/jstest_jsbinny.nim
