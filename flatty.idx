@@ -1,56 +1,66 @@
 nimTitle	flatty	flatty.html	module flatty		0
-nim	SomeTable	flatty.html#SomeTable	type SomeTable		11
-nim	toFlatty	flatty.html#toFlatty,string,seq[T]	proc toFlatty[T](s: var string; x: seq[T])		15
-nim	toFlatty	flatty.html#toFlatty,string,	proc toFlatty(s: var string; x: object)		16
-nim	toFlatty	flatty.html#toFlatty,string,T	proc toFlatty[T: distinct](s: var string; x: T)		17
-nim	toFlatty	flatty.html#toFlatty,string,SomeTable[K,V]	proc toFlatty[K, V](s: var string; x: SomeTable[K, V])		18
-nim	toFlatty	flatty.html#toFlatty,string,CountTable[K]	proc toFlatty[K](s: var string; x: CountTable[K])		19
-nim	toFlatty	flatty.html#toFlatty,string,array[N,T]	proc toFlatty[N, T](s: var string; x: array[N, T])		20
-nim	toFlatty	flatty.html#toFlatty,string,T_2	proc toFlatty[T: tuple](s: var string; x: T)		21
-nim	toFlatty	flatty.html#toFlatty,string,ref.T	proc toFlatty[T](s: var string; x: ref T)		22
-nim	fromFlatty	flatty.html#fromFlatty,string,int,seq[T]	proc fromFlatty[T](s: string; i: var int; x: var seq[T])		24
-nim	fromFlatty	flatty.html#fromFlatty,string,int,	proc fromFlatty(s: string; i: var int; x: var object)		25
-nim	fromFlatty	flatty.html#fromFlatty,string,int,T	proc fromFlatty[T: distinct](s: string; i: var int; x: var T)		26
-nim	fromFlatty	flatty.html#fromFlatty,string,int,SomeTable[K,V]	proc fromFlatty[K, V](s: string; i: var int; x: var SomeTable[K, V])		27
-nim	fromFlatty	flatty.html#fromFlatty,string,int,CountTable[K]	proc fromFlatty[K](s: string; i: var int; x: var CountTable[K])		28
-nim	fromFlatty	flatty.html#fromFlatty,string,int,array[N,T]	proc fromFlatty[N, T](s: string; i: var int; x: var array[N, T])		29
-nim	fromFlatty	flatty.html#fromFlatty,string,int,T_2	proc fromFlatty[T: tuple](s: string; i: var int; x: var T)		30
-nim	fromFlatty	flatty.html#fromFlatty,string,typedesc[T]	proc fromFlatty[T](s: string; x: typedesc[T]): T		31
-nim	fromFlatty	flatty.html#fromFlatty,string,int,ref.T	proc fromFlatty[T](s: string; i: var int; x: var ref T)		32
-nim	toFlatty	flatty.html#toFlatty,string,bool	proc toFlatty(s: var string; x: bool)		35
-nim	fromFlatty	flatty.html#fromFlatty,string,int,bool	proc fromFlatty(s: string; i: var int; x: var bool)		38
-nim	toFlatty	flatty.html#toFlatty,string,char	proc toFlatty(s: var string; x: char)		43
-nim	fromFlatty	flatty.html#fromFlatty,string,int,char	proc fromFlatty(s: string; i: var int; x: var char)		46
-nim	toFlatty	flatty.html#toFlatty,string,uint8	proc toFlatty(s: var string; x: uint8)		51
-nim	toFlatty	flatty.html#toFlatty,string,int8	proc toFlatty(s: var string; x: int8)		52
-nim	toFlatty	flatty.html#toFlatty,string,uint16	proc toFlatty(s: var string; x: uint16)		53
-nim	toFlatty	flatty.html#toFlatty,string,int16	proc toFlatty(s: var string; x: int16)		54
-nim	toFlatty	flatty.html#toFlatty,string,uint32	proc toFlatty(s: var string; x: uint32)		55
-nim	toFlatty	flatty.html#toFlatty,string,int32	proc toFlatty(s: var string; x: int32)		56
-nim	toFlatty	flatty.html#toFlatty,string,uint64	proc toFlatty(s: var string; x: uint64)		57
-nim	toFlatty	flatty.html#toFlatty,string,int64	proc toFlatty(s: var string; x: int64)		58
-nim	toFlatty	flatty.html#toFlatty,string,float32	proc toFlatty(s: var string; x: float32)		59
-nim	toFlatty	flatty.html#toFlatty,string,float64	proc toFlatty(s: var string; x: float64)		60
-nim	toFlatty	flatty.html#toFlatty,string,int	proc toFlatty(s: var string; x: int)		62
-nim	toFlatty	flatty.html#toFlatty,string,uint	proc toFlatty(s: var string; x: uint)		68
-nim	fromFlatty	flatty.html#fromFlatty,string,int,uint8	proc fromFlatty(s: string; i: var int; x: var uint8)		74
-nim	fromFlatty	flatty.html#fromFlatty,string,int,int8	proc fromFlatty(s: string; i: var int; x: var int8)		78
-nim	fromFlatty	flatty.html#fromFlatty,string,int,uint16	proc fromFlatty(s: string; i: var int; x: var uint16)		82
-nim	fromFlatty	flatty.html#fromFlatty,string,int,int16	proc fromFlatty(s: string; i: var int; x: var int16)		86
-nim	fromFlatty	flatty.html#fromFlatty,string,int,uint32	proc fromFlatty(s: string; i: var int; x: var uint32)		90
-nim	fromFlatty	flatty.html#fromFlatty,string,int,int32	proc fromFlatty(s: string; i: var int; x: var int32)		94
-nim	fromFlatty	flatty.html#fromFlatty,string,int,uint64	proc fromFlatty(s: string; i: var int; x: var uint64)		98
+nim	SomeTable	flatty.html#SomeTable	type SomeTable		12
+nim	toFlatty	flatty.html#toFlatty,string,seq[T]	proc toFlatty[T](s: var string; x: seq[T])		58
+nim	toFlatty	flatty.html#toFlatty,string,T	proc toFlatty[T: object](s: var string; x: T)		59
+nim	toFlatty	flatty.html#toFlatty,string,T_2	proc toFlatty[T: distinct](s: var string; x: T)		60
+nim	toFlatty	flatty.html#toFlatty,string,SomeTable[K,V]	proc toFlatty[K, V](s: var string; x: SomeTable[K, V])		61
+nim	toFlatty	flatty.html#toFlatty,string,CountTable[K]	proc toFlatty[K](s: var string; x: CountTable[K])		62
+nim	toFlatty	flatty.html#toFlatty,string,array[N,T]	proc toFlatty[N, T](s: var string; x: array[N, T])		63
+nim	toFlatty	flatty.html#toFlatty,string,T_3	proc toFlatty[T: tuple](s: var string; x: T)		64
+nim	toFlatty	flatty.html#toFlatty,string,ref.T	proc toFlatty[T](s: var string; x: ref T)		65
+nim	toFlatty	flatty.html#toFlatty,string,SomeSet[T]	proc toFlatty[T](s: var string; x: SomeSet[T])		66
+nim	toFlatty	flatty.html#toFlatty,string,bool	proc toFlatty(s: var string; x: bool)		67
+nim	toFlatty	flatty.html#toFlatty,string,char	proc toFlatty(s: var string; x: char)		68
+nim	toFlatty	flatty.html#toFlatty,string,uint8	proc toFlatty(s: var string; x: uint8)		69
+nim	toFlatty	flatty.html#toFlatty,string,int8	proc toFlatty(s: var string; x: int8)		70
+nim	toFlatty	flatty.html#toFlatty,string,uint16	proc toFlatty(s: var string; x: uint16)		71
+nim	toFlatty	flatty.html#toFlatty,string,int16	proc toFlatty(s: var string; x: int16)		72
+nim	toFlatty	flatty.html#toFlatty,string,uint32	proc toFlatty(s: var string; x: uint32)		73
+nim	toFlatty	flatty.html#toFlatty,string,int32	proc toFlatty(s: var string; x: int32)		74
+nim	toFlatty	flatty.html#toFlatty,string,uint64	proc toFlatty(s: var string; x: uint64)		75
+nim	toFlatty	flatty.html#toFlatty,string,int64	proc toFlatty(s: var string; x: int64)		76
+nim	toFlatty	flatty.html#toFlatty,string,float32	proc toFlatty(s: var string; x: float32)		77
+nim	toFlatty	flatty.html#toFlatty,string,float64	proc toFlatty(s: var string; x: float64)		78
+nim	toFlatty	flatty.html#toFlatty,string,int	proc toFlatty(s: var string; x: int)		79
+nim	toFlatty	flatty.html#toFlatty,string,uint	proc toFlatty(s: var string; x: uint)		80
+nim	toFlatty	flatty.html#toFlatty,string,T_4	proc toFlatty[T: enum and not range](s: var string; x: T)		81
+nim	toFlatty	flatty.html#toFlatty,string,string	proc toFlatty(s: var string; x: string)		82
+nim	fromFlatty	flatty.html#fromFlatty,string,int,seq[T]	proc fromFlatty[T](s: string; i: var int; x: var seq[T])		84
+nim	fromFlatty	flatty.html#fromFlatty,string,int,T	proc fromFlatty[T: object](s: string; i: var int; x: var T)		85
+nim	fromFlatty	flatty.html#fromFlatty,string,int,T_2	proc fromFlatty[T: distinct](s: string; i: var int; x: var T)		86
+nim	fromFlatty	flatty.html#fromFlatty,string,int,SomeTable[K,V]	proc fromFlatty[K, V](s: string; i: var int; x: var SomeTable[K, V])		87
+nim	fromFlatty	flatty.html#fromFlatty,string,int,CountTable[K]	proc fromFlatty[K](s: string; i: var int; x: var CountTable[K])		88
+nim	fromFlatty	flatty.html#fromFlatty,string,int,array[N,T]	proc fromFlatty[N, T](s: string; i: var int; x: var array[N, T])		89
+nim	fromFlatty	flatty.html#fromFlatty,string,int,T_3	proc fromFlatty[T: tuple](s: string; i: var int; x: var T)		90
+nim	fromFlatty	flatty.html#fromFlatty,string,int,ref.T	proc fromFlatty[T](s: string; i: var int; x: var ref T)		91
+nim	fromFlatty	flatty.html#fromFlatty,string,int,SomeSet[T]	proc fromFlatty[T](s: string; i: var int; x: var SomeSet[T])		92
+nim	fromFlatty	flatty.html#fromFlatty,string,int,bool	proc fromFlatty(s: string; i: var int; x: var bool)		93
+nim	fromFlatty	flatty.html#fromFlatty,string,int,char	proc fromFlatty(s: string; i: var int; x: var char)		94
+nim	fromFlatty	flatty.html#fromFlatty,string,int,uint8	proc fromFlatty(s: string; i: var int; x: var uint8)		95
+nim	fromFlatty	flatty.html#fromFlatty,string,int,int8	proc fromFlatty(s: string; i: var int; x: var int8)		96
+nim	fromFlatty	flatty.html#fromFlatty,string,int,uint16	proc fromFlatty(s: string; i: var int; x: var uint16)		97
+nim	fromFlatty	flatty.html#fromFlatty,string,int,int16	proc fromFlatty(s: string; i: var int; x: var int16)		98
+nim	fromFlatty	flatty.html#fromFlatty,string,int,uint32	proc fromFlatty(s: string; i: var int; x: var uint32)		99
+nim	fromFlatty	flatty.html#fromFlatty,string,int,int32	proc fromFlatty(s: string; i: var int; x: var int32)		100
+nim	fromFlatty	flatty.html#fromFlatty,string,int,uint64	proc fromFlatty(s: string; i: var int; x: var uint64)		101
 nim	fromFlatty	flatty.html#fromFlatty,string,int,int64	proc fromFlatty(s: string; i: var int; x: var int64)		102
-nim	fromFlatty	flatty.html#fromFlatty,string,int,int	proc fromFlatty(s: string; i: var int; x: var int)		106
-nim	fromFlatty	flatty.html#fromFlatty,string,int,uint	proc fromFlatty(s: string; i: var int; x: var uint)		114
-nim	fromFlatty	flatty.html#fromFlatty,string,int,float32	proc fromFlatty(s: string; i: var int; x: var float32)		122
-nim	fromFlatty	flatty.html#fromFlatty,string,int,float64	proc fromFlatty(s: string; i: var int; x: var float64)		126
-nim	toFlatty	flatty.html#toFlatty,string,T_3	proc toFlatty[T: enum and not range](s: var string; x: T)		131
-nim	fromFlatty	flatty.html#fromFlatty,string,int,T_3	proc fromFlatty[T: enum and not range](s: string; i: var int; x: var T)		134
-nim	toFlatty	flatty.html#toFlatty,string,string	proc toFlatty(s: var string; x: string)		139
-nim	fromFlatty	flatty.html#fromFlatty,string,int,string	proc fromFlatty(s: string; i: var int; x: var string)		143
-nim	toFlatty	flatty.html#toFlatty,string,SomeSet[T]	proc toFlatty[T](s: var string; x: SomeSet[T])		288
-nim	fromFlatty	flatty.html#fromFlatty,string,int,SomeSet[T]	proc fromFlatty[T](s: string; i: var int; x: var SomeSet[T])		293
-nim	toFlatty	flatty.html#toFlatty,T	proc toFlatty[T](x: T): string		302
-nimgrp	toflatty	flatty.html#toFlatty-procs-all	proc		15
-nimgrp	fromflatty	flatty.html#fromFlatty-procs-all	proc		24
+nim	fromFlatty	flatty.html#fromFlatty,string,int,int	proc fromFlatty(s: string; i: var int; x: var int)		103
+nim	fromFlatty	flatty.html#fromFlatty,string,int,uint	proc fromFlatty(s: string; i: var int; x: var uint)		104
+nim	fromFlatty	flatty.html#fromFlatty,string,int,float32	proc fromFlatty(s: string; i: var int; x: var float32)		105
+nim	fromFlatty	flatty.html#fromFlatty,string,int,float64	proc fromFlatty(s: string; i: var int; x: var float64)		106
+nim	fromFlatty	flatty.html#fromFlatty,string,int,T_4	proc fromFlatty[T: enum and not range](s: string; i: var int; x: var T)		107
+nim	fromFlatty	flatty.html#fromFlatty,string,int,string	proc fromFlatty(s: string; i: var int; x: var string)		108
+nim	toFlatty	flatty.html#toFlatty,string,pointer	proc toFlatty(s: var string; x: pointer)		111
+nim	fromFlatty	flatty.html#fromFlatty,string,int,pointer	proc fromFlatty(s: string; i: var int; x: var pointer)		112
+nim	toFlatty	flatty.html#toFlatty,string,ptr.T	proc toFlatty[T](s: var string; x: ptr T)		113
+nim	fromFlatty	flatty.html#fromFlatty,string,int,ptr.T	proc fromFlatty[T](s: string; i: var int; x: var ptr T)		114
+nim	toFlatty	flatty.html#toFlatty,string,cstring	proc toFlatty(s: var string; x: cstring)		115
+nim	fromFlatty	flatty.html#fromFlatty,string,int,cstring	proc fromFlatty(s: string; i: var int; x: var cstring)		116
+nim	toFlatty	flatty.html#toFlatty,string,proc	proc toFlatty(s: var string; x: proc)		117
+nim	fromFlatty	flatty.html#fromFlatty,string,int,proc	proc fromFlatty(s: string; i: var int; x: var proc)		118
+nim	toFlatty	flatty.html#toFlatty,string,T_5	proc toFlatty[T: UnsupportedHandle](s: var string; x: T)		121
+nim	fromFlatty	flatty.html#fromFlatty,string,int,T_5	proc fromFlatty[T: UnsupportedHandle](s: string; i: var int; x: var T)		122
+nim	toFlatty	flatty.html#toFlatty,T	proc toFlatty[T](x: T): string		392
+nim	fromFlatty	flatty.html#fromFlatty,string,typedesc[T]	proc fromFlatty[T](s: string; x: typedesc[T]): T		396
+nimgrp	toflatty	flatty.html#toFlatty-procs-all	proc		58
+nimgrp	fromflatty	flatty.html#fromFlatty-procs-all	proc		84

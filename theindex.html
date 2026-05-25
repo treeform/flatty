@@ -89,8 +89,6 @@
           </ul></dd>
 <dt><a name="fromFlatty" href="#fromFlatty"><span>fromFlatty:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="flatty: proc fromFlatty(s: string; i: var int; x: var object)" href="flatty.html#fromFlatty%2Cstring%2Cint%2C">flatty: proc fromFlatty(s: string; i: var int; x: var object)</a></li>
-          <li><a class="reference external"
           data-doc-search-tag="flatty: proc fromFlatty[N, T](s: string; i: var int; x: var array[N, T])" href="flatty.html#fromFlatty%2Cstring%2Cint%2Carray%5BN%2CT%5D">flatty: proc fromFlatty[N, T](s: string; i: var int; x: var array[N, T])</a></li>
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc fromFlatty(s: string; i: var int; x: var bool)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cbool">flatty: proc fromFlatty(s: string; i: var int; x: var bool)</a></li>
@@ -98,6 +96,8 @@
           data-doc-search-tag="flatty: proc fromFlatty(s: string; i: var int; x: var char)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cchar">flatty: proc fromFlatty(s: string; i: var int; x: var char)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc fromFlatty[K](s: string; i: var int; x: var CountTable[K])" href="flatty.html#fromFlatty%2Cstring%2Cint%2CCountTable%5BK%5D">flatty: proc fromFlatty[K](s: string; i: var int; x: var CountTable[K])</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="flatty: proc fromFlatty(s: string; i: var int; x: var cstring)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Ccstring">flatty: proc fromFlatty(s: string; i: var int; x: var cstring)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc fromFlatty(s: string; i: var int; x: var float32)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cfloat32">flatty: proc fromFlatty(s: string; i: var int; x: var float32)</a></li>
           <li><a class="reference external"
@@ -113,6 +113,12 @@
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc fromFlatty(s: string; i: var int; x: var int8)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cint8">flatty: proc fromFlatty(s: string; i: var int; x: var int8)</a></li>
           <li><a class="reference external"
+          data-doc-search-tag="flatty: proc fromFlatty(s: string; i: var int; x: var pointer)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cpointer">flatty: proc fromFlatty(s: string; i: var int; x: var pointer)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="flatty: proc fromFlatty(s: string; i: var int; x: var proc)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cproc">flatty: proc fromFlatty(s: string; i: var int; x: var proc)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="flatty: proc fromFlatty[T](s: string; i: var int; x: var ptr T)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cptr.T">flatty: proc fromFlatty[T](s: string; i: var int; x: var ptr T)</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="flatty: proc fromFlatty[T](s: string; i: var int; x: var ref T)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cref.T">flatty: proc fromFlatty[T](s: string; i: var int; x: var ref T)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc fromFlatty[T](s: string; i: var int; x: var seq[T])" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cseq%5BT%5D">flatty: proc fromFlatty[T](s: string; i: var int; x: var seq[T])</a></li>
@@ -123,11 +129,15 @@
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc fromFlatty(s: string; i: var int; x: var string)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cstring">flatty: proc fromFlatty(s: string; i: var int; x: var string)</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="flatty: proc fromFlatty[T: distinct](s: string; i: var int; x: var T)" href="flatty.html#fromFlatty%2Cstring%2Cint%2CT">flatty: proc fromFlatty[T: distinct](s: string; i: var int; x: var T)</a></li>
+          data-doc-search-tag="flatty: proc fromFlatty[T: object](s: string; i: var int; x: var T)" href="flatty.html#fromFlatty%2Cstring%2Cint%2CT">flatty: proc fromFlatty[T: object](s: string; i: var int; x: var T)</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="flatty: proc fromFlatty[T: tuple](s: string; i: var int; x: var T)" href="flatty.html#fromFlatty%2Cstring%2Cint%2CT_2">flatty: proc fromFlatty[T: tuple](s: string; i: var int; x: var T)</a></li>
+          data-doc-search-tag="flatty: proc fromFlatty[T: distinct](s: string; i: var int; x: var T)" href="flatty.html#fromFlatty%2Cstring%2Cint%2CT_2">flatty: proc fromFlatty[T: distinct](s: string; i: var int; x: var T)</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="flatty: proc fromFlatty[T: enum and not range](s: string; i: var int; x: var T)" href="flatty.html#fromFlatty%2Cstring%2Cint%2CT_3">flatty: proc fromFlatty[T: enum and not range](s: string; i: var int; x: var T)</a></li>
+          data-doc-search-tag="flatty: proc fromFlatty[T: tuple](s: string; i: var int; x: var T)" href="flatty.html#fromFlatty%2Cstring%2Cint%2CT_3">flatty: proc fromFlatty[T: tuple](s: string; i: var int; x: var T)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="flatty: proc fromFlatty[T: enum and not range](s: string; i: var int; x: var T)" href="flatty.html#fromFlatty%2Cstring%2Cint%2CT_4">flatty: proc fromFlatty[T: enum and not range](s: string; i: var int; x: var T)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="flatty: proc fromFlatty[T: UnsupportedHandle](s: string; i: var int; x: var T)" href="flatty.html#fromFlatty%2Cstring%2Cint%2CT_5">flatty: proc fromFlatty[T: UnsupportedHandle](s: string; i: var int; x: var T)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc fromFlatty(s: string; i: var int; x: var uint)" href="flatty.html#fromFlatty%2Cstring%2Cint%2Cuint">flatty: proc fromFlatty(s: string; i: var int; x: var uint)</a></li>
           <li><a class="reference external"
@@ -245,8 +255,6 @@
           </ul></dd>
 <dt><a name="toFlatty" href="#toFlatty"><span>toFlatty:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="flatty: proc toFlatty(s: var string; x: object)" href="flatty.html#toFlatty%2Cstring%2C">flatty: proc toFlatty(s: var string; x: object)</a></li>
-          <li><a class="reference external"
           data-doc-search-tag="flatty: proc toFlatty[N, T](s: var string; x: array[N, T])" href="flatty.html#toFlatty%2Cstring%2Carray%5BN%2CT%5D">flatty: proc toFlatty[N, T](s: var string; x: array[N, T])</a></li>
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc toFlatty(s: var string; x: bool)" href="flatty.html#toFlatty%2Cstring%2Cbool">flatty: proc toFlatty(s: var string; x: bool)</a></li>
@@ -254,6 +262,8 @@
           data-doc-search-tag="flatty: proc toFlatty(s: var string; x: char)" href="flatty.html#toFlatty%2Cstring%2Cchar">flatty: proc toFlatty(s: var string; x: char)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc toFlatty[K](s: var string; x: CountTable[K])" href="flatty.html#toFlatty%2Cstring%2CCountTable%5BK%5D">flatty: proc toFlatty[K](s: var string; x: CountTable[K])</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="flatty: proc toFlatty(s: var string; x: cstring)" href="flatty.html#toFlatty%2Cstring%2Ccstring">flatty: proc toFlatty(s: var string; x: cstring)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc toFlatty(s: var string; x: float32)" href="flatty.html#toFlatty%2Cstring%2Cfloat32">flatty: proc toFlatty(s: var string; x: float32)</a></li>
           <li><a class="reference external"
@@ -269,6 +279,12 @@
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc toFlatty(s: var string; x: int8)" href="flatty.html#toFlatty%2Cstring%2Cint8">flatty: proc toFlatty(s: var string; x: int8)</a></li>
           <li><a class="reference external"
+          data-doc-search-tag="flatty: proc toFlatty(s: var string; x: pointer)" href="flatty.html#toFlatty%2Cstring%2Cpointer">flatty: proc toFlatty(s: var string; x: pointer)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="flatty: proc toFlatty(s: var string; x: proc)" href="flatty.html#toFlatty%2Cstring%2Cproc">flatty: proc toFlatty(s: var string; x: proc)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="flatty: proc toFlatty[T](s: var string; x: ptr T)" href="flatty.html#toFlatty%2Cstring%2Cptr.T">flatty: proc toFlatty[T](s: var string; x: ptr T)</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="flatty: proc toFlatty[T](s: var string; x: ref T)" href="flatty.html#toFlatty%2Cstring%2Cref.T">flatty: proc toFlatty[T](s: var string; x: ref T)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc toFlatty[T](s: var string; x: seq[T])" href="flatty.html#toFlatty%2Cstring%2Cseq%5BT%5D">flatty: proc toFlatty[T](s: var string; x: seq[T])</a></li>
@@ -279,11 +295,15 @@
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc toFlatty(s: var string; x: string)" href="flatty.html#toFlatty%2Cstring%2Cstring">flatty: proc toFlatty(s: var string; x: string)</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="flatty: proc toFlatty[T: distinct](s: var string; x: T)" href="flatty.html#toFlatty%2Cstring%2CT">flatty: proc toFlatty[T: distinct](s: var string; x: T)</a></li>
+          data-doc-search-tag="flatty: proc toFlatty[T: object](s: var string; x: T)" href="flatty.html#toFlatty%2Cstring%2CT">flatty: proc toFlatty[T: object](s: var string; x: T)</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="flatty: proc toFlatty[T: tuple](s: var string; x: T)" href="flatty.html#toFlatty%2Cstring%2CT_2">flatty: proc toFlatty[T: tuple](s: var string; x: T)</a></li>
+          data-doc-search-tag="flatty: proc toFlatty[T: distinct](s: var string; x: T)" href="flatty.html#toFlatty%2Cstring%2CT_2">flatty: proc toFlatty[T: distinct](s: var string; x: T)</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="flatty: proc toFlatty[T: enum and not range](s: var string; x: T)" href="flatty.html#toFlatty%2Cstring%2CT_3">flatty: proc toFlatty[T: enum and not range](s: var string; x: T)</a></li>
+          data-doc-search-tag="flatty: proc toFlatty[T: tuple](s: var string; x: T)" href="flatty.html#toFlatty%2Cstring%2CT_3">flatty: proc toFlatty[T: tuple](s: var string; x: T)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="flatty: proc toFlatty[T: enum and not range](s: var string; x: T)" href="flatty.html#toFlatty%2Cstring%2CT_4">flatty: proc toFlatty[T: enum and not range](s: var string; x: T)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="flatty: proc toFlatty[T: UnsupportedHandle](s: var string; x: T)" href="flatty.html#toFlatty%2Cstring%2CT_5">flatty: proc toFlatty[T: UnsupportedHandle](s: var string; x: T)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="flatty: proc toFlatty(s: var string; x: uint)" href="flatty.html#toFlatty%2Cstring%2Cuint">flatty: proc toFlatty(s: var string; x: uint)</a></li>
           <li><a class="reference external"
@@ -341,7 +361,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-05-25 04:24:47 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-05-25 15:12:17 UTC</small>
       </div>
     </div>
   </div>
