@@ -11,9 +11,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
-    - uses: jiro4989/setup-nim-action@v2
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: treeform/setup-nim-action@v3
     - run: nim js -r tests/jstest.nim
     - run: nim js -r tests/jstest_jsbinny.nim
     - run: nim c -r tests/test_binny.nim
