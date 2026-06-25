@@ -29,27 +29,32 @@ type
 
 block:
   var test: Test1
-  doAssert test.memoryUsed() == 2 + 8 + 4 + 8
+  doAssert test.memoryUsed() ==
+    sizeof(uint16) + sizeof(int) + 4 * sizeof(uint8) + sizeof(float64)
 
 block:
   var test = Test2()
   test.c.add(1)
   test.c.add(2)
-  doAssert test.memoryUsed() == 8 + 4 + 8 + 16 + (2 * 8) + 4 * 8
+  doAssert test.memoryUsed() ==
+    sizeof(test) + sizeof(uint32) + sizeof(float) + 16 +
+    test.c.len * sizeof(int) + 4 * sizeof(uint64)
 
 block:
   var test = Test3()
-  doAssert test.memoryUsed() == 8 + 1 + 2 + 8 + 4 + 8
+  doAssert test.memoryUsed() ==
+    sizeof(test) + sizeof(uint8) +
+    sizeof(uint16) + sizeof(int) + 4 * sizeof(uint8) + sizeof(float64)
 
 block:
   var test = Test4()
-  doAssert test.memoryUsed() == 8 + 1 + 8
+  doAssert test.memoryUsed() == sizeof(test) + sizeof(uint8) + sizeof(Test2)
 
 block:
   var test: Test5
-  doAssert test.memoryUsed() == 8 + 8
+  doAssert test.memoryUsed() == sizeof(uint64) + sizeof(float64)
 
 block:
   var test = Test6()
   test.a = "test string"
-  doAssert test.memoryUsed() == 8 + 16 + 11
+  doAssert test.memoryUsed() == sizeof(test) + 16 + test.a.len

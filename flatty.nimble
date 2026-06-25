@@ -1,7 +1,7 @@
-version       = "0.3.4"
+version       = "0.4.0"
 author        = "Andre von Houck"
 description   = "Flatty - tools and serializer for plain flat binary files."
 license       = "MIT"
 srcDir        = "src"
 
-requires "nim >= 1.4.0"
+requires "nim >= 2.0.0"

@@ -1,4 +1,7 @@
-import flatty/hashy
+when defined(js):
+  import flatty/jshashy
+else:
+  import flatty/hashy
 
 echo hashy(1.int8)
 echo hashy(1.uint8)
@@ -18,7 +21,12 @@ let
   a = "12345678a"
   b = "123456781"
 
-doAssert ryan64nim(a[0].unsafeAddr, a.len) != ryan64nim(b[0].unsafeAddr, b.len)
-doAssert ryan64sdbm(a[0].unsafeAddr, a.len) != ryan64sdbm(b[0].unsafeAddr, b.len)
-doAssert ryan64djb2(a[0].unsafeAddr, a.len) != ryan64djb2(b[0].unsafeAddr, b.len)
+when defined(js):
+  doAssert ryan64nim(a) != ryan64nim(b)
+  doAssert ryan64sdbm(a) != ryan64sdbm(b)
+  doAssert ryan64djb2(a) != ryan64djb2(b)
+else:
+  doAssert ryan64nim(a[0].unsafeAddr, a.len) != ryan64nim(b[0].unsafeAddr, b.len)
+  doAssert ryan64sdbm(a[0].unsafeAddr, a.len) != ryan64sdbm(b[0].unsafeAddr, b.len)
+  doAssert ryan64djb2(a[0].unsafeAddr, a.len) != ryan64djb2(b[0].unsafeAddr, b.len)
 doAssert hashy(a) != hashy(b)

@@ -1,35 +1,207 @@
 ## Convert any Nim objects, numbers, strings, refs to and from binary format.
-import 
-  std/[tables, typetraits, sets],
+import
+  std/[importutils, tables, typetraits, sets],
   flatty/objvar
-  
+
 when defined(js):
   import flatty/jsbinny
 else:
   import flatty/binny
+  import std/[asyncdispatch, nativesockets]
 
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 type SomeSet[A] = set[A] | HashSet[A] | OrderedSet[A]
 
+when defined(flatty32) and defined(flatty64):
+  {.error: "flatty32 and flatty64 cannot both be defined".}
+
+const FlattyIntSize =
+  when defined(flatty32):
+    4
+  elif defined(flatty64):
+    8
+  else:
+    sizeof(int)
+
+when not defined(js):
+  type UnsupportedHandle = AsyncFD | SocketHandle
+
+const unsupportedTypeMsg =
+  "flatty can only serialize Nim-owned values; raw pointers, cstrings, procs, " &
+  "and distinct OS handles cannot be flattened"
+
+func skipsFlattyCopyMem[T](_: typedesc[T]): bool =
+  when defined(js):
+    false
+  else:
+    T is UnsupportedHandle
+
+func hasModeInt[T](_: typedesc[T]): bool =
+  when (T is int) or (T is uint):
+    true
+  elif T is distinct:
+    typeof(default(T).distinctBase).hasModeInt
+  elif T is object:
+    when default(T).isObjectVariant:
+      true
+    else:
+      block:
+        var found {.compileTime.} = false
+        for field in default(T).fields:
+          found = found or typeof(field).hasModeInt
+        found
+  elif T is tuple:
+    block:
+      var found {.compileTime.} = false
+      for field in default(T).fields:
+        found = found or typeof(field).hasModeInt
+      found
+  elif T is array:
+    typeof(default(T)[low(T)]).hasModeInt
+  else:
+    false
+
+func copyable[T](_: typedesc[T]): bool =
+  when not T.supportsCopyMem:
+    false
+  elif FlattyIntSize != sizeof(int) and T.hasModeInt:
+    false
+  elif skipsFlattyCopyMem(T):
+    false
+  elif T is range:
+    false
+  elif (T is pointer) or (T is ptr) or (T is cstring) or (T is proc):
+    false
+  elif T is distinct:
+    typeof(default(T).distinctBase).copyable
+  elif T is object:
+    when default(T).isObjectVariant:
+      false
+    else:
+      block:
+        var ok {.compileTime.} = true
+        for field in default(T).fields:
+          ok = ok and typeof(field).copyable
+        ok
+  elif T is tuple:
+    block:
+      var ok {.compileTime.} = true
+      for field in default(T).fields:
+        ok = ok and typeof(field).copyable
+      ok
+  elif T is array:
+    typeof(default(T)[low(T)]).copyable
+  else:
+    true
+
+template writeFlattyInt(s: var string, i: int, x: int) =
+  when FlattyIntSize == 4:
+    s.writeInt32(i, x.int32)
+  else:
+    s.writeInt64(i, x.int64)
+
+template addFlattyInt(s: var string, x: int) =
+  when FlattyIntSize == 4:
+    s.addInt32(x.int32)
+  else:
+    s.addInt64(x.int64)
+
+template addFlattyUInt(s: var string, x: uint) =
+  when FlattyIntSize == 4:
+    s.addUint32(x.uint32)
+  else:
+    s.addUint64(x.uint64)
+
+template readFlattyInt(s: string, i: var int): untyped =
+  block:
+    when FlattyIntSize == 4:
+      let value = s.readInt32(i).int
+      i += 4
+      value
+    else:
+      let value = s.readInt64(i).int
+      i += 8
+      value
+
+template readFlattyUInt(s: string, i: var int): untyped =
+  block:
+    when FlattyIntSize == 4:
+      let value = s.readUint32(i).uint
+      i += 4
+      value
+    else:
+      let value = s.readUint64(i).uint
+      i += 8
+      value
+
 # Forward declarations.
 proc toFlatty*[T](s: var string, x: seq[T])
-proc toFlatty*(s: var string, x: object)
+proc toFlatty*[T: object](s: var string, x: T)
 proc toFlatty*[T: distinct](s: var string, x: T)
 proc toFlatty*[K, V](s: var string, x: SomeTable[K, V])
 proc toFlatty*[K](s: var string, x: CountTable[K])
 proc toFlatty*[N, T](s: var string, x: array[N, T])
 proc toFlatty*[T: tuple](s: var string, x: T)
 proc toFlatty*[T](s: var string, x: ref T)
+proc toFlatty*[T](s: var string, x: SomeSet[T])
+proc toFlatty*(s: var string, x: bool)
+proc toFlatty*(s: var string, x: char)
+proc toFlatty*(s: var string, x: uint8)
+proc toFlatty*(s: var string, x: int8)
+proc toFlatty*(s: var string, x: uint16)
+proc toFlatty*(s: var string, x: int16)
+proc toFlatty*(s: var string, x: uint32)
+proc toFlatty*(s: var string, x: int32)
+proc toFlatty*(s: var string, x: uint64)
+proc toFlatty*(s: var string, x: int64)
+proc toFlatty*(s: var string, x: float32)
+proc toFlatty*(s: var string, x: float64)
+proc toFlatty*(s: var string, x: int)
+proc toFlatty*(s: var string, x: uint)
+proc toFlatty*[T: range](s: var string, x: T)
+proc toFlatty*[T: enum and not range](s: var string, x: T)
+proc toFlatty*(s: var string, x: string)
 
 proc fromFlatty*[T](s: string, i: var int, x: var seq[T])
-proc fromFlatty*(s: string, i: var int, x: var object)
+proc fromFlatty*[T: object](s: string, i: var int, x: var T)
 proc fromFlatty*[T: distinct](s: string, i: var int, x: var T)
 proc fromFlatty*[K, V](s: string, i: var int, x: var SomeTable[K, V])
 proc fromFlatty*[K](s: string, i: var int, x: var CountTable[K])
 proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T])
 proc fromFlatty*[T: tuple](s: string, i: var int, x: var T)
-proc fromFlatty*[T](s: string, x: typedesc[T]): T
 proc fromFlatty*[T](s: string, i: var int, x: var ref T)
+proc fromFlatty*[T](s: string, i: var int, x: var SomeSet[T])
+proc fromFlatty*(s: string, i: var int, x: var bool)
+proc fromFlatty*(s: string, i: var int, x: var char)
+proc fromFlatty*(s: string, i: var int, x: var uint8)
+proc fromFlatty*(s: string, i: var int, x: var int8)
+proc fromFlatty*(s: string, i: var int, x: var uint16)
+proc fromFlatty*(s: string, i: var int, x: var int16)
+proc fromFlatty*(s: string, i: var int, x: var uint32)
+proc fromFlatty*(s: string, i: var int, x: var int32)
+proc fromFlatty*(s: string, i: var int, x: var uint64)
+proc fromFlatty*(s: string, i: var int, x: var int64)
+proc fromFlatty*(s: string, i: var int, x: var int)
+proc fromFlatty*(s: string, i: var int, x: var uint)
+proc fromFlatty*(s: string, i: var int, x: var float32)
+proc fromFlatty*(s: string, i: var int, x: var float64)
+proc fromFlatty*[T: range](s: string, i: var int, x: var T)
+proc fromFlatty*[T: enum and not range](s: string, i: var int, x: var T)
+proc fromFlatty*(s: string, i: var int, x: var string)
+
+# Unsupported runtime resources.
+proc toFlatty*(s: var string, x: pointer) {.error: unsupportedTypeMsg.}
+proc fromFlatty*(s: string, i: var int, x: var pointer) {.error: unsupportedTypeMsg.}
+proc toFlatty*[T](s: var string, x: ptr T) {.error: unsupportedTypeMsg.}
+proc fromFlatty*[T](s: string, i: var int, x: var ptr T) {.error: unsupportedTypeMsg.}
+proc toFlatty*(s: var string, x: cstring) {.error: unsupportedTypeMsg.}
+proc fromFlatty*(s: string, i: var int, x: var cstring) {.error: unsupportedTypeMsg.}
+proc toFlatty*(s: var string, x: proc) {.error: unsupportedTypeMsg.}
+proc fromFlatty*(s: string, i: var int, x: var proc) {.error: unsupportedTypeMsg.}
+
+when not defined(js):
+  proc toFlatty*[T: UnsupportedHandle](s: var string, x: T) {.error: unsupportedTypeMsg.}
+  proc fromFlatty*[T: UnsupportedHandle](s: string, i: var int, x: var T) {.error: unsupportedTypeMsg.}
 
 # Booleans
 proc toFlatty*(s: var string, x: bool) =
@@ -46,7 +218,7 @@ proc toFlatty*(s: var string, x: char) =
 proc fromFlatty*(s: string, i: var int, x: var char) =
   x = s.readUint8(i).char
   i += 1
-  
+
 # Numbers
 proc toFlatty*(s: var string, x: uint8) = s.addUint8(x)
 proc toFlatty*(s: var string, x: int8) = s.addInt8(x)
@@ -60,16 +232,10 @@ proc toFlatty*(s: var string, x: float32) = s.addFloat32(x)
 proc toFlatty*(s: var string, x: float64) = s.addFloat64(x)
 
 proc toFlatty*(s: var string, x: int) =
-  when sizeof(int) == 4:
-    s.addInt32(x)
-  else:
-    s.addInt64(x)
+  s.addFlattyInt(x)
 
 proc toFlatty*(s: var string, x: uint) =
-  when sizeof(int) == 4:
-    s.addUInt32(x)
-  else:
-    s.addUInt64(x)
+  s.addFlattyUInt(x)
 
 proc fromFlatty*(s: string, i: var int, x: var uint8) =
   x = s.readUint8(i)
@@ -104,20 +270,10 @@ proc fromFlatty*(s: string, i: var int, x: var int64) =
   i += 8
 
 proc fromFlatty*(s: string, i: var int, x: var int) =
-  when sizeof(int) == 4:
-    x = s.readInt32(i).int
-    i += 4
-  else:
-    x = s.readInt64(i).int
-    i += 8
+  x = s.readFlattyInt(i)
 
 proc fromFlatty*(s: string, i: var int, x: var uint) =
-  when sizeof(int) == 4:
-    x = s.readUInt32(i).uint
-    i += 4
-  else:
-    x = s.readUInt64(i).uint
-    i += 8
+  x = s.readFlattyUInt(i)
 
 proc fromFlatty*(s: string, i: var int, x: var float32) =
   x = s.readFloat32(i)
@@ -126,6 +282,17 @@ proc fromFlatty*(s: string, i: var int, x: var float32) =
 proc fromFlatty*(s: string, i: var int, x: var float64) =
   x = s.readFloat64(i)
   i += 8
+
+# Ranges
+proc toFlatty*[T: range](s: var string, x: T) =
+  s.toFlatty(x.rangeBase)
+
+proc fromFlatty*[T: range](s: string, i: var int, x: var T) =
+  var value: rangeBase(T)
+  s.fromFlatty(i, value)
+  if value < low(T).rangeBase or value > high(T).rangeBase:
+    raise newException(RangeDefect, "value out of range")
+  x = T(value)
 
 # Enums
 proc toFlatty*[T: enum and not range](s: var string, x: T) =
@@ -137,43 +304,52 @@ proc fromFlatty*[T: enum and not range](s: string, i: var int, x: var T) =
 
 # Strings
 proc toFlatty*(s: var string, x: string) =
-  s.addInt64(x.len)
+  s.addFlattyInt(x.len)
   s.add(x)
 
 proc fromFlatty*(s: string, i: var int, x: var string) =
-  let len = s.readInt64(i).int
-  i += 8
-  x = s[i ..< i + len]
+  let len = s.readFlattyInt(i)
+  when defined(js):
+    x = s[i ..< i + len]
+  else:
+    x = newStringUninit(len)
+    if len > 0:
+      copyMem(x[0].addr, s[i].unsafeAddr, len)
   i += len
 
 # Seq
 proc toFlatty*[T](s: var string, x: seq[T]) =
-  s.addInt64(x.len.int64)
-  when not defined(js) and T.supportsCopyMem:
-    if x.len == 0:
-      return
-    let byteLen = x.len * sizeof(T)
-    s.setLen(s.len + byteLen)
-    let dest = s[s.len - byteLen].addr
-    copyMem(dest, x[0].unsafeAddr, byteLen)
+  when not defined(js) and T.copyable:
+    let
+      oldLen = s.len
+      byteLen = x.len * sizeof(T)
+    s.setLen(oldLen + FlattyIntSize + byteLen)
+    s.writeFlattyInt(oldLen, x.len)
+    if byteLen > 0:
+      copyMem(s[oldLen + FlattyIntSize].addr, x[0].unsafeAddr, byteLen)
   else:
+    s.addFlattyInt(x.len)
     for e in x:
       s.toFlatty(e)
 
 proc fromFlatty*[T](s: string, i: var int, x: var seq[T]) =
-  let len = s.readInt64(i)
-  i += 8
-  x.setLen(len)
-  when not defined(js) and T.supportsCopyMem:
+  let len = s.readFlattyInt(i)
+  when not defined(js) and T.copyable:
+    when declared(setLenUninit):
+      x.setLenUninit(len)
+    else:
+      x.setLen(len)
     if len > 0:
       copyMem(x[0].addr, s[i].unsafeAddr, len * sizeof(T))
-      i += sizeof(T) * len.int
+      i += sizeof(T) * len
   else:
+    x.setLen(len)
     for j in x.mitems:
       s.fromFlatty(i, j)
 
 # Objects
-proc toFlatty*(s: var string, x: object) =
+proc toFlatty*[T: object](s: var string, x: T) =
+  privateAccess(T)
   when x.isObjectVariant:
     s.toFlatty(x.discriminatorField)
     for k, e in x.fieldPairs:
@@ -183,7 +359,8 @@ proc toFlatty*(s: var string, x: object) =
     for e in x.fields:
       s.toFlatty(e)
 
-proc fromFlatty*(s: string, i: var int, x: var object) =
+proc fromFlatty*[T: object](s: string, i: var int, x: var T) =
+  privateAccess(T)
   when x.isObjectVariant:
     var discriminator: type(x.discriminatorField)
     s.fromFlatty(i, discriminator)
@@ -209,7 +386,7 @@ proc fromFlatty*[T: distinct](s: string, i: var int, x: var T) =
 
 # Tables
 proc toTableLike[T](s: var string, K: type, V: type, x: T) {.inline.} =
-  s.addInt64(x.len.int64)
+  s.addFlattyInt(x.len)
   for k, v in x:
     s.toFlatty(k)
     s.toFlatty(v)
@@ -217,8 +394,13 @@ proc toTableLike[T](s: var string, K: type, V: type, x: T) {.inline.} =
 proc fromTableLike[T](
     s: string, i: var int, K: type, V: type, x: var T
 ) {.inline.} =
-  let len = s.readInt64(i)
-  i += 8
+  let len = s.readFlattyInt(i)
+  when T is Table[K, V]:
+    x = initTable[K, V](len)
+  elif T is OrderedTable[K, V]:
+    x = initOrderedTable[K, V](len)
+  elif T is CountTable[K]:
+    x = initCountTable[K](len)
   for _ in 0 ..< len:
     var
       k: K
@@ -241,21 +423,21 @@ proc fromFlatty*[K](s: string, i: var int, x: var CountTable[K]) =
 
 # Arrays
 proc toFlatty*[N, T](s: var string, x: array[N, T]) =
-  when not defined(js) and T.supportsCopyMem:
+  when not defined(js) and T.copyable:
     if x.len == 0:
       return
     let byteLen = x.len * sizeof(T)
-    s.setLen(s.len + byteLen)
-    let dest = s[s.len - byteLen].addr
-    copyMem(dest, x[0.N].unsafeAddr, byteLen)
+    let oldLen = s.len
+    s.setLen(oldLen + byteLen)
+    copyMem(s[oldLen].addr, x[low(x)].unsafeAddr, byteLen)
   else:
     for e in x:
       s.toFlatty(e)
 
 proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T]) =
-  when not defined(js) and T.supportsCopyMem:
+  when not defined(js) and T.copyable:
     if x.len > 0:
-      copyMem(x[0.N].addr, s[i].unsafeAddr, sizeof(x))
+      copyMem(x[low(x)].addr, s[i].unsafeAddr, sizeof(x))
       i += sizeof(x)
   else:
     for j in x.mitems:
@@ -273,26 +455,29 @@ proc fromFlatty*[T: tuple](s: string, i: var int, x: var T) =
 # Refs
 proc toFlatty*[T](s: var string, x: ref T) =
   let isNil = x == nil
-  s.toFlatty(isNil)
+  s.addUint8(isNil.uint8)
   if not isNil:
     s.toFlatty(x[])
 
 proc fromFlatty*[T](s: string, i: var int, x: var ref T) =
-  var isNil: bool
-  s.fromFlatty(i, isNil)
+  let isNil = s.readUint8(i).bool
+  i += 1
   if not isNil:
     new(x)
     s.fromFlatty(i, x[])
 
 # Sets
 proc toFlatty*[T](s: var string, x: SomeSet[T]) =
-  s.addInt64(x.card.int64)
+  s.addFlattyInt(x.card)
   for e in x:
     s.toFlatty(e)
 
 proc fromFlatty*[T](s: string, i: var int, x: var SomeSet[T]) =
-  let len = s.readInt64(i).int
-  i += 8
+  let len = s.readFlattyInt(i)
+  when x is HashSet[T]:
+    x = initHashSet[T](len)
+  elif x is OrderedSet[T]:
+    x = initOrderedSet[T](len)
   for j in 0 ..< len:
     var e: T
     s.fromFlatty(i, e)
