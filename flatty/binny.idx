@@ -1,68 +1,68 @@
 nimTitle	binny	flatty/binny.html	module flatty/binny		0
-nim	readUint8	flatty/binny.html#readUint8,Buffer,int	proc readUint8(s: Buffer; i: int): uint8		8
-nim	writeUint8	flatty/binny.html#writeUint8,Buffer,int,uint8	proc writeUint8(s: var Buffer; i: int; v: uint8)		11
-nim	addUint8	flatty/binny.html#addUint8,Buffer,uint8	proc addUint8(s: var Buffer; v: uint8)		14
-nim	readUint16	flatty/binny.html#readUint16,Buffer,int	proc readUint16(s: Buffer; i: int): uint16		17
-nim	writeUint16	flatty/binny.html#writeUint16,Buffer,int,uint16	proc writeUint16(s: var Buffer; i: int; v: uint16)		20
-nim	addUint16	flatty/binny.html#addUint16,Buffer,uint16	proc addUint16(s: var Buffer; v: uint16)		23
-nim	readUint32	flatty/binny.html#readUint32,Buffer,int	proc readUint32(s: Buffer; i: int): uint32		27
-nim	writeUint32	flatty/binny.html#writeUint32,Buffer,int,uint32	proc writeUint32(s: var Buffer; i: int; v: uint32)		30
-nim	addUint32	flatty/binny.html#addUint32,Buffer,uint32	proc addUint32(s: var Buffer; v: uint32)		33
-nim	readUint64	flatty/binny.html#readUint64,Buffer,int	proc readUint64(s: Buffer; i: int): uint64		37
-nim	writeUint64	flatty/binny.html#writeUint64,Buffer,int,uint64	proc writeUint64(s: var Buffer; i: int; v: uint64)		40
-nim	addUint64	flatty/binny.html#addUint64,Buffer,uint64	proc addUint64(s: var Buffer; v: uint64)		43
-nim	readInt8	flatty/binny.html#readInt8,Buffer,int	proc readInt8(s: Buffer; i: int): int8		47
-nim	writeInt8	flatty/binny.html#writeInt8,Buffer,int,int8	proc writeInt8(s: var Buffer; i: int; v: int8)		50
-nim	addInt8	flatty/binny.html#addInt8,Buffer,int8	proc addInt8(s: var Buffer; v: int8)		53
-nim	readInt16	flatty/binny.html#readInt16,Buffer,int	proc readInt16(s: Buffer; i: int): int16		56
-nim	writeInt16	flatty/binny.html#writeInt16,Buffer,int,int16	proc writeInt16(s: var Buffer; i: int; v: int16)		59
-nim	addInt16	flatty/binny.html#addInt16,Buffer,int16	proc addInt16(s: var Buffer; i: int16)		62
-nim	readInt32	flatty/binny.html#readInt32,Buffer,int	proc readInt32(s: Buffer; i: int): int32		65
-nim	writeInt32	flatty/binny.html#writeInt32,Buffer,int,int32	proc writeInt32(s: var Buffer; i: int; v: int32)		68
-nim	addInt32	flatty/binny.html#addInt32,Buffer,int32	proc addInt32(s: var Buffer; i: int32)		71
-nim	readInt64	flatty/binny.html#readInt64,Buffer,int	proc readInt64(s: Buffer; i: int): int64		74
-nim	writeInt64	flatty/binny.html#writeInt64,Buffer,int,int64	proc writeInt64(s: var Buffer; i: int; v: int64)		77
-nim	addInt64	flatty/binny.html#addInt64,Buffer,int64	proc addInt64(s: var Buffer; i: int64)		80
-nim	readFloat32	flatty/binny.html#readFloat32,Buffer,int	proc readFloat32(s: Buffer; i: int): float32		83
-nim	addFloat32	flatty/binny.html#addFloat32,Buffer,float32	proc addFloat32(s: var Buffer; v: float32)		86
-nim	writeFloat32	flatty/binny.html#writeFloat32,Buffer,int,float32	proc writeFloat32(s: var Buffer; i: int; v: float32)		89
-nim	readFloat64	flatty/binny.html#readFloat64,Buffer,int	proc readFloat64(s: Buffer; i: int): float64		92
-nim	writeFloat64	flatty/binny.html#writeFloat64,Buffer,int,float64	proc writeFloat64(s: var Buffer; i: int; v: float64)		95
-nim	addFloat64	flatty/binny.html#addFloat64,Buffer,float64	proc addFloat64(s: var Buffer; v: float64)		98
-nim	addStr	flatty/binny.html#addStr,string,string	proc addStr(s: var string; v: string)		101
-nim	readStr	flatty/binny.html#readStr,string,int,int	proc readStr(s: string; i: int; v: int): string		104
-nim	addStr	flatty/binny.html#addStr,seq[uint8],string	proc addStr(s: var seq[uint8]; v: string)		107
-nim	readStr	flatty/binny.html#readStr,seq[uint8],int,int	proc readStr(s: seq[uint8]; i: int; v: int): string		110
-nim	readStr	flatty/binny.html#readStr,ptr.UncheckedArray[uint8],int,int	proc readStr(s: ptr UncheckedArray[uint8]; i, v: int): string		115
-nim	readUint8	flatty/binny.html#readUint8,ptr.UncheckedArray[uint8],int	proc readUint8(s: ptr UncheckedArray[uint8]; i: int): uint8		119
-nim	readUint16	flatty/binny.html#readUint16,ptr.UncheckedArray[uint8],int	proc readUint16(s: ptr UncheckedArray[uint8]; i: int): uint16		122
-nim	readUint32	flatty/binny.html#readUint32,ptr.UncheckedArray[uint8],int	proc readUint32(s: ptr UncheckedArray[uint8]; i: int): uint32		125
-nim	readUint64	flatty/binny.html#readUint64,ptr.UncheckedArray[uint8],int	proc readUint64(s: ptr UncheckedArray[uint8]; i: int): uint64		128
-nim	readInt8	flatty/binny.html#readInt8,ptr.UncheckedArray[uint8],int	proc readInt8(s: ptr UncheckedArray[uint8]; i: int): int8		131
-nim	readInt16	flatty/binny.html#readInt16,ptr.UncheckedArray[uint8],int	proc readInt16(s: ptr UncheckedArray[uint8]; i: int): int16		134
-nim	readInt32	flatty/binny.html#readInt32,ptr.UncheckedArray[uint8],int	proc readInt32(s: ptr UncheckedArray[uint8]; i: int): int32		137
-nim	readInt64	flatty/binny.html#readInt64,ptr.UncheckedArray[uint8],int	proc readInt64(s: ptr UncheckedArray[uint8]; i: int): int64		140
-nim	readFloat32	flatty/binny.html#readFloat32,ptr.UncheckedArray[uint8],int	proc readFloat32(s: ptr UncheckedArray[uint8]; i: int): float32		143
-nim	readFloat64	flatty/binny.html#readFloat64,ptr.UncheckedArray[uint8],int	proc readFloat64(s: ptr UncheckedArray[uint8]; i: int): float64		146
-nim	swap	flatty/binny.html#swap,uint8	proc swap(v: uint8): uint8		149
-nim	swap	flatty/binny.html#swap,uint16	proc swap(v: uint16): uint16		152
-nim	swap	flatty/binny.html#swap,uint32	proc swap(v: uint32): uint32		156
-nim	swap	flatty/binny.html#swap,uint64	proc swap(v: uint64): uint64		160
-nim	swap	flatty/binny.html#swap,int16	proc swap(v: int16): int16		164
-nim	swap	flatty/binny.html#swap,int32	proc swap(v: int32): int32		167
-nim	swap	flatty/binny.html#swap,int64	proc swap(v: int64): int64		170
-nim	swap	flatty/binny.html#swap,int	proc swap(v: int): int		173
-nim	maybeSwap	flatty/binny.html#maybeSwap,T,bool	proc maybeSwap[T](v: T; enable: bool): T		181
-nimgrp	readuint8	flatty/binny.html#readUint8-procs-all	proc		8
-nimgrp	readint16	flatty/binny.html#readInt16-procs-all	proc		56
-nimgrp	readfloat64	flatty/binny.html#readFloat64-procs-all	proc		92
-nimgrp	swap	flatty/binny.html#swap-procs-all	proc		149
-nimgrp	addstr	flatty/binny.html#addStr-procs-all	proc		101
-nimgrp	readint8	flatty/binny.html#readInt8-procs-all	proc		47
-nimgrp	readint64	flatty/binny.html#readInt64-procs-all	proc		74
-nimgrp	readfloat32	flatty/binny.html#readFloat32-procs-all	proc		83
-nimgrp	readint32	flatty/binny.html#readInt32-procs-all	proc		65
-nimgrp	readstr	flatty/binny.html#readStr-procs-all	proc		104
-nimgrp	readuint64	flatty/binny.html#readUint64-procs-all	proc		37
-nimgrp	readuint16	flatty/binny.html#readUint16-procs-all	proc		17
-nimgrp	readuint32	flatty/binny.html#readUint32-procs-all	proc		27
+nim	readUint8	flatty/binny.html#readUint8,Buffer,int	proc readUint8(s: Buffer; i: int): uint8		21
+nim	writeUint8	flatty/binny.html#writeUint8,Buffer,int,uint8	proc writeUint8(s: var Buffer; i: int; v: uint8)		25
+nim	addUint8	flatty/binny.html#addUint8,Buffer,uint8	proc addUint8(s: var Buffer; v: uint8)		28
+nim	readUint16	flatty/binny.html#readUint16,Buffer,int	proc readUint16(s: Buffer; i: int): uint16		31
+nim	writeUint16	flatty/binny.html#writeUint16,Buffer,int,uint16	proc writeUint16(s: var Buffer; i: int; v: uint16)		35
+nim	addUint16	flatty/binny.html#addUint16,Buffer,uint16	proc addUint16(s: var Buffer; v: uint16)		38
+nim	readUint32	flatty/binny.html#readUint32,Buffer,int	proc readUint32(s: Buffer; i: int): uint32		42
+nim	writeUint32	flatty/binny.html#writeUint32,Buffer,int,uint32	proc writeUint32(s: var Buffer; i: int; v: uint32)		46
+nim	addUint32	flatty/binny.html#addUint32,Buffer,uint32	proc addUint32(s: var Buffer; v: uint32)		49
+nim	readUint64	flatty/binny.html#readUint64,Buffer,int	proc readUint64(s: Buffer; i: int): uint64		53
+nim	writeUint64	flatty/binny.html#writeUint64,Buffer,int,uint64	proc writeUint64(s: var Buffer; i: int; v: uint64)		57
+nim	addUint64	flatty/binny.html#addUint64,Buffer,uint64	proc addUint64(s: var Buffer; v: uint64)		60
+nim	readInt8	flatty/binny.html#readInt8,Buffer,int	proc readInt8(s: Buffer; i: int): int8		64
+nim	writeInt8	flatty/binny.html#writeInt8,Buffer,int,int8	proc writeInt8(s: var Buffer; i: int; v: int8)		67
+nim	addInt8	flatty/binny.html#addInt8,Buffer,int8	proc addInt8(s: var Buffer; v: int8)		70
+nim	readInt16	flatty/binny.html#readInt16,Buffer,int	proc readInt16(s: Buffer; i: int): int16		73
+nim	writeInt16	flatty/binny.html#writeInt16,Buffer,int,int16	proc writeInt16(s: var Buffer; i: int; v: int16)		76
+nim	addInt16	flatty/binny.html#addInt16,Buffer,int16	proc addInt16(s: var Buffer; i: int16)		79
+nim	readInt32	flatty/binny.html#readInt32,Buffer,int	proc readInt32(s: Buffer; i: int): int32		82
+nim	writeInt32	flatty/binny.html#writeInt32,Buffer,int,int32	proc writeInt32(s: var Buffer; i: int; v: int32)		85
+nim	addInt32	flatty/binny.html#addInt32,Buffer,int32	proc addInt32(s: var Buffer; i: int32)		88
+nim	readInt64	flatty/binny.html#readInt64,Buffer,int	proc readInt64(s: Buffer; i: int): int64		91
+nim	writeInt64	flatty/binny.html#writeInt64,Buffer,int,int64	proc writeInt64(s: var Buffer; i: int; v: int64)		94
+nim	addInt64	flatty/binny.html#addInt64,Buffer,int64	proc addInt64(s: var Buffer; i: int64)		97
+nim	readFloat32	flatty/binny.html#readFloat32,Buffer,int	proc readFloat32(s: Buffer; i: int): float32		100
+nim	addFloat32	flatty/binny.html#addFloat32,Buffer,float32	proc addFloat32(s: var Buffer; v: float32)		103
+nim	writeFloat32	flatty/binny.html#writeFloat32,Buffer,int,float32	proc writeFloat32(s: var Buffer; i: int; v: float32)		106
+nim	readFloat64	flatty/binny.html#readFloat64,Buffer,int	proc readFloat64(s: Buffer; i: int): float64		109
+nim	writeFloat64	flatty/binny.html#writeFloat64,Buffer,int,float64	proc writeFloat64(s: var Buffer; i: int; v: float64)		112
+nim	addFloat64	flatty/binny.html#addFloat64,Buffer,float64	proc addFloat64(s: var Buffer; v: float64)		115
+nim	addStr	flatty/binny.html#addStr,string,string	proc addStr(s: var string; v: string)		118
+nim	readStr	flatty/binny.html#readStr,string,int,int	proc readStr(s: string; i: int; v: int): string		121
+nim	addStr	flatty/binny.html#addStr,seq[uint8],string	proc addStr(s: var seq[uint8]; v: string)		124
+nim	readStr	flatty/binny.html#readStr,seq[uint8],int,int	proc readStr(s: seq[uint8]; i: int; v: int): string		127
+nim	readStr	flatty/binny.html#readStr,ptr.UncheckedArray[uint8],int,int	proc readStr(s: ptr UncheckedArray[uint8]; i, v: int): string		132
+nim	readUint8	flatty/binny.html#readUint8,ptr.UncheckedArray[uint8],int	proc readUint8(s: ptr UncheckedArray[uint8]; i: int): uint8		136
+nim	readUint16	flatty/binny.html#readUint16,ptr.UncheckedArray[uint8],int	proc readUint16(s: ptr UncheckedArray[uint8]; i: int): uint16		139
+nim	readUint32	flatty/binny.html#readUint32,ptr.UncheckedArray[uint8],int	proc readUint32(s: ptr UncheckedArray[uint8]; i: int): uint32		142
+nim	readUint64	flatty/binny.html#readUint64,ptr.UncheckedArray[uint8],int	proc readUint64(s: ptr UncheckedArray[uint8]; i: int): uint64		145
+nim	readInt8	flatty/binny.html#readInt8,ptr.UncheckedArray[uint8],int	proc readInt8(s: ptr UncheckedArray[uint8]; i: int): int8		148
+nim	readInt16	flatty/binny.html#readInt16,ptr.UncheckedArray[uint8],int	proc readInt16(s: ptr UncheckedArray[uint8]; i: int): int16		151
+nim	readInt32	flatty/binny.html#readInt32,ptr.UncheckedArray[uint8],int	proc readInt32(s: ptr UncheckedArray[uint8]; i: int): int32		154
+nim	readInt64	flatty/binny.html#readInt64,ptr.UncheckedArray[uint8],int	proc readInt64(s: ptr UncheckedArray[uint8]; i: int): int64		157
+nim	readFloat32	flatty/binny.html#readFloat32,ptr.UncheckedArray[uint8],int	proc readFloat32(s: ptr UncheckedArray[uint8]; i: int): float32		160
+nim	readFloat64	flatty/binny.html#readFloat64,ptr.UncheckedArray[uint8],int	proc readFloat64(s: ptr UncheckedArray[uint8]; i: int): float64		163
+nim	swap	flatty/binny.html#swap,uint8	proc swap(v: uint8): uint8		166
+nim	swap	flatty/binny.html#swap,uint16	proc swap(v: uint16): uint16		169
+nim	swap	flatty/binny.html#swap,uint32	proc swap(v: uint32): uint32		173
+nim	swap	flatty/binny.html#swap,uint64	proc swap(v: uint64): uint64		177
+nim	swap	flatty/binny.html#swap,int16	proc swap(v: int16): int16		181
+nim	swap	flatty/binny.html#swap,int32	proc swap(v: int32): int32		184
+nim	swap	flatty/binny.html#swap,int64	proc swap(v: int64): int64		187
+nim	swap	flatty/binny.html#swap,int	proc swap(v: int): int		190
+nim	maybeSwap	flatty/binny.html#maybeSwap,T,bool	proc maybeSwap[T](v: T; enable: bool): T		198
+nimgrp	readuint8	flatty/binny.html#readUint8-procs-all	proc		21
+nimgrp	readint16	flatty/binny.html#readInt16-procs-all	proc		73
+nimgrp	readfloat64	flatty/binny.html#readFloat64-procs-all	proc		109
+nimgrp	swap	flatty/binny.html#swap-procs-all	proc		166
+nimgrp	addstr	flatty/binny.html#addStr-procs-all	proc		118
+nimgrp	readint8	flatty/binny.html#readInt8-procs-all	proc		64
+nimgrp	readint64	flatty/binny.html#readInt64-procs-all	proc		91
+nimgrp	readfloat32	flatty/binny.html#readFloat32-procs-all	proc		100
+nimgrp	readint32	flatty/binny.html#readInt32-procs-all	proc		82
+nimgrp	readstr	flatty/binny.html#readStr-procs-all	proc		121
+nimgrp	readuint64	flatty/binny.html#readUint64-procs-all	proc		53
+nimgrp	readuint16	flatty/binny.html#readUint16-procs-all	proc		31
+nimgrp	readuint32	flatty/binny.html#readUint32-procs-all	proc		42
