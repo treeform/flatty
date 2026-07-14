@@ -41,6 +41,18 @@ type
     of fkD:
       t: Table[string, int]
 
+  # Holey enum: defined ordinals 0, 2, 5. Values 1, 3, 4 sit in holes --
+  # low..high range checks accept them, then `new(x, disc)` segfaults.
+  HoleyKind = enum hkA = 0, hkB = 2, hkC = 5
+  HoleyVariant = ref object
+    case kind: HoleyKind
+    of hkA:
+      n: int
+    of hkB:
+      s: string
+    of hkC:
+      xs: seq[int]
+
   Nested = ref object
     id: int
     name: string
@@ -48,7 +60,7 @@ type
 
 # The set of types we fuzz, addressed by name on the command line.
 const FuzzTypes = [
-  "int", "string", "seqint", "seqstr", "table", "variant", "nested"
+  "int", "string", "seqint", "seqstr", "table", "variant", "holey", "nested"
 ]
 
 # Encoding helpers for hand-built adversarial inputs.
@@ -87,6 +99,21 @@ proc corners(typ: string): seq[string] =
       i64(9999),                                   # out-of-range discriminator
       i64(int(high(FuzzKind)) + 1),                # just past the enum
       i64(int(fkA)),                               # valid tag, missing fields
+    ]
+  of "holey":
+    # HoleyVariant is a ref, so byte 0 is the nil flag (0 = present). Without
+    # that leading 0 the decoder returns nil and never touches the disc.
+    @[
+      "",
+      "\x00",                                      # non-nil, missing disc
+      "\x00" & i64(-1),                            # negative discriminator
+      "\x00" & i64(9999),                          # past high(HoleyKind)
+      "\x00" & i64(1),                             # hole between hkA and hkB
+      "\x00" & i64(3),                             # hole between hkB and hkC
+      "\x00" & i64(4),                             # hole between hkB and hkC
+      "\x00" & i64(int(hkA)),                      # valid tag, missing fields
+      "\x00" & i64(int(hkB)),
+      "\x00" & i64(int(hkC)),
     ]
   of "nested":
     @[
@@ -139,6 +166,19 @@ proc genValid(r: var Rand, typ: string): string =
       for _ in 0 ..< r.rand(4): t[r.randBytes(1 + r.rand(4))] = r.rand(100)
       v = FuzzVariant(kind: fkD, t: t)
     v.toFlatty
+  of "holey":
+    # Pick only defined ordinals so genValid stays well-formed.
+    let defined = [hkA, hkB, hkC]
+    let k = defined[r.rand(defined.len - 1)]
+    var v: HoleyVariant
+    case k
+    of hkA: v = HoleyVariant(kind: hkA, n: r.rand(1000))
+    of hkB: v = HoleyVariant(kind: hkB, s: r.randBytes(r.rand(8)))
+    of hkC:
+      var xs: seq[int]
+      for _ in 0 ..< r.rand(6): xs.add r.rand(1000)
+      v = HoleyVariant(kind: hkC, xs: xs)
+    v.toFlatty
   of "nested":
     proc gen(r: var Rand, depth: int): Nested =
       result = Nested(id: r.rand(1000), name: r.randBytes(r.rand(6)))
@@ -189,6 +229,15 @@ proc decodeAs(typ, data: string) =
   of "variant":
     let v = data.fromFlatty(FuzzVariant)
     if v != nil: discard ord(v.kind)              # touch the discriminator
+  of "holey":
+    let v = data.fromFlatty(HoleyVariant)
+    if v != nil:
+      # A hole ordinal that survives fromFlatty is a hardening failure: under
+      # -d:danger, `case v.kind` silently takes the wrong branch; under
+      # -d:release, field access can SIGSEGV. low..high range checks miss
+      # holes, so treat an undefined kind as a hard abort for the harness.
+      if v.kind != hkA and v.kind != hkB and v.kind != hkC:
+        quit(139)
   of "nested":
     let n = data.fromFlatty(Nested)
     if n != nil: discard n.kids.len

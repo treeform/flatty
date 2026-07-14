@@ -1,6 +1,6 @@
 ## Convert any Nim objects, numbers, strings, refs to and from binary format.
 import
-  std/[importutils, tables, typetraits, sets],
+  std/[importutils, macros, tables, typetraits, sets],
   flatty/objvar
 
 when defined(js):
@@ -14,9 +14,9 @@ type SomeSet[A] = set[A] | HashSet[A] | OrderedSet[A]
 
 type FlattyError* = object of CatchableError
   ## Raised when decoding malformed input: a negative or oversized length /
-  ## element count, or an out-of-range enum discriminator. Truncated reads
-  ## raise IndexDefect from the binny layer; catch both to fully contain a
-  ## hostile payload.
+  ## element count, or an undefined enum discriminator (out of range or a
+  ## hole in a discontinuous enum). Truncated reads raise IndexDefect from
+  ## the binny layer; catch both to fully contain a hostile payload.
 
 const flattyPreallocCap = 4096
   ## Upper bound on how many slots a Table/Set decode will preallocate from an
@@ -403,17 +403,43 @@ proc fromFlatty*[T: range](s: string, i: var int, x: var T) =
 proc toFlatty*[T: enum and not range](s: var string, x: T) =
   s.addInt64(x.int)
 
+macro flattyEnumOrds(T: typedesc[enum]): untyped =
+  ## Defined ordinals of `T` as a compile-time `array` of `int64`.
+  ## Only needed for holey enums, where `low..high` is not a valid
+  ## membership test (and `items` / `succ` are unavailable).
+  result = nnkBracket.newTree()
+  let impl = getTypeImpl(T.getType[1])
+  for c in impl:
+    if c.kind == nnkSym:
+      result.add newCall(bindSym"int64", newCall(bindSym"ord", c))
+
 proc fromFlatty*[T: enum and not range](s: string, i: var int, x: var T) =
   let value = s.readInt64(i)
   i += 8
-  # An out-of-range discriminator is the dangerous case: for an object
-  # variant it reaches `new(x, discriminator)` and segfaults. Range-check
-  # against the enum's bounds before constructing the value.
-  if value < low(T).int64 or value > high(T).int64:
-    raise newException(
-      FlattyError,
-      "flatty: enum value " & $value & " out of range for " & $T
-    )
+  # An undefined discriminator is the dangerous case: for an object variant
+  # it reaches `new(x, discriminator)` with a bad ordinal and can segfault
+  # or silently take the wrong branch under -d:danger.
+  when T is Ordinal:
+    # Contiguous enum: every value in low..high is defined, so a range
+    # check is exact and cheaper than scanning the ordinal list.
+    if value < low(T).int64 or value > high(T).int64:
+      raise newException(
+        FlattyError,
+        "flatty: enum value " & $value & " out of range for " & $T
+      )
+  else:
+    # Holey enum: low..high includes gaps; require a defined ordinal.
+    const ords = flattyEnumOrds(T)
+    var ok = false
+    for o in ords:
+      if o == value:
+        ok = true
+        break
+    if not ok:
+      raise newException(
+        FlattyError,
+        "flatty: enum value " & $value & " out of range for " & $T
+      )
   x = cast[T](value)
 
 # Strings
