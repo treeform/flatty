@@ -12,6 +12,111 @@ else:
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 type SomeSet[A] = set[A] | HashSet[A] | OrderedSet[A]
 
+type FlattyError* = object of CatchableError
+  ## Raised when decoding malformed input: a negative or oversized length /
+  ## element count, or an out-of-range enum discriminator. Truncated reads
+  ## raise IndexDefect from the binny layer; catch both to fully contain a
+  ## hostile payload.
+
+const flattyPreallocCap = 4096
+  ## Upper bound on how many slots a Table/Set decode will preallocate from an
+  ## untrusted element count. This makes the preallocation a bounded constant
+  ## (~a few hundred KB, freed on error) regardless of the claimed count, so a
+  ## small payload can't force a huge hash-table allocation, while still
+  ## preallocating exactly for the common case of tables up to this size.
+  ## Larger containers grow organically as their real entries decode.
+
+template checkCount(s: string, i, count, elemSize: int) =
+  ## Reject a length/count prefix that cannot possibly be backed by the
+  ## bytes remaining in the buffer. Every value flatty encodes occupies at
+  ## least one byte, so a container can never hold more elements than there
+  ## are bytes left. Phrased to avoid overflow on a hostile `count`.
+  ##
+  ## NOTE: types that serialize to zero bytes (e.g. an empty object with no
+  ## fields) violate the >=1-byte assumption; a very large seq of those will
+  ## be rejected. That is a deliberate trade for a bound that needs no
+  ## configuration.
+  if count < 0 or (elemSize > 0 and count > (s.len - i) div elemSize):
+    raise newException(
+      FlattyError,
+      "flatty: element count " & $count & " exceeds " & $(s.len - i) &
+        " bytes remaining"
+    )
+
+# Deeply nested input (a long ref/seq chain) would otherwise recurse until the
+# thread stack overflows -- an uncatchable crash that no length check stops.
+# Rather than thread a depth counter through every call (and unwind it on the
+# way back up), we watch the actual stack pointer: the hardware stack already
+# counts depth for us, returns need no bookkeeping, and sibling recursion
+# self-corrects. We bail a fixed margin before the thread's real stack end,
+# queried once from the OS so the guard adapts to frame size, build mode, and
+# per-thread stack size.
+when not defined(js):
+  const flattyStackMargin = 128 * 1024
+    ## Stop recursing this many bytes before the true end of the stack, so the
+    ## unwinding `raise` itself has room to run.
+
+  var flattyStackLimit {.threadvar.}: uint
+    ## Lowest safe stack address for this thread; recursion bails once the
+    ## stack pointer drops below it. 0 means "not yet computed" -> guard off.
+
+  proc flattyComputeStackLimit(): uint =
+    ## Lowest safe address = (far end of this thread's stack) + margin.
+    when defined(windows):
+      proc getCurrentThreadStackLimits(lowLimit, highLimit: ptr uint) {.
+        importc: "GetCurrentThreadStackLimits", stdcall, dynlib: "kernel32".}
+      var lo, hi: uint
+      getCurrentThreadStackLimits(addr lo, addr hi)
+      lo + flattyStackMargin
+    elif defined(macosx):
+      proc pthread_self(): pointer {.importc, header: "<pthread.h>".}
+      proc pthread_get_stackaddr_np(t: pointer): pointer {.
+        importc, header: "<pthread.h>".}
+      proc pthread_get_stacksize_np(t: pointer): culong {.
+        importc, header: "<pthread.h>".}
+      let t = pthread_self()
+      # stackaddr_np is the base (highest address); the stack grows down.
+      let base = cast[uint](pthread_get_stackaddr_np(t))
+      let size = pthread_get_stacksize_np(t).uint
+      base - size + flattyStackMargin
+    elif defined(posix):
+      type PthreadAttr {.importc: "pthread_attr_t", header: "<pthread.h>",
+        bycopy.} = object
+        abi: array[64, uint8]  # opaque; sized generously
+      proc pthread_self(): culong {.importc, header: "<pthread.h>".}
+      proc pthread_getattr_np(t: culong, a: ptr PthreadAttr): cint {.
+        importc, header: "<pthread.h>".}
+      proc pthread_attr_getstack(a: ptr PthreadAttr, stackaddr: ptr pointer,
+        stacksize: ptr culong): cint {.importc, header: "<pthread.h>".}
+      proc pthread_attr_destroy(a: ptr PthreadAttr): cint {.
+        importc, header: "<pthread.h>".}
+      var a: PthreadAttr
+      if pthread_getattr_np(pthread_self(), addr a) != 0:
+        return 0  # can't tell; leave the guard off rather than false-trip
+      var lo: pointer
+      var size: culong
+      discard pthread_attr_getstack(addr a, addr lo, addr size)
+      discard pthread_attr_destroy(addr a)
+      # getstack returns the lowest address directly.
+      cast[uint](lo) + flattyStackMargin
+    else:
+      0  # unknown platform: guard disabled
+
+  template flattyInitStackGuard() =
+    flattyStackLimit = flattyComputeStackLimit()
+
+  template flattyStackGuard() =
+    ## One-line guard at each recursive descent. A cycle in a Nim type must
+    ## pass through a heap indirection (ref/seq/Table/HashSet) every loop, so
+    ## guarding only those procs catches all unbounded recursion while leaving
+    ## the common object/tuple/array paths untouched.
+    var probe {.volatile.}: int
+    if flattyStackLimit != 0'u and cast[uint](addr probe) < flattyStackLimit:
+      raise newException(FlattyError, "flatty: input nesting too deep")
+else:
+  template flattyInitStackGuard() = discard
+  template flattyStackGuard() = discard
+
 when defined(flatty32) and defined(flatty64):
   {.error: "flatty32 and flatty64 cannot both be defined".}
 
@@ -299,8 +404,17 @@ proc toFlatty*[T: enum and not range](s: var string, x: T) =
   s.addInt64(x.int)
 
 proc fromFlatty*[T: enum and not range](s: string, i: var int, x: var T) =
-  x = cast[T](s.readInt64(i))
+  let value = s.readInt64(i)
   i += 8
+  # An out-of-range discriminator is the dangerous case: for an object
+  # variant it reaches `new(x, discriminator)` and segfaults. Range-check
+  # against the enum's bounds before constructing the value.
+  if value < low(T).int64 or value > high(T).int64:
+    raise newException(
+      FlattyError,
+      "flatty: enum value " & $value & " out of range for " & $T
+    )
+  x = cast[T](value)
 
 # Strings
 proc toFlatty*(s: var string, x: string) =
@@ -309,6 +423,7 @@ proc toFlatty*(s: var string, x: string) =
 
 proc fromFlatty*(s: string, i: var int, x: var string) =
   let len = s.readFlattyInt(i)
+  s.checkCount(i, len, 1)
   when defined(js):
     x = s[i ..< i + len]
   else:
@@ -335,6 +450,7 @@ proc toFlatty*[T](s: var string, x: seq[T]) =
 proc fromFlatty*[T](s: string, i: var int, x: var seq[T]) =
   let len = s.readFlattyInt(i)
   when not defined(js) and T.copyable:
+    s.checkCount(i, len, sizeof(T))
     when declared(setLenUninit):
       x.setLenUninit(len)
     else:
@@ -343,6 +459,10 @@ proc fromFlatty*[T](s: string, i: var int, x: var seq[T]) =
       copyMem(x[0].addr, s[i].unsafeAddr, len * sizeof(T))
       i += sizeof(T) * len
   else:
+    # Element-wise types occupy at least one byte each; bound the count by
+    # the bytes remaining so a bogus length can't drive a huge setLen.
+    flattyStackGuard()
+    s.checkCount(i, len, 1)
     x.setLen(len)
     for j in x.mitems:
       s.fromFlatty(i, j)
@@ -394,13 +514,21 @@ proc toTableLike[T](s: var string, K: type, V: type, x: T) {.inline.} =
 proc fromTableLike[T](
     s: string, i: var int, K: type, V: type, x: var T
 ) {.inline.} =
+  flattyStackGuard()
   let len = s.readFlattyInt(i)
+  # `len` is bounded by the bytes remaining, but a hash slot is far larger
+  # than one byte, so preallocating `len` slots from an untrusted count is a
+  # memory-amplification DoS (a ~0.5MB payload can force tens of MB). Clamp
+  # the preallocation hint; a genuinely large table just grows as its real,
+  # byte-backed entries are decoded below.
+  s.checkCount(i, len, 1)
+  let prealloc = min(len, flattyPreallocCap)
   when T is Table[K, V]:
-    x = initTable[K, V](len)
+    x = initTable[K, V](prealloc)
   elif T is OrderedTable[K, V]:
-    x = initOrderedTable[K, V](len)
+    x = initOrderedTable[K, V](prealloc)
   elif T is CountTable[K]:
-    x = initCountTable[K](len)
+    x = initCountTable[K](prealloc)
   for _ in 0 ..< len:
     var
       k: K
@@ -437,6 +565,13 @@ proc toFlatty*[N, T](s: var string, x: array[N, T]) =
 proc fromFlatty*[N, T](s: string, i: var int, x: var array[N, T]) =
   when not defined(js) and T.copyable:
     if x.len > 0:
+      # Array length is fixed, but the buffer may be short of sizeof(x).
+      if i < 0 or sizeof(x) > s.len - i:
+        raise newException(
+          FlattyError,
+          "flatty: array needs " & $sizeof(x) & " bytes, " &
+            $(s.len - i) & " remaining"
+        )
       copyMem(x[low(x)].addr, s[i].unsafeAddr, sizeof(x))
       i += sizeof(x)
   else:
@@ -460,6 +595,7 @@ proc toFlatty*[T](s: var string, x: ref T) =
     s.toFlatty(x[])
 
 proc fromFlatty*[T](s: string, i: var int, x: var ref T) =
+  flattyStackGuard()
   let isNil = s.readUint8(i).bool
   i += 1
   if not isNil:
@@ -473,11 +609,15 @@ proc toFlatty*[T](s: var string, x: SomeSet[T]) =
     s.toFlatty(e)
 
 proc fromFlatty*[T](s: string, i: var int, x: var SomeSet[T]) =
+  flattyStackGuard()
   let len = s.readFlattyInt(i)
+  # Clamp the preallocation hint; see fromTableLike for the amplification.
+  s.checkCount(i, len, 1)
+  let prealloc = min(len, flattyPreallocCap)
   when x is HashSet[T]:
-    x = initHashSet[T](len)
+    x = initHashSet[T](prealloc)
   elif x is OrderedSet[T]:
-    x = initOrderedSet[T](len)
+    x = initOrderedSet[T](prealloc)
   for j in 0 ..< len:
     var e: T
     s.fromFlatty(i, e)
@@ -490,5 +630,6 @@ proc toFlatty*[T](x: T): string =
 
 proc fromFlatty*[T](s: string, x: typedesc[T]): T =
   ## Takes binary string and turn into structures.
+  flattyInitStackGuard()
   var i = 0
   s.fromFlatty(i, result)

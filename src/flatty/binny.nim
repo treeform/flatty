@@ -5,7 +5,21 @@ when cpuEndian != littleEndian:
 
 type Buffer = string | seq[uint8]
 
+template boundsCheck(s: Buffer, i, n: int) =
+  ## Guard a read of `n` bytes starting at `i` against the buffer length.
+  ## Untrusted input reaches these reads, so this stays on even under
+  ## -d:danger (where the compiler's own [] bounds checks are elided).
+  ## Written as `i > s.len - n` so a hostile `n` near high(int) can't
+  ## overflow `i + n`.
+  if i < 0 or n < 0 or i > s.len - n:
+    raise newException(
+      IndexDefect,
+      "flatty: read of " & $n & " bytes at " & $i &
+        " exceeds buffer length " & $s.len
+    )
+
 func readUint8*(s: Buffer, i: int): uint8 {.inline.} =
+  boundsCheck(s, i, 1)
   cast[uint8](s[i])
 
 func writeUint8*(s: var Buffer, i: int, v: uint8) {.inline.} =
@@ -15,6 +29,7 @@ func addUint8*(s: var Buffer, v: uint8) {.inline.} =
   s.add v.char
 
 func readUint16*(s: Buffer, i: int): uint16 {.inline.} =
+  boundsCheck(s, i, 2)
   copyMem(result.addr, s[i].unsafeAddr, 2)
 
 func writeUint16*(s: var Buffer, i: int, v: uint16) {.inline.} =
@@ -25,6 +40,7 @@ func addUint16*(s: var Buffer, v: uint16) {.inline.} =
   copyMem(s[s.len - sizeof(v)].addr, v.unsafeAddr, sizeof(v))
 
 func readUint32*(s: Buffer, i: int): uint32 {.inline.} =
+  boundsCheck(s, i, 4)
   copyMem(result.addr, s[i].unsafeAddr, 4)
 
 func writeUint32*(s: var Buffer, i: int, v: uint32) {.inline.} =
@@ -35,6 +51,7 @@ func addUint32*(s: var Buffer, v: uint32) {.inline.} =
   copyMem(s[s.len - sizeof(v)].addr, v.unsafeAddr, sizeof(v))
 
 func readUint64*(s: Buffer, i: int): uint64 {.inline.} =
+  boundsCheck(s, i, 8)
   copyMem(result.addr, s[i].unsafeAddr, 8)
 
 func writeUint64*(s: var Buffer, i: int, v: uint64) {.inline.} =

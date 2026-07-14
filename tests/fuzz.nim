@@ -15,8 +15,9 @@
 ## records it, and resumes the child just past that input. Everything is
 ## driven by a seeded PRNG, so every reproducer replays deterministically.
 ##
-## Run:  nim c -r --path:../src test_fuzz.nim
-## Replay one input by hand: see the hex printed next to each CRASH.
+## Run from the repo root:  nim r tests/fuzz.nim
+## Replay one input by hand:  nim r tests/fuzz.nim --replay <type> <hex>
+## (the hex for each finding is printed next to its CRASH line)
 
 import
   std/[os, osproc, random, strutils, tables],
