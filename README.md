@@ -67,3 +67,23 @@ Flatty does not do compression it self but I recommend using the excellent https
 ## Networking
 
 The `flatty` + `supersnappy` + `netty` were originally made to be used together. [Netty](https://github.com/treeform/netty) is a great for UDP networking for games.
+
+## Untrusted input and hardening
+
+Flatty is often used to decode data that arrives over the network, so `fromFlatty` is built to never crash the process on a malformed or hostile blob. A bad blob fails with a **catchable** error instead of a segfault, an out-of-memory abort, or a stack overflow:
+
+* Every read is bounds-checked against the buffer, so truncated blobs can't over-read (this stays on even under `-d:danger`).
+* Length and element-count prefixes are validated against the bytes remaining before anything is allocated, so a bogus length can't drive a huge allocation.
+* Enum discriminators are range-checked before an object variant is built, so an out-of-range tag can't corrupt a variant or segfault.
+* `Table`/`HashSet` preallocation from an untrusted count is capped, so a small blob can't force a huge hash-table allocation.
+* A stack-pointer watermark stops deeply nested input (a long `ref`/`seq` chain) before it overflows the thread stack.
+
+Decode failures raise `FlattyError` (bad length, count, or enum) or `IndexDefect` (truncation). Wrap the decode and handle both:
+
+```nim
+try:
+  let msg = data.fromFlatty(Message)
+  ...
+except CatchableError, Defect:
+  discard # drop the blob / disconnect the peer
+```
