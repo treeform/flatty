@@ -79,6 +79,8 @@ when not defined(js):
       let base = cast[uint](pthread_get_stackaddr_np(t))
       let size = pthread_get_stacksize_np(t).uint
       base - size + flattyStackMargin
+    elif defined(emscripten):
+      0  # wasm has no pthread stack to query; leave the guard off.
     elif defined(posix):
       type PthreadAttr {.importc: "pthread_attr_t", header: "<pthread.h>",
         bycopy.} = object
