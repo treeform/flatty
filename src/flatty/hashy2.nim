@@ -9,8 +9,13 @@ import
 when defined(release):
   {.push checks: off.}
 
+const HashySeed* = 538100364'u32
+
 proc addHashy*[T](h: var uint32, x: seq[T])
 proc addHashy*(h: var uint32, x: SomeNumber|bool|enum)
+proc addHashy*(h: var uint32, x: uint64)
+proc addHashy*(h: var uint32, x: int64)
+proc addHashy*(h: var uint32, x: int)
 proc addHashy*(h: var uint32, x: string)
 proc addHashy*(h: var uint32, x: object)
 proc addHashy*[T: distinct](h: var uint32, x: T)
@@ -39,13 +44,26 @@ proc hashMem*(p: pointer, len: int): uint32 =
 proc addHashy*(h: var uint32, x: SomeNumber|bool|enum) =
   h = h * 33 + cast[uint32](x)
 
+proc addHashy*(h: var uint32, x: uint64) =
+  ## Mixes both 32-bit halves so a 64-bit value is not truncated.
+  h = h * 33 + uint32(x)
+  h = h * 33 + uint32(x shr 32)
+
+proc addHashy*(h: var uint32, x: int64) =
+  ## Mixes a signed 64-bit value as two canonical 32-bit halves.
+  h.addHashy(cast[uint64](x))
+
+proc addHashy*(h: var uint32, x: int) =
+  ## Widens to int64 so wasm32 and 64-bit hosts hash the same integer.
+  h.addHashy(int64(x))
+
 proc addHashy*(h: var uint32, x: string) =
-  h.addHashy(x.len)
+  h.addHashy(int32(x.len))
   if x.len > 0:
     h = h * 33 + hashMem(x[0].unsafeAddr, x.len)
 
 proc addHashy*[T](h: var uint32, x: seq[T]) =
-  h.addHashy(x.len)
+  h.addHashy(int32(x.len))
   if x.len > 0:
     when T.supportsCopyMem:
       h = h * 33 + hashMem(x[0].unsafeAddr, x.len * sizeof(T))
@@ -54,7 +72,7 @@ proc addHashy*[T](h: var uint32, x: seq[T]) =
         h.addHashy(e)
 
 proc addHashy*[N, T](h: var uint32, x: array[N, T]) =
-  h.addHashy(x.len)
+  h.addHashy(int32(x.len))
   if x.len > 0:
     when T.supportsCopyMem:
       h = h * 33 + hashMem(x[0].unsafeAddr, x.len * sizeof(T))
@@ -89,7 +107,7 @@ proc addHashy*[T](h: var uint32, x: ref T) =
 
 proc hashy*[T](x: T): uint32 =
   ## Takes structures and hashes them.
-  result = 538100364
+  result = HashySeed
   result.addHashy(x)
 
 when defined(release):
